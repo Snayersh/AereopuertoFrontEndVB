@@ -61,5 +61,52 @@ Public Class MisBoletos
             rptBoletos.Visible = False
         End Try
     End Sub
+    ' =================================================================
+    ' EVENTO: CUANDO ALGUIEN HACE CLIC EN UN BOTÓN DENTRO DEL REPEATER
+    ' =================================================================
+    Protected Sub rptBoletos_ItemCommand(source As Object, e As RepeaterCommandEventArgs) Handles rptBoletos.ItemCommand
+        If e.CommandName = "CancelarReserva" Then
+            ' Atrapamos el código de la reserva que enviamos desde el HTML
+            Dim codigoReserva As String = e.CommandArgument.ToString()
+            ProcesarCancelacion(codigoReserva)
+        End If
+    End Sub
+
+    Private Sub ProcesarCancelacion(codigoReserva As String)
+        Dim db As New ConexionDB()
+        Dim correoUsuario As String = Session("UserEmail").ToString()
+
+        Try
+            Using conn As OracleConnection = db.ObtenerConexion()
+                Using cmd As New OracleCommand("SP_CANCELAR_RESERVA", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+                    cmd.BindByName = True
+
+                    cmd.Parameters.Add("p_codigo_reserva", OracleDbType.Varchar2).Value = codigoReserva
+                    cmd.Parameters.Add("p_correo_usuario", OracleDbType.Varchar2).Value = correoUsuario
+
+                    Dim outResultado As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
+                    outResultado.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(outResultado)
+
+                    conn.Open()
+                    cmd.ExecuteNonQuery()
+
+                    Dim resultado As String = outResultado.Value.ToString()
+
+                    If resultado = "EXITO" Then
+                        ' Recargamos la lista para que el boleto ahora aparezca como "Cancelado"
+                        CargarMisBoletos()
+                    Else
+                        pnlError.Visible = True
+                        lblError.Text = "No se pudo cancelar: " & resultado
+                    End If
+                End Using
+            End Using
+        Catch ex As Exception
+            pnlError.Visible = True
+            lblError.Text = "Error de conexión al cancelar: " & ex.Message
+        End Try
+    End Sub
 
 End Class

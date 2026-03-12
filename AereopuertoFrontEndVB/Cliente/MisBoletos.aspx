@@ -72,14 +72,24 @@
                             </div>
                         </div>
                         
-                        <div class="ticket-side">
+                   <div class="ticket-side">
                             <div class="ticket-label text-center">LOCALIZADOR</div>
                             <h3 class="fw-bold text-dark mb-3"><%# Eval("CodigoReserva") %></h3>
                             
                             <div class="ticket-label text-center">ESTADO</div>
-                            <span class='<%# If(Eval("EstadoBoleto").ToString() = "Pagado", "badge-pagado", "badge-reservado") %> fw-bold mb-2'>
+                            <span class='<%# If(Eval("EstadoBoleto").ToString() = "Pagado", "badge-pagado", If(Eval("EstadoBoleto").ToString() = "Cancelado", "badge-cancelado", "badge-reservado")) %> fw-bold mb-3'>
                                 <%# Eval("EstadoBoleto") %>
                             </span>
+
+                            <asp:Panel ID="pnlAcciones" runat="server" Visible='<%# Eval("EstadoBoleto").ToString() = "Reservado" %>'>
+                                <a href='Pagos.aspx?codigo=<%# Eval("CodigoReserva") %>' class="btn btn-sm btn-success w-100 mb-2 fw-bold shadow-sm">💳 Pagar Ahora</a>
+                                
+                                <asp:LinkButton ID="btnCancelar" runat="server" CssClass="btn btn-sm btn-outline-danger w-100 fw-bold" 
+                                    CommandName="CancelarReserva" CommandArgument='<%# Eval("CodigoReserva") %>' 
+                                    OnClientClick="return confirm('¿Estás seguro que deseas cancelar esta reserva? El asiento será liberado para otros pasajeros.');">
+                                    ❌ Cancelar
+                                </asp:LinkButton>
+                            </asp:Panel>
                         </div>
                     </div>
                 </ItemTemplate>

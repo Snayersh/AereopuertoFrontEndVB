@@ -233,6 +233,12 @@ Public Class Reservas
 
                 lblCodigoBoleto.Text = codigoReservaUnico
                 lblAsientoConfirmado.Text = String.Join(", ", listaAsientos)
+
+                ' =========================================================
+                ' NUEVA LÍNEA: Le inyectamos el código al botón de Pagar
+                hlPagarAhora.NavigateUrl = "Pagos.aspx?codigo=" & codigoReservaUnico
+                ' =========================================================
+
                 pnlExito.Visible = True
             Else
                 MostrarError("Hubo problemas con algunos asientos: " & errores.ToString())

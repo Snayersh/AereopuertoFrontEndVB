@@ -49,13 +49,20 @@
                             <asp:Label ID="lblError" runat="server" CssClass="fw-bold"></asp:Label>
                         </asp:Panel>
 
-                        <asp:Panel ID="pnlExito" runat="server" Visible="false" CssClass="ticket-result text-center mb-4">
-                            <h4 class="text-success fw-bold mb-2">¡Reserva Confirmada! 🎉</h4>
-                            <p class="m-0 text-secondary">Tu código de localización es:</p>
-                            <h1 class="fw-bold text-dark my-2 tracking-widest"><asp:Label ID="lblCodigoBoleto" runat="server"></asp:Label></h1>
-                            <p class="fs-5 m-0 text-primary fw-bold">Asiento: <asp:Label ID="lblAsientoConfirmado" runat="server"></asp:Label></p>
-                            <p class="small text-muted m-0 mt-2">Presenta este código en mostrador el día de tu vuelo.</p>
-                        </asp:Panel>
+                     <asp:Panel ID="pnlExito" runat="server" Visible="false" CssClass="ticket-result text-center mb-4">
+    <h4 class="text-success fw-bold mb-2">¡Reserva Confirmada! 🎉</h4>
+    <p class="m-0 text-secondary">Tu código de localización es:</p>
+    <h1 class="fw-bold text-dark my-2 tracking-widest"><asp:Label ID="lblCodigoBoleto" runat="server"></asp:Label></h1>
+    <p class="fs-5 m-0 text-primary fw-bold">Asiento: <asp:Label ID="lblAsientoConfirmado" runat="server"></asp:Label></p>
+    
+    <div class="mt-4 mb-2">
+        <asp:HyperLink ID="hlPagarAhora" runat="server" CssClass="btn btn-success fw-bold px-4 py-2 shadow" style="border-radius: 8px; font-size: 1.1rem;">
+            💳 Pagar Ahora
+        </asp:HyperLink>
+    </div>
+    
+    <p class="small text-muted m-0 mt-2">O si lo prefieres, puedes pagarlo más tarde desde "Mis Boletos".</p>
+</asp:Panel>
 
                         <div class="row">
                             <div class="col-md-6 border-end pe-md-4">

@@ -164,6 +164,8 @@
     <Content Include="About.aspx" />
     <Content Include="Account\Activar.aspx" />
     <Content Include="Account\Login.aspx" />
+    <Content Include="Cliente\Equipaje.aspx" />
+    <Content Include="Cliente\Pagos.aspx" />
     <Content Include="Account\Registro.aspx" />
     <Content Include="Admin\Aereopuertos.aspx" />
     <Content Include="Admin\Aerolineas.aspx" />
@@ -272,6 +274,20 @@
     </Compile>
     <Compile Include="Account\Login.aspx.vb">
       <DependentUpon>Login.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Cliente\Equipaje.aspx.designer.vb">
+      <DependentUpon>Equipaje.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Cliente\Equipaje.aspx.vb">
+      <DependentUpon>Equipaje.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Cliente\Pagos.aspx.designer.vb">
+      <DependentUpon>Pagos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Cliente\Pagos.aspx.vb">
+      <DependentUpon>Pagos.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Account\Registro.aspx.designer.vb">

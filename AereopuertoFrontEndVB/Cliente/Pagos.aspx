@@ -1,0 +1,95 @@
+﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="Pagos.aspx.vb" Inherits="AereopuertoFrontEndVB.Pagos" %>
+
+<!DOCTYPE html>
+<html lang="es">
+<head runat="server">
+    <meta charset="utf-8" />
+    <title>Pago de Reserva - La Aurora</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .top-bar { background-color: #0d47a1; color: white; padding: 15px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .payment-card { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 40px; border-top: 5px solid #2e7d32; margin-top: 40px; margin-bottom: 40px; }
+        .form-control { height: 50px; border-radius: 8px; font-size: 1.1rem; }
+        .btn-success { background-color: #2e7d32; border: none; height: 50px; font-weight: bold; border-radius: 8px; font-size: 1.1rem; transition: 0.3s; }
+        .btn-success:hover { background-color: #1b5e20; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3); }
+        
+        /* Estilos de la tarjeta de crédito simulada */
+        .cc-box { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; border-radius: 15px; padding: 25px; margin-bottom: 25px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        .cc-chip { width: 50px; height: 35px; background: #ffd54f; border-radius: 5px; margin-bottom: 15px; opacity: 0.8; }
+        .section-title { font-size: 0.9rem; font-weight: bold; color: #81c784; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div class="top-bar d-flex justify-content-between align-items-center">
+            <h4 class="m-0 fw-bold">💳 Pasarela de Pagos</h4>
+            <a href="../Default.aspx" class="btn btn-outline-light btn-sm fw-bold rounded-pill px-4">← Volver al Inicio</a>
+        </div>
+
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="payment-card">
+                        <div class="text-center mb-4">
+                            <h2 class="fw-bold" style="color: #2e7d32;">Completa tu Compra</h2>
+                            <p class="text-muted">Ingresa tu código de reserva y los datos de pago.</p>
+                        </div>
+
+                        <asp:Panel ID="pnlError" runat="server" Visible="false" CssClass="alert alert-danger text-center rounded-3 mb-4">
+                            <asp:Label ID="lblError" runat="server" CssClass="fw-bold"></asp:Label>
+                        </asp:Panel>
+
+                        <asp:Panel ID="pnlExito" runat="server" Visible="false" CssClass="alert alert-success text-center rounded-3 mb-4 p-4 border-2 border-success">
+                            <h3 class="fw-bold text-success mb-2">¡Pago Procesado con Éxito! ✅</h3>
+                            <p class="fs-5 mb-1">Tus boletos ahora están confirmados.</p>
+                            <p class="m-0 text-muted">Número de Factura generada: <strong class="text-dark fs-4"><asp:Label ID="lblFactura" runat="server"></asp:Label></strong></p>
+                            <div class="mt-4">
+                                <a href="MisBoletos.aspx" class="btn btn-outline-success fw-bold px-4 rounded-pill">Ver Mis Boletos</a>
+                            </div>
+                        </asp:Panel>
+
+                        <asp:Panel ID="pnlFormulario" runat="server">
+                            <div class="section-title">1. Datos de la Reserva</div>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary">Código de Reserva (Localizador)</label>
+                                <asp:TextBox ID="txtCodigoReserva" runat="server" CssClass="form-control text-uppercase" placeholder="Ej: B-A1B2C" required="true"></asp:TextBox>
+                                <div class="form-text">El código que obtuviste al seleccionar tus asientos.</div>
+                            </div>
+
+                            <div class="section-title mt-5">2. Método de Pago</div>
+                            
+                            <div class="cc-box">
+                                <div class="cc-chip"></div>
+                                <div class="mb-3">
+                                    <label class="form-label small text-white-50 mb-1">Número de Tarjeta</label>
+                                    <asp:TextBox ID="txtTarjeta" runat="server" CssClass="form-control bg-light border-0" placeholder="0000 0000 0000 0000" MaxLength="19" required="true"></asp:TextBox>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="form-label small text-white-50 mb-1">Vencimiento</label>
+                                        <asp:TextBox ID="txtVencimiento" runat="server" CssClass="form-control bg-light border-0" placeholder="MM/YY" MaxLength="5" required="true"></asp:TextBox>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small text-white-50 mb-1">CVV</label>
+                                        <asp:TextBox ID="txtCVV" runat="server" CssClass="form-control bg-light border-0" placeholder="123" MaxLength="4" TextMode="Password" required="true"></asp:TextBox>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <label class="form-label small text-white-50 mb-1">Nombre en la tarjeta</label>
+                                    <asp:TextBox ID="txtNombreTitular" runat="server" CssClass="form-control bg-light border-0 text-uppercase" placeholder="JUAN PEREZ" required="true"></asp:TextBox>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <asp:Button ID="btnPagar" runat="server" Text="Procesar Pago Seguro 🔒" CssClass="btn btn-success w-100 shadow-sm" />
+                            </div>
+                        </asp:Panel>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

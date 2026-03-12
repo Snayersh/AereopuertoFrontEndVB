@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class Reservas
+Partial Public Class Equipaje
 
     '''<summary>
     '''form1 control.
@@ -23,110 +23,83 @@ Partial Public Class Reservas
     Protected WithEvents form1 As Global.System.Web.UI.HtmlControls.HtmlForm
 
     '''<summary>
-    '''pnlError control.
+    '''pnlMensaje control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlError As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents pnlMensaje As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''lblError control.
+    '''lblMensaje control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents lblError As Global.System.Web.UI.WebControls.Label
+    Protected WithEvents lblMensaje As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''pnlExito control.
+    '''ddlBoletos control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlExito As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents ddlBoletos As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''lblCodigoBoleto control.
+    '''pnlGestionEquipaje control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents lblCodigoBoleto As Global.System.Web.UI.WebControls.Label
+    Protected WithEvents pnlGestionEquipaje As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''lblAsientoConfirmado control.
+    '''txtPeso control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents lblAsientoConfirmado As Global.System.Web.UI.WebControls.Label
+    Protected WithEvents txtPeso As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''hlPagarAhora control.
+    '''txtDescripcion control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents hlPagarAhora As Global.System.Web.UI.WebControls.HyperLink
+    Protected WithEvents txtDescripcion As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''ddlVuelos control.
+    '''btnRegistrarEquipaje control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlVuelos As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents btnRegistrarEquipaje As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''ddlClase control.
+    '''pnlVacio control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlClase As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents pnlVacio As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''hfAsientoSeleccionado control.
+    '''rptEquipaje control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents hfAsientoSeleccionado As Global.System.Web.UI.WebControls.HiddenField
-
-    '''<summary>
-    '''btnReservar control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents btnReservar As Global.System.Web.UI.WebControls.Button
-
-    '''<summary>
-    '''panelAvion control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents panelAvion As Global.System.Web.UI.HtmlControls.HtmlGenericControl
-
-    '''<summary>
-    '''litMapaAsientos control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents litMapaAsientos As Global.System.Web.UI.WebControls.Literal
+    Protected WithEvents rptEquipaje As Global.System.Web.UI.WebControls.Repeater
 End Class

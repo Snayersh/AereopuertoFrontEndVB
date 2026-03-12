@@ -41,11 +41,12 @@
     <li class="section-title">General</li>
     <li class="nav-item"><a class="nav-link active" href="Default.aspx">📊 Panel Principal</a></li>
     
-    <asp:Panel ID="pnlMiCuenta" runat="server" Visible="false">
+   <asp:Panel ID="pnlMiCuenta" runat="server" Visible="false">
         <li class="section-title text-light">Mi Cuenta</li>
         <li class="nav-item"><a class="nav-link text-warning fw-bold" href="Cliente/Reservas.aspx">🛒 Reservar Vuelo</a></li>
         <li class="nav-item"><a class="nav-link" href="Cliente/MisBoletos.aspx">🎫 Mis Boletos</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">🧳 Equipaje</a></li>
+        <li class="nav-item"><a class="nav-link text-success fw-bold" href="Cliente/Pagos.aspx">💳 Pagar Reserva</a></li>
+        <li class="nav-item"><a class="nav-link" href="Cliente/Equipaje.aspx">🧳 Equipaje</a></li>
     </asp:Panel>
 
     <asp:Panel ID="pnlAdmin" runat="server" Visible="false">
