@@ -37,31 +37,31 @@
                 <div class="col-md-2 sidebar d-none d-md-block">
                     <a href="Default.aspx" class="sidebar-brand">✈️ La Aurora</a>
                     
-                   <ul class="nav flex-column">
-    <li class="section-title">General</li>
-    <li class="nav-item"><a class="nav-link active" href="Default.aspx">📊 Panel Principal</a></li>
-    
-   <asp:Panel ID="pnlMiCuenta" runat="server" Visible="false">
-        <li class="section-title text-light">Mi Cuenta</li>
-        <li class="nav-item"><a class="nav-link text-warning fw-bold" href="Cliente/Reservas.aspx">🛒 Reservar Vuelo</a></li>
-        <li class="nav-item"><a class="nav-link" href="Cliente/MisBoletos.aspx">🎫 Mis Boletos</a></li>
-        <li class="nav-item"><a class="nav-link text-success fw-bold" href="Cliente/Pagos.aspx">💳 Pagar Reserva</a></li>
-        <li class="nav-item"><a class="nav-link" href="Cliente/Equipaje.aspx">🧳 Equipaje</a></li>
-    </asp:Panel>
+                    <ul class="nav flex-column">
+                        <li class="section-title">General</li>
+                        <li class="nav-item"><a class="nav-link active" href="Default.aspx">📊 Panel Principal</a></li>
+                        
+                        <asp:Panel ID="pnlMiCuenta" runat="server" Visible="false">
+                            <li class="section-title text-light">Mi Cuenta</li>
+                            <li class="nav-item"><a class="nav-link text-warning fw-bold" href="Cliente/Reservas.aspx">🛒 Reservar Vuelo</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Cliente/MisBoletos.aspx">🎫 Mis Boletos</a></li>
+                            <li class="nav-item"><a class="nav-link text-success fw-bold" href="Cliente/Pagos.aspx">💳 Pagar Reserva</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Cliente/Equipaje.aspx">🧳 Equipaje</a></li>
+                        </asp:Panel>
 
-    <asp:Panel ID="pnlAdmin" runat="server" Visible="false">
-        <li class="section-title text-warning">Operaciones</li>
-        <li class="nav-item"><a class="nav-link" href="Admin/ProgramasVuelo.aspx">📅 Prog. Vuelos</a></li>
-        <li class="nav-item"><a class="nav-link" href="Admin/GestionReservas.aspx">📋 Todas las Reservas</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">🛑 Escalas</a></li>
-        
-        <li class="section-title text-danger">Catálogos</li>
-        <li class="nav-item"><a class="nav-link" href="Admin/Aerolineas.aspx">🏢 Aerolíneas</a></li>
-        <li class="nav-item"><a class="nav-link" href="Admin/Aeronaves.aspx">🛩️ Aeronaves</a></li>
-        <li class="nav-item"><a class="nav-link" href="Admin/Aeropuertos.aspx">🛫 Aeropuertos</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">👥 Usuarios</a></li>
-    </asp:Panel>
-</ul>
+                        <asp:Panel ID="pnlAdmin" runat="server" Visible="false">
+                            <li class="section-title text-warning">Operaciones</li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/ProgramasVuelo.aspx">📅 Prog. Vuelos</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/GestionReservas.aspx">📋 Todas las Reservas</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">🛑 Escalas</a></li>
+                            
+                            <li class="section-title text-danger">Catálogos</li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/Aerolineas.aspx">🏢 Aerolíneas</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/Aeronaves.aspx">🛩️ Aeronaves</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/Aeropuertos.aspx">🛫 Aeropuertos</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/Usuarios.aspx">👥 Usuarios y Roles</a></li>
+                        </asp:Panel>
+                    </ul>
                 </div>
 
                 <div class="col-md-10 main-content">
@@ -85,38 +85,38 @@
                         </div>
                     </div>
 
-                 <div class="row mb-4">
-    <div class="col-md-4 mb-3">
-        <div class="card stat-card shadow-sm text-white" style="background-color: #2c3e50;">
-            <div class="card-body p-4 d-flex justify-content-between align-items-center">
-                <div><h6 class="text-uppercase mb-1 text-white-50">Vuelos Activos</h6>
-                    <h2 class="fw-bold mb-0"><asp:Label ID="lblVuelosActivos" runat="server" Text="0"></asp:Label></h2>
-                </div>
-                <h1 class="opacity-50 m-0">📡</h1>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 mb-3">
-        <div class="card stat-card shadow-sm text-white" style="background-color: #27ae60;">
-            <div class="card-body p-4 d-flex justify-content-between align-items-center">
-                <div><h6 class="text-uppercase mb-1 text-white-50">Llegadas Hoy</h6>
-                    <h2 class="fw-bold mb-0"><asp:Label ID="lblLlegadas" runat="server" Text="0"></asp:Label></h2>
-                </div>
-                <h1 class="opacity-50 m-0">🛬</h1>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 mb-3">
-        <div class="card stat-card shadow-sm text-dark" style="background-color: #f1c40f;">
-            <div class="card-body p-4 d-flex justify-content-between align-items-center">
-                <div><h6 class="text-uppercase mb-1 text-black-50">Salidas Hoy</h6>
-                    <h2 class="fw-bold mb-0"><asp:Label ID="lblSalidas" runat="server" Text="0"></asp:Label></h2>
-                </div>
-                <h1 class="opacity-50 m-0">🛫</h1>
-            </div>
-        </div>
-    </div>
-</div>
+                    <div class="row mb-4">
+                        <div class="col-md-4 mb-3">
+                            <div class="card stat-card shadow-sm text-white" style="background-color: #2c3e50;">
+                                <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                                    <div><h6 class="text-uppercase mb-1 text-white-50">Vuelos Activos</h6>
+                                        <h2 class="fw-bold mb-0"><asp:Label ID="lblVuelosActivos" runat="server" Text="0"></asp:Label></h2>
+                                    </div>
+                                    <h1 class="opacity-50 m-0">📡</h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card stat-card shadow-sm text-white" style="background-color: #27ae60;">
+                                <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                                    <div><h6 class="text-uppercase mb-1 text-white-50">Llegadas Hoy</h6>
+                                        <h2 class="fw-bold mb-0"><asp:Label ID="lblLlegadas" runat="server" Text="0"></asp:Label></h2>
+                                    </div>
+                                    <h1 class="opacity-50 m-0">🛬</h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card stat-card shadow-sm text-dark" style="background-color: #f1c40f;">
+                                <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                                    <div><h6 class="text-uppercase mb-1 text-black-50">Salidas Hoy</h6>
+                                        <h2 class="fw-bold mb-0"><asp:Label ID="lblSalidas" runat="server" Text="0"></asp:Label></h2>
+                                    </div>
+                                    <h1 class="opacity-50 m-0">🛫</h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="table-container">
                         <h4 class="fw-bold mb-4">Monitoreo en Tiempo Real</h4>
@@ -130,22 +130,14 @@
                                 <tbody>
                                     <asp:Repeater ID="rptVuelos" runat="server">
                                         <ItemTemplate>
-                                           <ItemTemplate>
-    <tr onclick="window.location.href='DetalleVuelo.aspx?id=<%# Eval("IdVuelo") %>';" style="cursor: pointer;" title="Haz clic en la fila para ver detalles">
-        
-        <td><strong class="fs-5 text-primary"><%# Eval("NumeroVuelo") %></strong></td>
-        
-        <td><span class='<%# If(Eval("Aerolinea").ToString() = "Iberia", "text-danger fw-bold", "text-secondary fw-bold") %>'><%# Eval("Aerolinea") %></span></td>
-        
-        <td><span class='<%# If(Convert.ToBoolean(Eval("EsLlegada")), "badge-llegada", "badge-salida") %>'><%# If(Convert.ToBoolean(Eval("EsLlegada")), "🛬 Llegada", "🛫 Salida") %></span></td>
-        
-        <td><strong><%# Eval("OrigenDestino") %></strong></td>
-        
-        <td><h5 class="m-0 fw-bold"><%# Convert.ToDateTime(Eval("HoraProgramada")).ToString("HH:mm") %></h5></td>
-        
-        <td><span class='<%# ObtenerClaseEstado(Eval("Estado").ToString()) %>'><%# ObtenerIconoEstado(Eval("Estado").ToString()) %> <%# Eval("Estado") %></span></td>
-    </tr>
-</ItemTemplate>
+                                            <tr onclick="window.location.href='DetalleVuelo.aspx?id=<%# Eval("IdVuelo") %>';" style="cursor: pointer;" title="Haz clic en la fila para ver detalles">
+                                                <td><strong class="fs-5 text-primary"><%# Eval("NumeroVuelo") %></strong></td>
+                                                <td><span class='<%# If(Eval("Aerolinea").ToString() = "Iberia", "text-danger fw-bold", "text-secondary fw-bold") %>'><%# Eval("Aerolinea") %></span></td>
+                                                <td><span class='<%# If(Convert.ToBoolean(Eval("EsLlegada")), "badge-llegada", "badge-salida") %>'><%# If(Convert.ToBoolean(Eval("EsLlegada")), "🛬 Llegada", "🛫 Salida") %></span></td>
+                                                <td><strong><%# Eval("OrigenDestino") %></strong></td>
+                                                <td><h5 class="m-0 fw-bold"><%# Convert.ToDateTime(Eval("HoraProgramada")).ToString("HH:mm") %></h5></td>
+                                                <td><span class='<%# ObtenerClaseEstado(Eval("Estado").ToString()) %>'><%# ObtenerIconoEstado(Eval("Estado").ToString()) %> <%# Eval("Estado") %></span></td>
+                                            </tr>
                                         </ItemTemplate>
                                     </asp:Repeater>
                                 </tbody>

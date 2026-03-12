@@ -164,6 +164,7 @@
     <Content Include="About.aspx" />
     <Content Include="Account\Activar.aspx" />
     <Content Include="Account\Login.aspx" />
+    <Content Include="Admin\Usuarios.aspx" />
     <Content Include="Cliente\Equipaje.aspx" />
     <Content Include="Cliente\Pagos.aspx" />
     <Content Include="Account\Registro.aspx" />
@@ -225,6 +226,7 @@
     <Content Include="Content\bootstrap-grid.min.css.map" />
     <Content Include="Content\bootstrap-grid.css.map" />
     <None Include=".editorconfig" />
+    <Content Include="connections.config" />
     <None Include="Oracle.DataAccess.Common.Configuration.Section.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -274,6 +276,13 @@
     </Compile>
     <Compile Include="Account\Login.aspx.vb">
       <DependentUpon>Login.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Admin\Usuarios.aspx.designer.vb">
+      <DependentUpon>Usuarios.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\Usuarios.aspx.vb">
+      <DependentUpon>Usuarios.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Cliente\Equipaje.aspx.designer.vb">

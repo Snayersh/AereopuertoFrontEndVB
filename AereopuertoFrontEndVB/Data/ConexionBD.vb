@@ -15,14 +15,19 @@ Public Class ConexionDB
     ''' <summary>
     ''' Método de prueba para verificar que Visual Studio y Oracle se comunican.
     ''' </summary>
-    Public Function ProbarConexion() As Boolean
+    Public Function ProbarConexion(ByRef mensajeError As String) As Boolean
         Try
             Using conexion As OracleConnection = ObtenerConexion()
                 conexion.Open()
-                Return True ' Si llega aquí, la conexión fue exitosa
+                mensajeError = "Conexión exitosa."
+                Return True
             End Using
+        Catch ex As OracleException
+            ' Captura errores específicos de Oracle (ej. ORA-01017: usuario/contraseña inválidos)
+            mensajeError = "Error de Oracle: " & ex.Message
+            Return False
         Catch ex As Exception
-            ' Aquí podrías imprimir ex.Message en consola para ver el error exacto
+            mensajeError = "Error general: " & ex.Message
             Return False
         End Try
     End Function
