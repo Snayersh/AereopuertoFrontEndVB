@@ -37,35 +37,49 @@
                 <div class="col-md-2 sidebar d-none d-md-block">
                     <a href="Default.aspx" class="sidebar-brand">✈️ La Aurora</a>
                     
-                    <ul class="nav flex-column">
+                    <ul class="nav flex-column mb-5">
                         <li class="section-title">General</li>
                         <li class="nav-item"><a class="nav-link active" href="Default.aspx">📊 Panel Principal</a></li>
                         
-                        <asp:Panel ID="pnlMiCuenta" runat="server" Visible="false">
+                        <asp:Panel ID="pnlCliente" runat="server" Visible="false">
                             <li class="section-title text-light">Mi Cuenta</li>
+                                                    <li class="nav-item"><a class="nav-link" href="Account/MiPerfil.aspx">👤 Mi Perfil</a></li>
                             <li class="nav-item"><a class="nav-link text-warning fw-bold" href="Cliente/Reservas.aspx">🛒 Reservar Vuelo</a></li>
                             <li class="nav-item"><a class="nav-link" href="Cliente/MisBoletos.aspx">🎫 Mis Boletos</a></li>
                             <li class="nav-item"><a class="nav-link text-success fw-bold" href="Cliente/Pagos.aspx">💳 Pagar Reserva</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Cliente/Equipaje.aspx">🧳 Equipaje</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Cliente/Equipaje.aspx">🧳 Mi Equipaje</a></li>
+                        </asp:Panel>
+
+                        <asp:Panel ID="pnlEmpleado" runat="server" Visible="false">
+                            <li class="section-title text-info">Operativa</li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/ControlVuelos.aspx">📡 Torre de Control</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Empleado/RegistroEquipaje.aspx">⚖️ Registro Equipaje</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Empleado/CheckIn.aspx">✅ Validar Abordaje</a></li>
                         </asp:Panel>
 
                         <asp:Panel ID="pnlAdmin" runat="server" Visible="false">
-                            <li class="section-title text-warning">Operaciones</li>
-                            <li class="nav-item"><a class="nav-link" href="Admin/ProgramasVuelo.aspx">📅 Prog. Vuelos</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Admin/GestionReservas.aspx">📋 Todas las Reservas</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">🛑 Escalas</a></li>
+                            <li class="section-title text-warning">Logística de Vuelos</li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/ProgramasVuelo.aspx">📅 Crear Vuelo</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/Tripulacion.aspx">👨‍✈️ Asignar Tripulación</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/Escalas.aspx">🛑 Gestión de Escalas</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/ControlVuelos.aspx">📡 Torre de Control</a></li>
                             
-                            <li class="section-title text-danger">Catálogos</li>
+                            <li class="section-title text-danger">Catálogos Fijos</li>
                             <li class="nav-item"><a class="nav-link" href="Admin/Aerolineas.aspx">🏢 Aerolíneas</a></li>
                             <li class="nav-item"><a class="nav-link" href="Admin/Aeronaves.aspx">🛩️ Aeronaves</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Admin/Aeropuertos.aspx">🛫 Aeropuertos</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Admin/Usuarios.aspx">👥 Usuarios y Roles</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/Aereopuertos.aspx">🛫 Aeropuertos</a></li>
+                            
+                            <li class="section-title text-success">Recursos Humanos</li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/Empleados.aspx">🧑‍💼 Personal (Empleados)</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/Usuarios.aspx">👥 Usuarios y Accesos</a></li>
+
+                            <li class="section-title text-secondary">Reportes y Auditoría</li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/ReportePagos.aspx">💵 Historial de Pagos</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/Bitacora.aspx">📜 Bitácora del Sistema</a></li>
                         </asp:Panel>
                     </ul>
                 </div>
-
                 <div class="col-md-10 main-content">
-                    
                     <div class="dashboard-header d-flex justify-content-between align-items-center flex-wrap">
                         <div>
                             <h2 class="fw-bold mb-1 text-white">Centro de Control GUA</h2>

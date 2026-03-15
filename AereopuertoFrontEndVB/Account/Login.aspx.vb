@@ -53,6 +53,9 @@ Public Class Login
                     Dim resultado As String = outResultado.Value.ToString()
 
                     ' 3. Manejo de todos los posibles escenarios que nos responde Oracle
+
+                    ' 3. Manejo de todos los posibles escenarios que nos responde Oracle
+
                     If resultado = "EXITO" Then
                         Dim idRol As Integer = Convert.ToInt32(outRol.Value.ToString())
                         Session("UserName") = outNombre.Value.ToString()
@@ -75,12 +78,19 @@ Public Class Login
                     ElseIf resultado = "CUENTA_PENDIENTE" Then
                         MostrarError("Tu cuenta aún no está activada. Por favor revisa la bandeja de entrada de tu correo electrónico.")
 
+                        ' =========================================================
+                        ' NUEVO: BLOQUEO PARA CUENTAS DESACTIVADAS POR EL ADMIN
+                        ' =========================================================
+                    ElseIf resultado = "CUENTA_INACTIVA" Then
+                        MostrarError("⛔ Tu cuenta ha sido desactivada. Por favor, contacta a la administración del aeropuerto.")
+
                     ElseIf resultado = "CREDENCIALES_INVALIDAS" Then
                         MostrarError("Correo o contraseña incorrectos.")
 
                     Else
                         MostrarError("Aviso del sistema: " & resultado)
                     End If
+
 
                 End Using
             End Using
@@ -108,5 +118,6 @@ Public Class Login
         pnlError.Visible = True
         lblError.Text = mensaje
     End Sub
+
 
 End Class

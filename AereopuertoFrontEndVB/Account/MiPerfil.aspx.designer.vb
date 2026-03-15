@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class _Default
+Partial Public Class MiPerfil
 
     '''<summary>
     '''form1 control.
@@ -23,101 +23,74 @@ Partial Public Class _Default
     Protected WithEvents form1 As Global.System.Web.UI.HtmlControls.HtmlForm
 
     '''<summary>
-    '''pnlCliente control.
+    '''pnlMensaje control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlCliente As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents pnlMensaje As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''pnlEmpleado control.
+    '''lblMensaje control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlEmpleado As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents lblMensaje As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''pnlAdmin control.
+    '''txtPrimerNombre control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlAdmin As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents txtPrimerNombre As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''lblSaludo control.
+    '''txtSegundoNombre control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents lblSaludo As Global.System.Web.UI.WebControls.Label
+    Protected WithEvents txtSegundoNombre As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''pnlBotonesAcceso control.
+    '''txtPrimerApellido control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlBotonesAcceso As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents txtPrimerApellido As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''pnlBotonSalir control.
+    '''txtSegundoApellido control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlBotonSalir As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents txtSegundoApellido As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''btnLogout control.
+    '''txtTelefono control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents btnLogout As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents txtTelefono As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''lblVuelosActivos control.
+    '''btnGuardar control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents lblVuelosActivos As Global.System.Web.UI.WebControls.Label
-
-    '''<summary>
-    '''lblLlegadas control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents lblLlegadas As Global.System.Web.UI.WebControls.Label
-
-    '''<summary>
-    '''lblSalidas control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents lblSalidas As Global.System.Web.UI.WebControls.Label
-
-    '''<summary>
-    '''rptVuelos control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents rptVuelos As Global.System.Web.UI.WebControls.Repeater
+    Protected WithEvents btnGuardar As Global.System.Web.UI.WebControls.Button
 End Class

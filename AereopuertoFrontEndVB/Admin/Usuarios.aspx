@@ -37,40 +37,55 @@
                         </asp:Panel>
 
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Nombre Completo</th>
-                                        <th>Correo (Usuario)</th>
-                                        <th>Rol Actual</th>
-                                        <th>Acción</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <asp:Repeater ID="rptUsuarios" runat="server">
-                                        <ItemTemplate>
-                                            <tr>
-                                                <td class="fw-bold text-secondary">#<%# Eval("id_usuario") %></td>
-                                                <td class="fw-bold"><%# Eval("nombre_completo") %></td>
-                                                <td><%# Eval("correo") %></td>
-                                                <td>
-                                                    <span class='badge <%# If(Eval("nombre_rol").ToString() = "Administrador", "badge-admin", If(Eval("nombre_rol").ToString() = "Empleado", "badge-empleado", "badge-cliente")) %> px-3 py-2'>
-                                                        <%# Eval("nombre_rol") %>
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <asp:LinkButton ID="btnEditar" runat="server" CssClass="btn btn-sm btn-outline-primary fw-bold" 
-                                                        CommandName="EditarRol" 
-                                                        CommandArgument='<%# Eval("id_usuario") & "|" & Eval("nombre_completo") & "|" & Eval("id_rol") %>'>
-                                                        ✏️ Modificar Rol
-                                                    </asp:LinkButton>
-                                                </td>
-                                            </tr>
-                                        </ItemTemplate>
-                                    </asp:Repeater>
-                                </tbody>
-                            </table>
+                           <table class="table table-hover align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Nombre Completo</th>
+            <th>Correo (Usuario)</th>
+            <th>Rol</th>
+            <th>Estado</th> <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <asp:Repeater ID="rptUsuarios" runat="server">
+            <ItemTemplate>
+                <tr>
+                    <td class="fw-bold text-secondary">#<%# Eval("id_usuario") %></td>
+                    <td class="fw-bold"><%# Eval("nombre_completo") %></td>
+                    <td><%# Eval("correo") %></td>
+                    <td>
+                        <span class='badge <%# If(Eval("nombre_rol").ToString() = "Administrador", "badge-admin", If(Eval("nombre_rol").ToString() = "Empleado", "badge-empleado", "badge-cliente")) %> px-3 py-2'>
+                            <%# Eval("nombre_rol") %>
+                        </span>
+                    </td>
+                    
+                    <td>
+                        <span class='badge <%# If(Eval("estado").ToString().ToUpper() = "ACTIVO", "bg-success", "bg-danger") %>'>
+                            <%# Eval("estado") %>
+                        </span>
+                    </td>
+                    
+                    <td>
+                        <asp:LinkButton ID="btnEditar" runat="server" CssClass="btn btn-sm btn-outline-primary fw-bold mb-1" 
+                            CommandName="EditarRol" 
+                            CommandArgument='<%# Eval("id_usuario") & "|" & Eval("nombre_completo") & "|" & Eval("id_rol") %>'>
+                            ✏️ Rol
+                        </asp:LinkButton>
+                        
+                        <asp:LinkButton ID="btnToggleEstado" runat="server" 
+                            CssClass='<%# If(Eval("estado").ToString().ToUpper() = "ACTIVO", "btn btn-sm btn-outline-danger fw-bold mb-1", "btn btn-sm btn-outline-success fw-bold mb-1") %>' 
+                            CommandName="ToggleEstado" 
+                            CommandArgument='<%# Eval("id_usuario") & "|" & Eval("estado") %>'
+                            OnClientClick='<%# "return confirm(""¿Estás seguro que deseas " & If(Eval("estado").ToString().ToUpper() = "ACTIVO", "DESACTIVAR", "ACTIVAR") & " a este usuario?"");" %>'>
+                            <%# If(Eval("estado").ToString().ToUpper() = "ACTIVO", "🚫 Desactivar", "✅ Activar") %>
+                        </asp:LinkButton>
+                    </td>
+                </tr>
+            </ItemTemplate>
+        </asp:Repeater>
+    </tbody>
+</table>
                         </div>
                     </div>
                 </div>

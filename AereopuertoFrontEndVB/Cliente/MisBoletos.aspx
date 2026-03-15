@@ -1,5 +1,4 @@
 ﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="MisBoletos.aspx.vb" Inherits="AereopuertoFrontEndVB.MisBoletos" %>
-
 <!DOCTYPE html>
 <html lang="es">
 <head runat="server">
@@ -24,6 +23,7 @@
         
         .badge-reservado { background-color: #fff3e0; color: #e65100; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem; }
         .badge-pagado { background-color: #e8f5e9; color: #2e7d32; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem; }
+        .badge-cancelado { background-color: #ffebee; color: #c62828; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -37,6 +37,26 @@
             <div class="text-center mb-5">
                 <h2 class="fw-bold text-dark">Mis Viajes</h2>
                 <p class="text-muted">Historial de reservas y pases de abordar</p>
+            </div>
+            
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body d-flex align-middle justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-filter-left fs-4 me-2"></i>
+                        <span class="fw-bold me-3">Filtrar por:</span>
+                        <asp:DropDownList ID="ddlFiltroEstado" runat="server" AutoPostBack="true" 
+                            OnSelectedIndexChanged="ddlFiltroEstado_SelectedIndexChanged" 
+                            CssClass="form-select shadow-sm">
+                            <asp:ListItem Text="Pendiente de Pago" Value="1" Selected="True"></asp:ListItem>
+                            <asp:ListItem Text="Pagados" Value="2"></asp:ListItem>
+                            <asp:ListItem Text="Cancelados" Value="3"></asp:ListItem>
+                            <asp:ListItem Text="Todos los boletos" Value="0"></asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
+                    <div>
+                        <span class="text-muted small">Mostrando tus boletos con estado seleccionado.</span>
+                    </div>
+                </div>
             </div>
 
             <asp:Panel ID="pnlVacio" runat="server" Visible="false" CssClass="text-center py-5">
@@ -72,16 +92,16 @@
                             </div>
                         </div>
                         
-                   <div class="ticket-side">
+                        <div class="ticket-side">
                             <div class="ticket-label text-center">LOCALIZADOR</div>
                             <h3 class="fw-bold text-dark mb-3"><%# Eval("CodigoReserva") %></h3>
                             
                             <div class="ticket-label text-center">ESTADO</div>
-                            <span class='<%# If(Eval("EstadoBoleto").ToString() = "Pagado", "badge-pagado", If(Eval("EstadoBoleto").ToString() = "Cancelado", "badge-cancelado", "badge-reservado")) %> fw-bold mb-3'>
+                            <span class='<%# If(Eval("EstadoBoleto").ToString().ToUpper() = "PAGADO", "badge-pagado", If(Eval("EstadoBoleto").ToString().ToUpper() = "CANCELADO", "badge-cancelado", "badge-reservado")) %> fw-bold mb-3'>
                                 <%# Eval("EstadoBoleto") %>
                             </span>
 
-                            <asp:Panel ID="pnlAcciones" runat="server" Visible='<%# Eval("EstadoBoleto").ToString() = "Reservado" %>'>
+                            <asp:Panel ID="pnlAcciones" runat="server" Visible='<%# Eval("EstadoBoleto").ToString().ToUpper() = "RESERVADO" %>'>
                                 <a href='Pagos.aspx?codigo=<%# Eval("CodigoReserva") %>' class="btn btn-sm btn-success w-100 mb-2 fw-bold shadow-sm">💳 Pagar Ahora</a>
                                 
                                 <asp:LinkButton ID="btnCancelar" runat="server" CssClass="btn btn-sm btn-outline-danger w-100 fw-bold" 
@@ -90,7 +110,15 @@
                                     ❌ Cancelar
                                 </asp:LinkButton>
                             </asp:Panel>
+
+                            <asp:Panel ID="pnlAccionesPagado" runat="server" Visible='<%# Eval("EstadoBoleto").ToString().ToUpper() = "PAGADO" %>'>
+                                <a href='PaseAbordar.aspx?codigo=<%# Eval("CodigoReserva") %>' target="_blank" class="btn btn-sm btn-primary w-100 fw-bold shadow-sm">
+                                    🖨️ Imprimir Pase
+                                </a>
+                                <div class="small text-center mt-2 text-success fw-bold">¡Listo para volar!</div>
+                            </asp:Panel>
                         </div>
+
                     </div>
                 </ItemTemplate>
             </asp:Repeater>
