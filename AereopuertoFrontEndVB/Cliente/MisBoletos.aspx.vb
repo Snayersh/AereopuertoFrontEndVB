@@ -5,68 +5,78 @@ Public Class MisBoletos
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        ' Seguridad: Validamos que haya una sesión iniciada
+        ' 1. Verificación de Seguridad
         If Session("UserEmail") Is Nothing Then
             Response.Redirect("~/Account/Login.aspx")
+            Return
         End If
 
         If Not IsPostBack Then
-            CargarMisBoletos()
+            ' La primera vez carga con el valor por defecto del DropDown (ID 1 - Pendientes)
+            CargarDataBoletos(ddlFiltroEstado.SelectedValue)
         End If
     End Sub
 
-    Private Sub CargarMisBoletos()
+    ' Evento del DropDown: Al cambiar el filtro, recarga la lista
+    Protected Sub ddlFiltroEstado_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ddlFiltroEstado.SelectedIndexChanged
+        CargarDataBoletos(ddlFiltroEstado.SelectedValue)
+    End Sub
+
+    ' =================================================================
+    ' FUNCIÓN UNIFICADA PARA CARGAR BOLETOS (CON FILTRO)
+    ' =================================================================
+    Private Sub CargarDataBoletos(idEstadoFiltro As String)
         Dim db As New ConexionDB()
         Dim correoUsuario As String = Session("UserEmail").ToString()
 
+        ' Limpiamos mensajes de error previos
+        pnlError.Visible = False
+
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
-                Using cmd As New OracleCommand("SP_MIS_BOLETOS", conn)
+                ' Usamos el nuevo SP que creamos con filtro
+                Using cmd As New OracleCommand("SP_CONSULTAR_MIS_BOLETOS", conn)
                     cmd.CommandType = CommandType.StoredProcedure
+                    cmd.BindByName = True ' Muy importante para evitar errores de orden de parámetros
 
-                    ' 1. Parámetro de Entrada: El correo del usuario logueado
-                    cmd.Parameters.Add("p_correo_usuario", OracleDbType.Varchar2).Value = correoUsuario
+                    ' Agregamos los parámetros EXACTOS que definimos en el SP de Oracle
+                    cmd.Parameters.Add("p_correo", OracleDbType.Varchar2).Value = correoUsuario
+                    cmd.Parameters.Add("p_id_estado_filtro", OracleDbType.Int32).Value = Convert.ToInt32(idEstadoFiltro)
 
-                    ' 2. Parámetro de Salida: El Cursor con las filas
+                    ' Parámetro de salida (CURSOR)
                     Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
                     cursorParam.Direction = ParameterDirection.Output
                     cmd.Parameters.Add(cursorParam)
 
                     conn.Open()
 
-                    ' 3. Leemos los datos hacia un DataTable
                     Using da As New OracleDataAdapter(cmd)
                         Dim dt As New DataTable()
                         da.Fill(dt)
 
-                        ' 4. Lógica de presentación
                         If dt.Rows.Count > 0 Then
                             rptBoletos.DataSource = dt
                             rptBoletos.DataBind()
-
-                            pnlVacio.Visible = False
                             rptBoletos.Visible = True
+                            pnlVacio.Visible = False
                         Else
-                            ' Si no ha comprado nada, mostramos el mensaje amigable
-                            pnlVacio.Visible = True
                             rptBoletos.Visible = False
+                            pnlVacio.Visible = True
                         End If
                     End Using
                 End Using
             End Using
-
         Catch ex As Exception
             pnlError.Visible = True
-            lblError.Text = "No se pudieron cargar tus viajes: " & ex.Message
-            rptBoletos.Visible = False
+            lblError.Text = "Error al obtener tus vuelos: " & ex.Message
         End Try
     End Sub
+
     ' =================================================================
-    ' EVENTO: CUANDO ALGUIEN HACE CLIC EN UN BOTÓN DENTRO DEL REPEATER
+    ' MANEJO DE BOTONES (CANCELAR)
     ' =================================================================
     Protected Sub rptBoletos_ItemCommand(source As Object, e As RepeaterCommandEventArgs) Handles rptBoletos.ItemCommand
         If e.CommandName = "CancelarReserva" Then
-            ' Atrapamos el código de la reserva que enviamos desde el HTML
             Dim codigoReserva As String = e.CommandArgument.ToString()
             ProcesarCancelacion(codigoReserva)
         End If
@@ -92,21 +102,18 @@ Public Class MisBoletos
                     conn.Open()
                     cmd.ExecuteNonQuery()
 
-                    Dim resultado As String = outResultado.Value.ToString()
-
-                    If resultado = "EXITO" Then
-                        ' Recargamos la lista para que el boleto ahora aparezca como "Cancelado"
-                        CargarMisBoletos()
+                    If outResultado.Value.ToString() = "EXITO" Then
+                        ' REFRESCAMOS la lista usando el mismo filtro que está seleccionado
+                        CargarDataBoletos(ddlFiltroEstado.SelectedValue)
                     Else
                         pnlError.Visible = True
-                        lblError.Text = "No se pudo cancelar: " & resultado
+                        lblError.Text = "No se pudo cancelar: " & outResultado.Value.ToString()
                     End If
                 End Using
             End Using
         Catch ex As Exception
             pnlError.Visible = True
-            lblError.Text = "Error de conexión al cancelar: " & ex.Message
+            lblError.Text = "Error al procesar cancelación: " & ex.Message
         End Try
     End Sub
-
 End Class

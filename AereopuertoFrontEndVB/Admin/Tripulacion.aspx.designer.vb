@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class ProgramasVuelo
+Partial Public Class Tripulacion
 
     '''<summary>
     '''form1 control.
@@ -41,74 +41,47 @@ Partial Public Class ProgramasVuelo
     Protected WithEvents lblMensaje As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''txtCodigoVuelo control.
+    '''ddlVuelos control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtCodigoVuelo As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents ddlVuelos As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''ddlAerolinea control.
+    '''ddlPiloto control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlAerolinea As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents ddlPiloto As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''ddlAeronave control.
+    '''ddlCopiloto control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlAeronave As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents ddlCopiloto As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''ddlDestino control.
+    '''ddlSobrecargo control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlDestino As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents ddlSobrecargo As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''txtSalida control.
+    '''btnAsignar control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtSalida As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''txtLlegada control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents txtLlegada As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''btnLimpiar control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents btnLimpiar As Global.System.Web.UI.WebControls.Button
-
-    '''<summary>
-    '''btnGuardar control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents btnGuardar As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents btnAsignar As Global.System.Web.UI.WebControls.Button
 End Class

@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class ProgramasVuelo
+Partial Public Class MiPerfil
 
     '''<summary>
     '''form1 control.
@@ -41,67 +41,49 @@ Partial Public Class ProgramasVuelo
     Protected WithEvents lblMensaje As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''txtCodigoVuelo control.
+    '''txtPrimerNombre control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtCodigoVuelo As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtPrimerNombre As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''ddlAerolinea control.
+    '''txtSegundoNombre control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlAerolinea As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents txtSegundoNombre As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''ddlAeronave control.
+    '''txtPrimerApellido control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlAeronave As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents txtPrimerApellido As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''ddlDestino control.
+    '''txtSegundoApellido control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlDestino As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents txtSegundoApellido As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''txtSalida control.
+    '''txtTelefono control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtSalida As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''txtLlegada control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents txtLlegada As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''btnLimpiar control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents btnLimpiar As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents txtTelefono As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''btnGuardar control.

@@ -14,6 +14,8 @@
         .btn-success { background-color: #2e7d32; border: none; height: 45px; font-weight: bold; border-radius: 8px; transition: 0.3s; }
         .btn-success:hover { background-color: #1b5e20; transform: translateY(-2px); }
         .section-title { color: #0d47a1; font-weight: bold; font-size: 1.1rem; border-bottom: 2px solid #e3f2fd; padding-bottom: 5px; margin-bottom: 15px; }
+        /* Estilo para los campos bloqueados */
+        .readonly-field { background-color: #e9ecef !important; cursor: not-allowed; color: #6c757d; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -47,17 +49,19 @@
 
                                 <div class="mb-3">
                                     <label class="form-label fw-bold text-secondary">Aerolínea Responsable</label>
-                                    <asp:DropDownList ID="ddlAerolinea" runat="server" CssClass="form-select" required="true"></asp:DropDownList>
+                                    <asp:DropDownList ID="ddlAerolinea" runat="server" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlAerolinea_SelectedIndexChanged" required="true"></asp:DropDownList>
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label fw-bold text-secondary">Aeronave Asignada</label>
-                                    <asp:DropDownList ID="ddlAeronave" runat="server" CssClass="form-select" required="true"></asp:DropDownList>
+                                    <asp:DropDownList ID="ddlAeronave" runat="server" CssClass="form-select" required="true">
+                                        <asp:ListItem Text="-- Primero seleccione aerolínea --" Value=""></asp:ListItem>
+                                    </asp:DropDownList>
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label fw-bold text-secondary">Estado Inicial</label>
-                                    <asp:DropDownList ID="ddlEstado" runat="server" CssClass="form-select" required="true"></asp:DropDownList>
+                                    <input type="text" class="form-control readonly-field text-primary" value="Programado" readonly />
                                 </div>
                             </div>
 
@@ -66,7 +70,7 @@
 
                                 <div class="mb-3">
                                     <label class="form-label fw-bold text-secondary">Aeropuerto de Origen</label>
-                                    <asp:DropDownList ID="ddlOrigen" runat="server" CssClass="form-select" required="true"></asp:DropDownList>
+                                    <input type="text" class="form-control readonly-field" value="Aurora (GUA)" readonly />
                                 </div>
 
                                 <div class="mb-3">
@@ -80,8 +84,8 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold text-secondary">Fecha y Hora de Llegada</label>
-                                    <asp:TextBox ID="txtLlegada" runat="server" CssClass="form-control" TextMode="DateTimeLocal" required="true"></asp:TextBox>
+                                    <label class="form-label fw-bold text-secondary">Fecha y Hora de Llegada (Calculada)</label>
+                                    <asp:TextBox ID="txtLlegada" runat="server" CssClass="form-control readonly-field" TextMode="DateTimeLocal" ReadOnly="true"></asp:TextBox>
                                 </div>
                             </div>
                         </div>
@@ -95,5 +99,35 @@
             </div>
         </div>
     </form>
+
+    <script>
+        function calcularLlegada() {
+            let txtSalida = document.getElementById('<%= txtSalida.ClientID %>');
+            let ddlDestino = document.getElementById('<%= ddlDestino.ClientID %>');
+            let txtLlegada = document.getElementById('<%= txtLlegada.ClientID %>');
+
+            if (txtSalida.value && ddlDestino.value) {
+                // Leemos los minutos ocultos que VB nos inyectó
+                let opcionSeleccionada = ddlDestino.options[ddlDestino.selectedIndex];
+                let minutosViaje = parseInt(opcionSeleccionada.getAttribute('data-minutos')) || 120; // 120 por defecto
+
+                // Hacemos la matemática
+                let fechaSalida = new Date(txtSalida.value);
+                fechaSalida.setMinutes(fechaSalida.getMinutes() + minutosViaje);
+
+                // Ajustamos el formato para que lo acepte el input DateTimeLocal
+                let tzoffset = (new Date()).getTimezoneOffset() * 60000;
+                let localISOTime = (new Date(fechaSalida - tzoffset)).toISOString().slice(0, 16);
+                
+                txtLlegada.value = localISOTime;
+            } else {
+                txtLlegada.value = '';
+            }
+        }
+
+        // Le decimos que calcule cada vez que cambien el destino o la fecha de salida
+        document.getElementById('<%= ddlDestino.ClientID %>').addEventListener('change', calcularLlegada);
+        document.getElementById('<%= txtSalida.ClientID %>').addEventListener('input', calcularLlegada);
+    </script>
 </body>
 </html>

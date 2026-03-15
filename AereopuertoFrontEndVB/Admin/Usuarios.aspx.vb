@@ -5,15 +5,17 @@ Public Class Usuarios
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        ' SEGURIDAD NIVEL 1: Si no está logueado o NO es Administrador (Rol 1), lo echamos.
-        If Session("UserRole") Is Nothing OrElse Session("UserRole").ToString() <> "1" Then
-            Response.Redirect("~/Default.aspx") ' O lo mandas a una página de "Acceso Denegado"
+        ' SEGURIDAD CORREGIDA: Validamos que la sesión exista y que sea "Admin" (o "1")
+        If Session("UserRole") Is Nothing OrElse (Session("UserRole").ToString() <> "Admin" AndAlso Session("UserRole").ToString() <> "1") Then
+            Response.Redirect("~/Default.aspx")
         End If
 
         If Not IsPostBack Then
             pnlExito.Visible = False
             pnlError.Visible = False
             pnlEditarRol.Visible = False
+
+            ' Cargamos las tablas de forma normal
             CargarDirectorioUsuarios()
             CargarCatalogoRoles()
         End If
@@ -79,30 +81,73 @@ Public Class Usuarios
     ' CUANDO SE HACE CLIC EN "MODIFICAR ROL" EN LA TABLA
     ' =========================================================
     Protected Sub rptUsuarios_ItemCommand(source As Object, e As RepeaterCommandEventArgs) Handles rptUsuarios.ItemCommand
-        If e.CommandName = "EditarRol" Then
-            ' Limpiamos mensajes anteriores
-            pnlExito.Visible = False
-            pnlError.Visible = False
+        ' Limpiamos mensajes anteriores
+        pnlExito.Visible = False
+        pnlError.Visible = False
 
-            ' Recibimos los datos separados por la barra "|" (ID|Nombre|IdRolActual)
+        ' === SI HIZO CLIC EN EDITAR ROL ===
+        If e.CommandName = "EditarRol" Then
             Dim datos As String() = e.CommandArgument.ToString().Split("|"c)
             Dim idUsuario As String = datos(0)
             Dim nombre As String = datos(1)
             Dim idRolActual As String = datos(2)
 
-            ' Preparamos el panel lateral
             lblNombreEdicion.Text = nombre
             hfUsuarioEditando.Value = idUsuario
 
-            ' Seleccionamos el rol actual en el dropdown
             If ddlRoles.Items.FindByValue(idRolActual) IsNot Nothing Then
                 ddlRoles.ClearSelection()
                 ddlRoles.Items.FindByValue(idRolActual).Selected = True
             End If
 
-            ' Mostramos el panel
             pnlEditarRol.Visible = True
+
+            ' === SI HIZO CLIC EN DESACTIVAR / ACTIVAR ===
+        ElseIf e.CommandName = "ToggleEstado" Then
+            Dim datos As String() = e.CommandArgument.ToString().Split("|"c)
+            Dim idUsuario As String = datos(0)
+            Dim estadoActual As String = datos(1).ToUpper()
+
+            ' Lógica de interruptor: Si está activo, lo volvemos inactivo, y viceversa
+            Dim nuevoEstado As String = If(estadoActual = "ACTIVO", "Inactivo", "Activo")
+
+            CambiarEstadoUsuario(idUsuario, nuevoEstado)
         End If
+    End Sub
+
+    ' Nueva subrutina para comunicarse con Oracle
+    Private Sub CambiarEstadoUsuario(idUsuario As String, nuevoEstado As String)
+        Dim db As New ConexionDB()
+        Try
+            Using conn As OracleConnection = db.ObtenerConexion()
+                Using cmd As New OracleCommand("SP_CAMBIAR_ESTADO_USUARIO", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+                    cmd.BindByName = True
+
+                    cmd.Parameters.Add("p_id_usuario", OracleDbType.Int32).Value = Convert.ToInt32(idUsuario)
+                    cmd.Parameters.Add("p_nuevo_estado", OracleDbType.Varchar2).Value = nuevoEstado
+
+                    Dim outResultado As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
+                    outResultado.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(outResultado)
+
+                    conn.Open()
+                    cmd.ExecuteNonQuery()
+
+                    Dim resultado As String = outResultado.Value.ToString()
+
+                    If resultado = "EXITO" Then
+                        MostrarExito("El estado del usuario se actualizó a: " & nuevoEstado)
+                        CargarDirectorioUsuarios() ' Refrescamos la tabla
+                        pnlEditarRol.Visible = False
+                    Else
+                        MostrarError("Error al cambiar estado: " & resultado)
+                    End If
+                End Using
+            End Using
+        Catch ex As Exception
+            MostrarError("Error de conexión al cambiar estado: " & ex.Message)
+        End Try
     End Sub
 
     ' =========================================================

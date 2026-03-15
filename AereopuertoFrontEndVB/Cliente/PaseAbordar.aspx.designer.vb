@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class _Default
+Partial Public Class PaseAbordar
 
     '''<summary>
     '''form1 control.
@@ -23,101 +23,146 @@ Partial Public Class _Default
     Protected WithEvents form1 As Global.System.Web.UI.HtmlControls.HtmlForm
 
     '''<summary>
-    '''pnlCliente control.
+    '''pnlError control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlCliente As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents pnlError As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''pnlEmpleado control.
+    '''lblError control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlEmpleado As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents lblError As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''pnlAdmin control.
+    '''pnlPase control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlAdmin As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents pnlPase As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''lblSaludo control.
+    '''lblPasajero control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents lblSaludo As Global.System.Web.UI.WebControls.Label
+    Protected WithEvents lblPasajero As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''pnlBotonesAcceso control.
+    '''lblVuelo control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlBotonesAcceso As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents lblVuelo As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''pnlBotonSalir control.
+    '''lblOrigenIata control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlBotonSalir As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents lblOrigenIata As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''btnLogout control.
+    '''lblOrigenCiudad control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents btnLogout As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents lblOrigenCiudad As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''lblVuelosActivos control.
+    '''lblDestinoIata control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents lblVuelosActivos As Global.System.Web.UI.WebControls.Label
+    Protected WithEvents lblDestinoIata As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''lblLlegadas control.
+    '''lblDestinoCiudad control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents lblLlegadas As Global.System.Web.UI.WebControls.Label
+    Protected WithEvents lblDestinoCiudad As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''lblSalidas control.
+    '''lblFecha control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents lblSalidas As Global.System.Web.UI.WebControls.Label
+    Protected WithEvents lblFecha As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''rptVuelos control.
+    '''lblHora control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents rptVuelos As Global.System.Web.UI.WebControls.Repeater
+    Protected WithEvents lblHora As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''lblClase control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblClase As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''lblAsiento control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblAsiento As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''lblCodigoRecorte control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblCodigoRecorte As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''lblAsientoRecorte control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblAsientoRecorte As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''lblBarcode control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblBarcode As Global.System.Web.UI.WebControls.Label
 End Class

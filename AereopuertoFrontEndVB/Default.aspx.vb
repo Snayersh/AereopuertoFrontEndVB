@@ -1,4 +1,5 @@
-﻿Imports Oracle.ManagedDataAccess.Client
+﻿Imports System.Data
+Imports Oracle.ManagedDataAccess.Client
 
 Public Class _Default
     Inherits System.Web.UI.Page
@@ -7,8 +8,55 @@ Public Class _Default
         If Not IsPostBack Then
             AplicarSeguridadYBienvenida()
             CargarVuelos()
-            CargarEstadisticas() ' ¡Agregamos esta línea aquí!
+            CargarEstadisticas()
         End If
+    End Sub
+
+    ' -------------------------------------------------------------
+    ' LÓGICA DE CONTROL DE ACCESO BASADO EN ROLES (RBAC)
+    ' -------------------------------------------------------------
+    Private Sub AplicarSeguridadYBienvenida()
+        ' 1. Apagamos todos los menús laterales por precaución
+        pnlAdmin.Visible = False
+        pnlEmpleado.Visible = False
+        pnlCliente.Visible = False
+
+        ' 2. Verificamos si alguien inició sesión
+        If Session("UserRole") IsNot Nothing Then
+            Dim rol As String = Session("UserRole").ToString()
+            Dim nombre As String = Session("UserName").ToString()
+
+            ' Cambiamos el saludo
+            lblSaludo.Text = $"Hola, {nombre} | Perfil: {rol}"
+
+            ' Cambiamos los botones de la esquina superior derecha
+            pnlBotonesAcceso.Visible = False
+            pnlBotonSalir.Visible = True
+
+            ' 3. Encendemos ÚNICAMENTE el menú que le corresponde a su rol
+            Select Case rol
+                Case "Admin"
+                    pnlAdmin.Visible = True
+                Case "Empleado"
+                    pnlEmpleado.Visible = True
+                Case "Cliente"
+                    pnlCliente.Visible = True
+            End Select
+        Else
+            ' Si entra un Invitado (sin sesión)
+            lblSaludo.Text = "Bienvenido, Invitado. Inicia sesión para más opciones."
+            pnlBotonesAcceso.Visible = True
+            pnlBotonSalir.Visible = False
+        End If
+    End Sub
+
+    ' -------------------------------------------------------------
+    ' EVENTO PARA CERRAR SESIÓN
+    ' -------------------------------------------------------------
+    Protected Sub btnLogout_Click(sender As Object, e As EventArgs)
+        Session.Clear()
+        Session.Abandon()
+        Response.Redirect("Default.aspx")
     End Sub
 
     ' -------------------------------------------------------------
@@ -52,54 +100,7 @@ Public Class _Default
     End Sub
 
     ' -------------------------------------------------------------
-    ' LÓGICA DE CONTROL DE ACCESO BASADO EN ROLES (RBAC)
-    ' -------------------------------------------------------------
-    Private Sub AplicarSeguridadYBienvenida()
-        ' Verificamos si alguien inició sesión
-        If Session("UserRole") IsNot Nothing Then
-            Dim rol As String = Session("UserRole").ToString()
-            Dim nombre As String = Session("UserName").ToString()
-
-            ' Cambiamos el saludo
-            lblSaludo.Text = $"Hola, {nombre} | Perfil: {rol}"
-
-            ' Cambiamos los botones de la esquina superior derecha
-            pnlBotonesAcceso.Visible = False
-            pnlBotonSalir.Visible = True
-
-            ' Habilitamos el menú lateral según el rol
-            Select Case rol
-                Case "Admin"
-                    pnlAdmin.Visible = True
-                    pnlMiCuenta.Visible = True
-                Case "Empleado"
-                    pnlAdmin.Visible = False
-                    pnlMiCuenta.Visible = True
-                Case "Cliente"
-                    pnlAdmin.Visible = False
-                    pnlMiCuenta.Visible = True
-            End Select
-        Else
-            ' Si entra un Invitado (sin sesión)
-            lblSaludo.Text = "Bienvenido, Invitado. Inicia sesión para más opciones."
-            pnlBotonesAcceso.Visible = True
-            pnlBotonSalir.Visible = False
-            pnlAdmin.Visible = False
-            pnlMiCuenta.Visible = False
-        End If
-    End Sub
-
-    ' -------------------------------------------------------------
-    ' EVENTO PARA CERRAR SESIÓN
-    ' -------------------------------------------------------------
-    Protected Sub btnLogout_Click(sender As Object, e As EventArgs)
-        Session.Clear()
-        Session.Abandon()
-        Response.Redirect("Default.aspx")
-    End Sub
-
-    ' -------------------------------------------------------------
-    ' CARGA DE DATOS REALES DESDE ORACLE
+    ' CARGA DE DATOS REALES DESDE ORACLE (Tabla Principal)
     ' -------------------------------------------------------------
     Private Sub CargarVuelos()
         Dim db As New ConexionDB()
@@ -133,7 +134,6 @@ Public Class _Default
         End Try
     End Sub
 
-
     ' -------------------------------------------------------------
     ' FUNCIONES VISUALES PARA LA TABLA
     ' -------------------------------------------------------------
@@ -148,7 +148,5 @@ Public Class _Default
         If estado = "En Horario" Then Return "🟢"
         Return "🟡"
     End Function
-
-
 
 End Class

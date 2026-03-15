@@ -164,6 +164,10 @@
     <Content Include="About.aspx" />
     <Content Include="Account\Activar.aspx" />
     <Content Include="Account\Login.aspx" />
+    <Content Include="Account\MiPerfil.aspx" />
+    <Content Include="Admin\ControlVuelos.aspx" />
+    <Content Include="Admin\Radar.aspx" />
+    <Content Include="Admin\Tripulacion.aspx" />
     <Content Include="Admin\Usuarios.aspx" />
     <Content Include="Cliente\Equipaje.aspx" />
     <Content Include="Cliente\Pagos.aspx" />
@@ -173,6 +177,7 @@
     <Content Include="Admin\Aeronaves.aspx" />
     <Content Include="Admin\GestionReservas.aspx" />
     <Content Include="Admin\ProgramasVuelo.aspx" />
+    <Content Include="Cliente\PaseAbordar.aspx" />
     <Content Include="Cliente\Reservas.aspx" />
     <Content Include="Contact.aspx" />
     <Content Include="Content\bootstrap-grid.css" />
@@ -278,6 +283,34 @@
       <DependentUpon>Login.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
+    <Compile Include="Account\MiPerfil.aspx.designer.vb">
+      <DependentUpon>MiPerfil.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Account\MiPerfil.aspx.vb">
+      <DependentUpon>MiPerfil.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Admin\ControlVuelos.aspx.designer.vb">
+      <DependentUpon>ControlVuelos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\ControlVuelos.aspx.vb">
+      <DependentUpon>ControlVuelos.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Admin\Radar.aspx.designer.vb">
+      <DependentUpon>Radar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\Radar.aspx.vb">
+      <DependentUpon>Radar.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Admin\Tripulacion.aspx.designer.vb">
+      <DependentUpon>Tripulacion.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\Tripulacion.aspx.vb">
+      <DependentUpon>Tripulacion.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
     <Compile Include="Admin\Usuarios.aspx.designer.vb">
       <DependentUpon>Usuarios.aspx</DependentUpon>
     </Compile>
@@ -348,6 +381,13 @@
     </Compile>
     <Compile Include="About.aspx.vb">
       <DependentUpon>About.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Cliente\PaseAbordar.aspx.designer.vb">
+      <DependentUpon>PaseAbordar.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Cliente\PaseAbordar.aspx.vb">
+      <DependentUpon>PaseAbordar.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Cliente\Reservas.aspx.designer.vb">
