@@ -67,17 +67,8 @@
                             <li class="section-title text-danger">Catálogos Fijos</li>
                             <li class="nav-item"><a class="nav-link" href="Admin/Aerolineas.aspx">🏢 Aerolíneas</a></li>
                             <li class="nav-item"><a class="nav-link" href="Admin/Aeronaves.aspx">🛩️ Aeronaves</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Admin/Aereopuertos.aspx">🛫 Aeropuertos</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Admin/Radar.aspx">🛫 Radar</a></li>
-
-                            
-                            <li class="section-title text-success">Recursos Humanos</li>
-                            <li class="nav-item"><a class="nav-link" href="Admin/Empleados.aspx">🧑‍💼 Personal (Empleados)</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Admin/Usuarios.aspx">👥 Usuarios y Accesos</a></li>
-
-                            <li class="section-title text-secondary">Reportes y Auditoría</li>
-                            <li class="nav-item"><a class="nav-link" href="Admin/ReportePagos.aspx">💵 Historial de Pagos</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Admin/Bitacora.aspx">📜 Bitácora del Sistema</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/Aeropuertos.aspx">🛫 Aeropuertos</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/Usuarios.aspx">👥 Usuarios y Roles</a></li>
                         </asp:Panel>
                     </ul>
                 </div>

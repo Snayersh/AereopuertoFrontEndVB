@@ -166,8 +166,11 @@
     <Content Include="Account\Login.aspx" />
     <Content Include="Account\MiPerfil.aspx" />
     <Content Include="Admin\ControlVuelos.aspx" />
+<<<<<<< HEAD
     <Content Include="Admin\Radar.aspx" />
     <Content Include="Admin\Tripulacion.aspx" />
+=======
+>>>>>>> 9865c9495c1cd3d02dce94e58e966e432773af61
     <Content Include="Admin\Usuarios.aspx" />
     <Content Include="Cliente\Equipaje.aspx" />
     <Content Include="Cliente\Pagos.aspx" />
@@ -297,6 +300,7 @@
       <DependentUpon>ControlVuelos.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
+<<<<<<< HEAD
     <Compile Include="Admin\Radar.aspx.designer.vb">
       <DependentUpon>Radar.aspx</DependentUpon>
     </Compile>
@@ -311,6 +315,8 @@
       <DependentUpon>Tripulacion.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
+=======
+>>>>>>> 9865c9495c1cd3d02dce94e58e966e432773af61
     <Compile Include="Admin\Usuarios.aspx.designer.vb">
       <DependentUpon>Usuarios.aspx</DependentUpon>
     </Compile>
