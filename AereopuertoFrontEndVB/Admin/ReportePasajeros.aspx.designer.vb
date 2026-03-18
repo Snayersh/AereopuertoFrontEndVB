@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class Login
+Partial Public Class ReportePasajeros
 
     '''<summary>
     '''form1 control.
@@ -23,56 +23,29 @@ Partial Public Class Login
     Protected WithEvents form1 As Global.System.Web.UI.HtmlControls.HtmlForm
 
     '''<summary>
-    '''pnlExito control.
+    '''hfLabels control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlExito As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents hfLabels As Global.System.Web.UI.WebControls.HiddenField
 
     '''<summary>
-    '''pnlError control.
+    '''hfDatos control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlError As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents hfDatos As Global.System.Web.UI.WebControls.HiddenField
 
     '''<summary>
-    '''lblError control.
+    '''rptDatos control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents lblError As Global.System.Web.UI.WebControls.Label
-
-    '''<summary>
-    '''txtEmail control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents txtEmail As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''txtPassword control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents txtPassword As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''btnLogin control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents btnLogin As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents rptDatos As Global.System.Web.UI.WebControls.Repeater
 End Class

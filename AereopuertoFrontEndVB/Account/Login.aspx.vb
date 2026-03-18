@@ -9,10 +9,19 @@ Public Class Login
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         If Not IsPostBack Then
             pnlError.Visible = False
+
+            ' --- MAGIA AQUÍ: Detecta si viene de registrarse ---
+            If Request.QueryString("registro") = "exitoso" Then
+                pnlExito.Visible = True
+            End If
+            ' ---------------------------------------------------
         End If
     End Sub
 
     Protected Sub btnLogin_Click(sender As Object, e As EventArgs) Handles btnLogin.Click
+        ' Si hace clic en login, apagamos el mensaje de éxito por si acaso
+        pnlExito.Visible = False
+
         Dim email As String = txtEmail.Text.Trim()
         Dim passPlana As String = txtPassword.Text.Trim()
 
@@ -54,8 +63,6 @@ Public Class Login
 
                     ' 3. Manejo de todos los posibles escenarios que nos responde Oracle
 
-                    ' 3. Manejo de todos los posibles escenarios que nos responde Oracle
-
                     If resultado = "EXITO" Then
                         Dim idRol As Integer = Convert.ToInt32(outRol.Value.ToString())
                         Session("UserName") = outNombre.Value.ToString()
@@ -78,9 +85,6 @@ Public Class Login
                     ElseIf resultado = "CUENTA_PENDIENTE" Then
                         MostrarError("Tu cuenta aún no está activada. Por favor revisa la bandeja de entrada de tu correo electrónico.")
 
-                        ' =========================================================
-                        ' NUEVO: BLOQUEO PARA CUENTAS DESACTIVADAS POR EL ADMIN
-                        ' =========================================================
                     ElseIf resultado = "CUENTA_INACTIVA" Then
                         MostrarError("⛔ Tu cuenta ha sido desactivada. Por favor, contacta a la administración del aeropuerto.")
 
@@ -90,7 +94,6 @@ Public Class Login
                     Else
                         MostrarError("Aviso del sistema: " & resultado)
                     End If
-
 
                 End Using
             End Using
@@ -118,6 +121,4 @@ Public Class Login
         pnlError.Visible = True
         lblError.Text = mensaje
     End Sub
-
-
 End Class

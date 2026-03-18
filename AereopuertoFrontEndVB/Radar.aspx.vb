@@ -30,13 +30,17 @@ Public Class Radar
                         Dim dt As New DataTable()
                         da.Fill(dt)
 
-                        ' Convertir la tabla de Oracle a un formato JSON manual (Sin usar librerías externas complejas)
+                        ' Convertir la tabla de Oracle a un formato JSON manual
                         Dim jsonBuilder As New StringBuilder()
                         jsonBuilder.Append("[")
 
                         For i As Integer = 0 To dt.Rows.Count - 1
                             Dim row As DataRow = dt.Rows(i)
                             jsonBuilder.Append("{")
+
+                            ' --- AGREGAMOS EL ID DEL VUELO AQUÍ ---
+                            jsonBuilder.Append($"""id_vuelo"": {row("id_vuelo")},")
+
                             jsonBuilder.Append($"""codigo_vuelo"": ""{row("codigo_vuelo")}"",")
                             jsonBuilder.Append($"""origen_iata"": ""{row("origen_iata")}"",")
                             jsonBuilder.Append($"""destino_iata"": ""{row("destino_iata")}"",")

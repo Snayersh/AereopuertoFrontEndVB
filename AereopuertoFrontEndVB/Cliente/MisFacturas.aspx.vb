@@ -1,7 +1,7 @@
 ﻿Imports System.Data
 Imports Oracle.ManagedDataAccess.Client
 
-Public Class PaseAbordar
+Public Class MisFacturas
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
@@ -11,27 +11,20 @@ Public Class PaseAbordar
         End If
 
         If Not IsPostBack Then
-            Dim codigoReserva As String = Request.QueryString("codigo")
-
-            If Not String.IsNullOrEmpty(codigoReserva) Then
-                CargarDatosPase(codigoReserva)
-            Else
-                MostrarError("No se proporcionó un código de reserva válido.")
-            End If
+            CargarFacturas()
         End If
     End Sub
 
-    Private Sub CargarDatosPase(codigoReserva As String)
+    Private Sub CargarFacturas()
         Dim db As New ConexionDB()
         Dim correoUsuario As String = Session("UserEmail").ToString()
 
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
-                Using cmd As New OracleCommand("SP_OBTENER_PASE_ABORDAR", conn)
+                Using cmd As New OracleCommand("SP_CONSULTAR_MIS_FACTURAS", conn)
                     cmd.CommandType = CommandType.StoredProcedure
                     cmd.BindByName = True
 
-                    cmd.Parameters.Add("p_codigo_reserva", OracleDbType.Varchar2).Value = codigoReserva
                     cmd.Parameters.Add("p_correo", OracleDbType.Varchar2).Value = correoUsuario
 
                     Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
@@ -43,24 +36,21 @@ Public Class PaseAbordar
                         Dim dt As New DataTable()
                         da.Fill(dt)
 
-                        ' Si encuentra boletos, simplemente los mandamos a dibujar TODOS
                         If dt.Rows.Count > 0 Then
-                            rptPases.DataSource = dt
-                            rptPases.DataBind()
+                            rptFacturas.DataSource = dt
+                            rptFacturas.DataBind()
+                            pnlDatos.Visible = True
+                            pnlVacio.Visible = False
                         Else
-                            MostrarError("No se encontró el pase de abordar. Verifica que sea tuyo y esté pagado.")
+                            pnlDatos.Visible = False
+                            pnlVacio.Visible = True
                         End If
                     End Using
                 End Using
             End Using
         Catch ex As Exception
-            MostrarError("Error al generar el pase: " & ex.Message)
+            pnlError.Visible = True
+            lblError.Text = "Error al obtener tus facturas: " & ex.Message
         End Try
-    End Sub
-
-    Private Sub MostrarError(mensaje As String)
-        rptPases.Visible = False
-        pnlError.Visible = True
-        lblError.Text = mensaje
     End Sub
 End Class

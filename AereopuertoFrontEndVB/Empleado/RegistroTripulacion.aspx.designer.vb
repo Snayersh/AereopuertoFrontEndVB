@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class Login
+Partial Public Class RegistroTripulacion
 
     '''<summary>
     '''form1 control.
@@ -23,56 +23,56 @@ Partial Public Class Login
     Protected WithEvents form1 As Global.System.Web.UI.HtmlControls.HtmlForm
 
     '''<summary>
-    '''pnlExito control.
+    '''pnlMensaje control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlExito As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents pnlMensaje As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''pnlError control.
+    '''lblMensaje control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlError As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents lblMensaje As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''lblError control.
+    '''txtNombre control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents lblError As Global.System.Web.UI.WebControls.Label
+    Protected WithEvents txtNombre As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''txtEmail control.
+    '''ddlPuesto control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtEmail As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents ddlPuesto As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''txtPassword control.
+    '''txtLicencia control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtPassword As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtLicencia As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''btnLogin control.
+    '''btnGuardar control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents btnLogin As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents btnGuardar As Global.System.Web.UI.WebControls.Button
 End Class

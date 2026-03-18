@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class Aeropuertos
+Partial Public Class NuevaPassword
 
     '''<summary>
     '''form1 control.
@@ -41,56 +41,38 @@ Partial Public Class Aeropuertos
     Protected WithEvents lblMensaje As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''txtNombre control.
+    '''pnlFormulario control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtNombre As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents pnlFormulario As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''txtIata control.
+    '''txtPass1 control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtIata As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtPass1 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''txtPais control.
+    '''txtPass2 control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtPais As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtPass2 As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''txtCiudad control.
+    '''btnActualizar control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtCiudad As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''btnLimpiar control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents btnLimpiar As Global.System.Web.UI.WebControls.Button
-
-    '''<summary>
-    '''btnGuardar control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents btnGuardar As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents btnActualizar As Global.System.Web.UI.WebControls.Button
 End Class

@@ -135,18 +135,47 @@ Public Class _Default
     End Sub
 
     ' -------------------------------------------------------------
-    ' FUNCIONES VISUALES PARA LA TABLA
+    ' FUNCIONES VISUALES PARA LA TABLA (AHORA CON TODOS LOS ESTADOS)
     ' -------------------------------------------------------------
     Public Function ObtenerClaseEstado(estado As String) As String
-        If estado = "Aterrizó" Then Return "text-primary fw-bold"
-        If estado = "En Horario" Then Return "text-success fw-bold"
-        Return "text-warning fw-bold"
+        If String.IsNullOrEmpty(estado) Then Return "text-secondary fw-bold"
+
+        Select Case estado.ToUpper()
+            Case "PROGRAMADO"
+                Return "text-info fw-bold"
+            Case "ABORDANDO"
+                Return "text-warning fw-bold"
+            Case "EN VUELO"
+                Return "text-success fw-bold"
+            Case "ATERRIZADO", "ATERRIZÓ"
+                Return "text-primary fw-bold"
+            Case "CANCELADO"
+                Return "text-danger fw-bold text-decoration-line-through"
+            Case "RETRASADO"
+                Return "badge bg-warning text-dark px-3 py-1 rounded-pill" ' Resalta bastante en pantalla
+            Case Else
+                Return "text-secondary fw-bold"
+        End Select
     End Function
 
     Public Function ObtenerIconoEstado(estado As String) As String
-        If estado = "Aterrizó" Then Return "🔵"
-        If estado = "En Horario" Then Return "🟢"
-        Return "🟡"
-    End Function
+        If String.IsNullOrEmpty(estado) Then Return "🟡"
 
+        Select Case estado.ToUpper()
+            Case "PROGRAMADO"
+                Return "📅"
+            Case "ABORDANDO"
+                Return "🚶"
+            Case "EN VUELO"
+                Return "✈️"
+            Case "ATERRIZADO", "ATERRIZÓ"
+                Return "🛬"
+            Case "CANCELADO"
+                Return "❌"
+            Case "RETRASADO"
+                Return "⏳"
+            Case Else
+                Return "🟡"
+        End Select
+    End Function
 End Class

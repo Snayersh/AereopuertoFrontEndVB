@@ -23,6 +23,33 @@ Partial Public Class DetalleVuelo
     Protected WithEvents form1 As Global.System.Web.UI.HtmlControls.HtmlForm
 
     '''<summary>
+    '''hfSalidaISO control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents hfSalidaISO As Global.System.Web.UI.WebControls.HiddenField
+
+    '''<summary>
+    '''hfLlegadaISO control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents hfLlegadaISO As Global.System.Web.UI.WebControls.HiddenField
+
+    '''<summary>
+    '''hfEstadoActual control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents hfEstadoActual As Global.System.Web.UI.WebControls.HiddenField
+
+    '''<summary>
     '''pnlError control.
     '''</summary>
     '''<remarks>
@@ -68,6 +95,15 @@ Partial Public Class DetalleVuelo
     Protected WithEvents lblEstado As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
+    '''lblOrigenIata control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblOrigenIata As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
     '''lblOrigenCiudad control.
     '''</summary>
     '''<remarks>
@@ -77,13 +113,49 @@ Partial Public Class DetalleVuelo
     Protected WithEvents lblOrigenCiudad As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''lblOrigenIata control.
+    '''lblDuracion control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents lblOrigenIata As Global.System.Web.UI.WebControls.Label
+    Protected WithEvents lblDuracion As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''lblDestinoIata control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblDestinoIata As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''lblDestinoCiudad control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblDestinoCiudad As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''lblFechaSalida control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblFechaSalida As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''lblFechaLlegada control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblFechaLlegada As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
     '''lblOrigenAero control.
@@ -104,24 +176,6 @@ Partial Public Class DetalleVuelo
     Protected WithEvents lblOrigenPais As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''lblDestinoCiudad control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents lblDestinoCiudad As Global.System.Web.UI.WebControls.Label
-
-    '''<summary>
-    '''lblDestinoIata control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents lblDestinoIata As Global.System.Web.UI.WebControls.Label
-
-    '''<summary>
     '''lblDestinoAero control.
     '''</summary>
     '''<remarks>
@@ -138,24 +192,6 @@ Partial Public Class DetalleVuelo
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents lblDestinoPais As Global.System.Web.UI.WebControls.Label
-
-    '''<summary>
-    '''lblFechaSalida control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents lblFechaSalida As Global.System.Web.UI.WebControls.Label
-
-    '''<summary>
-    '''lblFechaLlegada control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents lblFechaLlegada As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
     '''lblAerolinea control.
@@ -183,13 +219,4 @@ Partial Public Class DetalleVuelo
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents lblCapacidad As Global.System.Web.UI.WebControls.Label
-
-    '''<summary>
-    '''lblDuracion control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents lblDuracion As Global.System.Web.UI.WebControls.Label
 End Class

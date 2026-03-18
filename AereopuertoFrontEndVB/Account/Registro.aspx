@@ -13,6 +13,9 @@
         .btn-primary { background-color: #0d47a1; height: 50px; border-radius: 10px; font-weight: bold; border: none; transition: 0.3s; }
         .btn-primary:hover { background-color: #1976d2; transform: translateY(-2px); }
         .section-title { color: #0d47a1; font-weight: bold; border-bottom: 2px solid #e3f2fd; padding-bottom: 5px; margin-bottom: 20px; margin-top: 20px; }
+        
+        /* Clase para cuando el botón está deshabilitado */
+        .btn-disabled { opacity: 0.7; cursor: not-allowed; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -24,7 +27,7 @@
                     <p class="text-muted">Completa tu perfil para acceder a los servicios de La Aurora</p>
                 </div>
 
-                <asp:Panel ID="pnlMensaje" runat="server" Visible="false" CssClass="alert alert-info text-center rounded-3 mb-4">
+                <asp:Panel ID="pnlMensaje" runat="server" Visible="false" CssClass="alert alert-info text-center rounded-3 mb-4 shadow-sm">
                     <asp:Label ID="lblMensaje" runat="server" CssClass="fw-bold"></asp:Label>
                 </asp:Panel>
 
@@ -62,9 +65,13 @@
                         <label class="form-label text-secondary small fw-bold">Fecha de Nacimiento *</label>
                         <asp:TextBox ID="txtFechaNac" runat="server" CssClass="form-control" TextMode="Date" required="true"></asp:TextBox>
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-3 mb-3">
                         <label class="form-label text-secondary small fw-bold">Teléfono *</label>
                         <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control" required="true"></asp:TextBox>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label text-secondary small fw-bold">No. Pasaporte *</label>
+                        <asp:TextBox ID="txtPasaporte" runat="server" CssClass="form-control" placeholder="Ej: P-123456" required="true"></asp:TextBox>
                     </div>
                 </div>
 
@@ -114,7 +121,10 @@
                     </div>
                 </div>
 
-                <asp:Button ID="btnRegistrar" runat="server" Text="Crear Cuenta y Enviar Activación" CssClass="btn btn-primary w-100 mb-3 shadow-sm" />
+                <asp:Button ID="btnRegistrar" runat="server" Text="Crear Cuenta" 
+                    CssClass="btn btn-primary w-100 mb-3 shadow-sm" 
+                    UseSubmitBehavior="false" 
+                    OnClientClick="bloquearBoton(this);" />
 
                 <div class="text-center mt-3">
                     <span class="text-muted">¿Ya tienes cuenta?</span>
@@ -123,5 +133,20 @@
             </div>
         </div>
     </form>
+
+    <script>
+        function bloquearBoton(btn) {
+            // Solo lo bloquea si el formulario es válido (HTML5 required check)
+            if (typeof (Page_ClientValidate) == 'function') {
+                if (Page_ClientValidate() == false) { return false; }
+            }
+            if (document.getElementById('form1').checkValidity()) {
+                btn.value = 'Procesando registro, por favor espere... ⏳';
+                btn.classList.add('btn-disabled');
+                return true;
+            }
+            return false;
+        }
+    </script>
 </body>
 </html>

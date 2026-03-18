@@ -28,6 +28,11 @@
                 <p class="text-muted">Aeropuerto Internacional La Aurora</p>
             </div>
 
+            <asp:Panel ID="pnlExito" runat="server" Visible="false" CssClass="alert alert-success text-center shadow-sm rounded-3 mb-4" style="border-left: 5px solid #2e7d32;">
+                <h6 class="fw-bold mb-1" style="color: #2e7d32;">¡Registro Exitoso! 🎉</h6>
+                <small class="text-dark">Tu cuenta ha sido creada. Por favor, <b>revisa tu correo electrónico</b> para activarla antes de iniciar sesión.</small>
+            </asp:Panel>
+
             <asp:Panel ID="pnlError" runat="server" Visible="false" CssClass="alert alert-danger text-center rounded-3 mb-4">
                 <asp:Label ID="lblError" runat="server" CssClass="fw-bold"></asp:Label>
             </asp:Panel>

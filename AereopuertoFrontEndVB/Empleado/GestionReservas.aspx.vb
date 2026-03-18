@@ -5,11 +5,11 @@ Public Class GestionReservas
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        ' Seguridad estricta: Solo Admin y Empleado pueden ver esto
-        If Session("UserRole") Is Nothing OrElse
-           (Session("UserRole").ToString() <> "Admin" AndAlso Session("UserRole").ToString() <> "Empleado") Then
+        If Session("UserRole") Is Nothing OrElse (Session("UserRole").ToString() <> "Empleado" AndAlso Session("UserRole").ToString() <> "Admin") Then
             Response.Redirect("~/Default.aspx")
         End If
+
+
 
         If Not IsPostBack Then
             pnlMensaje.Visible = False

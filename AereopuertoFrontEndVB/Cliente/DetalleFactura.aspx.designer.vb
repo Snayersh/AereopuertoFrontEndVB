@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class Login
+Partial Public Class DetalleFactura
 
     '''<summary>
     '''form1 control.
@@ -21,15 +21,6 @@ Partial Public Class Login
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents form1 As Global.System.Web.UI.HtmlControls.HtmlForm
-
-    '''<summary>
-    '''pnlExito control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents pnlExito As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
     '''pnlError control.
@@ -50,29 +41,65 @@ Partial Public Class Login
     Protected WithEvents lblError As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''txtEmail control.
+    '''pnlFactura control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtEmail As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents pnlFactura As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''txtPassword control.
+    '''lblNumeroFactura control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtPassword As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents lblNumeroFactura As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''btnLogin control.
+    '''lblCliente control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents btnLogin As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents lblCliente As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''lblCorreo control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblCorreo As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''lblFecha control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblFecha As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''rptDetalles control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents rptDetalles As Global.System.Web.UI.WebControls.Repeater
+
+    '''<summary>
+    '''lblTotal control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblTotal As Global.System.Web.UI.WebControls.Label
 End Class

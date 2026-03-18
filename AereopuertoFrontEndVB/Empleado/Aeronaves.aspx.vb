@@ -5,10 +5,10 @@ Public Class Aeronaves
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        ' Seguridad: Solo Administradores
-        If Session("UserRole") Is Nothing OrElse Session("UserRole").ToString() <> "Admin" Then
+        If Session("UserRole") Is Nothing OrElse (Session("UserRole").ToString() <> "Empleado" AndAlso Session("UserRole").ToString() <> "Admin") Then
             Response.Redirect("~/Default.aspx")
         End If
+
 
         If Not IsPostBack Then
             pnlMensaje.Visible = False

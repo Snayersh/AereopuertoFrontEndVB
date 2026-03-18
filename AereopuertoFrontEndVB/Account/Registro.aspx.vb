@@ -27,6 +27,7 @@ Public Class Registro
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_REGISTRAR_CLIENTE_COMPLETO", conn)
                     cmd.CommandType = CommandType.StoredProcedure
+                    cmd.BindByName = True
 
                     ' --- Parámetros de Persona ---
                     cmd.Parameters.Add("p_primer_nombre", OracleDbType.Varchar2).Value = txtPrimerNombre.Text.Trim()
@@ -46,12 +47,13 @@ Public Class Registro
                     cmd.Parameters.Add("p_zona", OracleDbType.Varchar2).Value = txtZona.Text.Trim()
                     cmd.Parameters.Add("p_colonia", OracleDbType.Varchar2).Value = txtColonia.Text.Trim()
                     cmd.Parameters.Add("p_calle", OracleDbType.Varchar2).Value = txtCalleAvenida.Text.Trim()
-                    cmd.Parameters.Add("p_avenida", OracleDbType.Varchar2).Value = DBNull.Value ' Lo omito si todo va en la misma caja
+                    cmd.Parameters.Add("p_avenida", OracleDbType.Varchar2).Value = DBNull.Value
                     cmd.Parameters.Add("p_numero_casa", OracleDbType.Varchar2).Value = txtNumCasa.Text.Trim()
 
-                    ' --- Parámetros de Usuario Seguro ---
+                    ' --- Parámetros de Usuario Seguro y Pasaporte ---
                     cmd.Parameters.Add("p_password_hash", OracleDbType.Varchar2).Value = contrasenaHasheada
                     cmd.Parameters.Add("p_token", OracleDbType.Varchar2).Value = tokenActivacion
+                    cmd.Parameters.Add("p_pasaporte", OracleDbType.Varchar2).Value = txtPasaporte.Text.Trim().ToUpper()
 
                     ' --- Salida ---
                     Dim paramOut As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
@@ -64,12 +66,14 @@ Public Class Registro
                     Dim resultado As String = paramOut.Value.ToString()
 
                     If resultado = "EXITO" Then
-                        ' Si guardó en Oracle, procedemos a enviar el correo
+                        ' 1. Mandamos el correo
                         EnviarCorreoActivacion(txtEmail.Text.Trim(), txtPrimerNombre.Text.Trim(), tokenActivacion)
 
-                        pnlMensaje.Visible = True
-                        pnlMensaje.CssClass = "alert alert-success text-center rounded-3 mb-4"
-                        lblMensaje.Text = "¡Cuenta creada! Hemos enviado un enlace de activación a tu correo electrónico."
+                        ' 2. Limpiamos todos los TextBox del formulario
+                        LimpiarCampos()
+
+                        ' 3. Redirigimos al Login con un parámetro de éxito en la URL
+                        Response.Redirect("Login.aspx?registro=exitoso", False)
                     Else
                         MostrarError(resultado)
                     End If
@@ -82,6 +86,33 @@ Public Class Registro
     End Sub
 
     ' =========================================================
+    ' FUNCIÓN PARA LIMPIAR TODOS LOS CAMPOS
+    ' =========================================================
+    Private Sub LimpiarCampos()
+        txtPrimerNombre.Text = ""
+        txtSegundoNombre.Text = ""
+        txtTercerNombre.Text = ""
+        txtPrimerApellido.Text = ""
+        txtSegundoApellido.Text = ""
+        txtApellidoCasada.Text = ""
+        txtFechaNac.Text = ""
+        txtTelefono.Text = ""
+        txtPasaporte.Text = ""
+
+        txtPais.Text = ""
+        txtDepartamento.Text = ""
+        txtMunicipio.Text = ""
+        txtZona.Text = ""
+        txtColonia.Text = ""
+        txtCalleAvenida.Text = ""
+        txtNumCasa.Text = ""
+
+        txtEmail.Text = ""
+        ' Nota: Los TextMode="Password" se limpian solos, pero por seguridad lo forzamos.
+        txtPassword.Attributes.Add("value", "")
+    End Sub
+
+    ' =========================================================
     ' FUNCIÓN PARA ENCRIPTAR LA CONTRASEÑA (SHA-256)
     ' =========================================================
     Private Function EncriptarSHA256(texto As String) As String
@@ -91,7 +122,7 @@ Public Class Registro
             For i As Integer = 0 To bytes.Length - 1
                 builder.Append(bytes(i).ToString("x2"))
             Next
-            Return builder.ToString() ' Devuelve la cadena alfanumérica ilegible
+            Return builder.ToString()
         End Using
     End Function
 
@@ -100,8 +131,6 @@ Public Class Registro
     ' =========================================================
     Private Sub EnviarCorreoActivacion(correoDestino As String, nombre As String, token As String)
         Try
-            ' Configuración del SMTP (Ejemplo usando Gmail)
-            ' Nota: Para que Gmail te deje, necesitas generar una "Contraseña de Aplicación" en tu cuenta de Google.
             Dim smtp As New SmtpClient("smtp.gmail.com", 587)
             smtp.EnableSsl = True
             smtp.Credentials = New NetworkCredential("proyectoaeroupuertoaurora@gmail.com", "ezkk vcci gsgy qguh")
@@ -112,7 +141,6 @@ Public Class Registro
             mensaje.Subject = "Activa tu cuenta en La Aurora GUA"
             mensaje.IsBodyHtml = True
 
-            ' URL a la que le darán clic (Crearemos esta página Activar.aspx después)
             Dim urlActivacion As String = "https://localhost:44356/Account/Activar.aspx?token=" & token
 
             mensaje.Body = $"
@@ -127,8 +155,7 @@ Public Class Registro
 
             smtp.Send(mensaje)
         Catch ex As Exception
-            ' Si falla el envío de correo, lo capturamos silenciosamente o mostramos un error
-            ' Dependiendo del entorno, puede que el firewall bloquee el puerto 587
+            ' Silencioso
         End Try
     End Sub
 
@@ -137,5 +164,4 @@ Public Class Registro
         pnlMensaje.CssClass = "alert alert-danger text-center rounded-3 mb-4"
         lblMensaje.Text = mensaje
     End Sub
-
 End Class

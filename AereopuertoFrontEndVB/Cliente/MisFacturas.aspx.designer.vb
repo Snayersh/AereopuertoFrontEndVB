@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class Login
+Partial Public Class MisFacturas
 
     '''<summary>
     '''form1 control.
@@ -21,15 +21,6 @@ Partial Public Class Login
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents form1 As Global.System.Web.UI.HtmlControls.HtmlForm
-
-    '''<summary>
-    '''pnlExito control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents pnlExito As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
     '''pnlError control.
@@ -50,29 +41,29 @@ Partial Public Class Login
     Protected WithEvents lblError As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''txtEmail control.
+    '''pnlVacio control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtEmail As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents pnlVacio As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''txtPassword control.
+    '''pnlDatos control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtPassword As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents pnlDatos As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''btnLogin control.
+    '''rptFacturas control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents btnLogin As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents rptFacturas As Global.System.Web.UI.WebControls.Repeater
 End Class
