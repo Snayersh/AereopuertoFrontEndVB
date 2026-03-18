@@ -7,7 +7,6 @@ Public Class Pagos
     Private CorreoUsuario As String
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        ' Validar sesión activa
         If Session("UserRole") Is Nothing Then
             Response.Redirect("~/Account/Login.aspx")
         End If
@@ -18,7 +17,6 @@ Public Class Pagos
             pnlError.Visible = False
             pnlExito.Visible = False
 
-            ' Truco de UX: Si venimos de otra página y nos mandan el código por URL, lo ponemos automático
             If Request.QueryString("codigo") IsNot Nothing Then
                 txtCodigoReserva.Text = Request.QueryString("codigo").ToString()
             End If
@@ -33,7 +31,6 @@ Public Class Pagos
             Return
         End If
 
-        ' Asumimos que 1 = Tarjeta de Crédito/Débito en tu tabla AUR_METODO_PAGO
         Dim idMetodoPago As Integer = 1
         Dim db As New ConexionDB()
 
@@ -58,14 +55,12 @@ Public Class Pagos
                     Dim partes() As String = resultadoCompleto.Split("|"c)
 
                     If partes(0) = "EXITO" Then
-                        ' Ocultamos el formulario y mostramos la pantalla de éxito
                         pnlFormulario.Visible = False
                         pnlError.Visible = False
 
-                        ' Mostramos el número de factura que nos devolvió Oracle
                         lblFactura.Text = "FAC-" & partes(1).PadLeft(6, "0"c)
+                        lblLocalizadorExito.Text = codigoReserva
                         pnlExito.Visible = True
-
                     ElseIf partes(0) = "ERROR_RESERVA_NO_VALIDA" Then
                         MostrarError("No se encontró una reserva pendiente de pago con ese código o ya fue pagada.")
                     Else
@@ -84,5 +79,4 @@ Public Class Pagos
         pnlError.Visible = True
         lblError.Text = mensaje
     End Sub
-
 End Class

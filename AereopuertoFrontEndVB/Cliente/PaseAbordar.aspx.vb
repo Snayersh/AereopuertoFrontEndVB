@@ -43,27 +43,10 @@ Public Class PaseAbordar
                         Dim dt As New DataTable()
                         da.Fill(dt)
 
+                        ' Si encuentra boletos, simplemente los mandamos a dibujar TODOS
                         If dt.Rows.Count > 0 Then
-                            Dim row As DataRow = dt.Rows(0)
-
-                            ' Llenamos el diseño principal
-                            lblPasajero.Text = row("pasajero").ToString()
-                            lblVuelo.Text = row("codigo_vuelo").ToString()
-                            lblOrigenIata.Text = row("origen_iata").ToString()
-                            lblOrigenCiudad.Text = row("origen_ciudad").ToString()
-                            lblDestinoIata.Text = row("destino_iata").ToString()
-                            lblDestinoCiudad.Text = row("destino_ciudad").ToString()
-                            lblFecha.Text = row("fecha").ToString()
-                            lblHora.Text = row("hora_salida").ToString()
-                            lblClase.Text = row("clase_cabina").ToString()
-                            lblAsiento.Text = row("asiento").ToString()
-
-                            ' Llenamos el talón derecho
-                            lblCodigoRecorte.Text = row("codigo_boleto").ToString()
-                            lblAsientoRecorte.Text = row("asiento").ToString()
-                            lblBarcode.Text = row("codigo_boleto").ToString() ' Se dibuja como código de barras por CSS
-
-                            pnlPase.Visible = True
+                            rptPases.DataSource = dt
+                            rptPases.DataBind()
                         Else
                             MostrarError("No se encontró el pase de abordar. Verifica que sea tuyo y esté pagado.")
                         End If
@@ -76,7 +59,7 @@ Public Class PaseAbordar
     End Sub
 
     Private Sub MostrarError(mensaje As String)
-        pnlPase.Visible = False
+        rptPases.Visible = False
         pnlError.Visible = True
         lblError.Text = mensaje
     End Sub

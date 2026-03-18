@@ -58,15 +58,19 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label text-secondary small fw-bold">Fecha de Nacimiento *</label>
-                        <asp:TextBox ID="txtFechaNac" runat="server" CssClass="form-control" TextMode="Date" required="true"></asp:TextBox>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label text-secondary small fw-bold">Teléfono *</label>
-                        <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control" required="true"></asp:TextBox>
-                    </div>
-                </div>
+    <div class="col-md-6 mb-3">
+        <label class="form-label text-secondary small fw-bold">Fecha de Nacimiento *</label>
+        <asp:TextBox ID="txtFechaNac" runat="server" CssClass="form-control" TextMode="Date" required="true"></asp:TextBox>
+    </div>
+    <div class="col-md-3 mb-3">
+        <label class="form-label text-secondary small fw-bold">Teléfono *</label>
+        <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control" required="true"></asp:TextBox>
+    </div>
+    <div class="col-md-3 mb-3">
+        <label class="form-label text-secondary small fw-bold">No. Pasaporte *</label>
+        <asp:TextBox ID="txtPasaporte" runat="server" CssClass="form-control" placeholder="Ej: P-123456" required="true"></asp:TextBox>
+    </div>
+</div>
 
                 <h5 class="section-title">Dirección de Residencia</h5>
                 <div class="row">

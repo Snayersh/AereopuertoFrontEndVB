@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class Aeropuertos
+Partial Public Class Rutas
 
     '''<summary>
     '''form1 control.
@@ -41,58 +41,31 @@ Partial Public Class Aeropuertos
     Protected WithEvents lblMensaje As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''txtNombre control.
+    '''ddlOrigen control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtNombre As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents ddlOrigen As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''txtIata control.
+    '''ddlDestino control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtIata As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents ddlDestino As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''txtPais control.
+    '''txtDuracion control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtPais As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''txtCiudad control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents txtCiudad As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''txtLatitud control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents txtLatitud As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''txtLongitud control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents txtLongitud As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtDuracion As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
     '''btnLimpiar control.

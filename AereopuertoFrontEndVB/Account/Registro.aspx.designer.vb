@@ -113,6 +113,15 @@ Partial Public Class Registro
     Protected WithEvents txtTelefono As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
+    '''txtPasaporte control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents txtPasaporte As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
     '''txtPais control.
     '''</summary>
     '''<remarks>

@@ -23,10 +23,15 @@ Public Class Registro
         ' 2. Generamos un código único para activar la cuenta
         Dim tokenActivacion As String = Guid.NewGuid().ToString()
 
+        ' ... dentro del bloque del botón registrar ...
+
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
+                ' Importante: Verifica que tu SP_REGISTRAR_CLIENTE_COMPLETO en Oracle 
+                ' ahora acepte el parámetro p_pasaporte.
                 Using cmd As New OracleCommand("SP_REGISTRAR_CLIENTE_COMPLETO", conn)
                     cmd.CommandType = CommandType.StoredProcedure
+                    cmd.BindByName = True ' Recomendado para evitar errores de orden
 
                     ' --- Parámetros de Persona ---
                     cmd.Parameters.Add("p_primer_nombre", OracleDbType.Varchar2).Value = txtPrimerNombre.Text.Trim()
@@ -46,12 +51,13 @@ Public Class Registro
                     cmd.Parameters.Add("p_zona", OracleDbType.Varchar2).Value = txtZona.Text.Trim()
                     cmd.Parameters.Add("p_colonia", OracleDbType.Varchar2).Value = txtColonia.Text.Trim()
                     cmd.Parameters.Add("p_calle", OracleDbType.Varchar2).Value = txtCalleAvenida.Text.Trim()
-                    cmd.Parameters.Add("p_avenida", OracleDbType.Varchar2).Value = DBNull.Value ' Lo omito si todo va en la misma caja
+                    cmd.Parameters.Add("p_avenida", OracleDbType.Varchar2).Value = DBNull.Value
                     cmd.Parameters.Add("p_numero_casa", OracleDbType.Varchar2).Value = txtNumCasa.Text.Trim()
 
-                    ' --- Parámetros de Usuario Seguro ---
+                    ' --- Parámetros de Usuario Seguro y Pasaporte ---
                     cmd.Parameters.Add("p_password_hash", OracleDbType.Varchar2).Value = contrasenaHasheada
                     cmd.Parameters.Add("p_token", OracleDbType.Varchar2).Value = tokenActivacion
+                    cmd.Parameters.Add("p_pasaporte", OracleDbType.Varchar2).Value = txtPasaporte.Text.Trim().ToUpper()
 
                     ' --- Salida ---
                     Dim paramOut As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
@@ -60,6 +66,8 @@ Public Class Registro
 
                     conn.Open()
                     cmd.ExecuteNonQuery()
+
+                    ' ... resto del código de éxito y envío de correo ...
 
                     Dim resultado As String = paramOut.Value.ToString()
 

@@ -11,58 +11,53 @@ Public Class ProgramasVuelo
 
         If Not IsPostBack Then
             pnlMensaje.Visible = False
-            CargarCatalogos()
+            CargarAerolineas()
+            CargarDestinosConMinutos()
         End If
     End Sub
 
     ' -------------------------------------------------------------
-    ' 1. CARGA DE CATÁLOGOS AL INICIAR LA PÁGINA
+    ' 1. CARGAR CATÁLOGOS
     ' -------------------------------------------------------------
-    Private Sub CargarCatalogos()
-        LlenarCombo("SELECT id_aerolinea, nombre FROM AUR_AEROLINEA ORDER BY nombre", ddlAerolinea, "NOMBRE", "ID_AEROLINEA", "Aerolínea")
-        CargarDestinosConTiempo()
-    End Sub
-
-    Private Sub LlenarCombo(query As String, ddl As DropDownList, textField As String, valueField As String, nombreCatalogo As String)
+    Private Sub CargarAerolineas()
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
-                Using cmd As New OracleCommand(query, conn)
+                Using cmd As New OracleCommand("SELECT id_aerolinea, nombre FROM AUR_AEROLINEA ORDER BY nombre", conn)
                     conn.Open()
                     Using reader As OracleDataReader = cmd.ExecuteReader()
-                        ddl.DataSource = reader
-                        ddl.DataTextField = textField
-                        ddl.DataValueField = valueField
-                        ddl.DataBind()
+                        ddlAerolinea.DataSource = reader
+                        ddlAerolinea.DataTextField = "nombre"
+                        ddlAerolinea.DataValueField = "id_aerolinea"
+                        ddlAerolinea.DataBind()
                     End Using
                 End Using
             End Using
-            ddl.Items.Insert(0, New ListItem($"-- Seleccione {nombreCatalogo} --", ""))
+            ddlAerolinea.Items.Insert(0, New ListItem("-- Seleccione Aerolínea --", ""))
         Catch ex As Exception
-            MostrarMensaje($"Error cargando {nombreCatalogo}: {ex.Message}", False)
+            MostrarMensaje("Error cargando Aerolíneas: " & ex.Message, False)
         End Try
     End Sub
 
-    ' ESTA ES LA FUNCIÓN CLAVE PARA INYECTAR LOS MINUTOS AL HTML
-    Private Sub CargarDestinosConTiempo()
+    ' Carga los destinos e inyecta los minutos para que JavaScript los lea
+    Private Sub CargarDestinosConMinutos()
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
-                ' Traemos el aeropuerto y sus minutos desde la nueva tabla
-                Dim query As String = "SELECT a.id_aeropuerto, a.nombre || ' (' || a.codigo_iata || ')' AS DETALLE, NVL(r.duracion_minutos, 120) AS MINUTOS " &
-                                      "FROM AUR_AEROPUERTO a " &
-                                      "LEFT JOIN AUR_RUTA_TIEMPO r ON a.id_aeropuerto = r.id_destino " &
-                                      "WHERE a.codigo_iata != 'GUA' ORDER BY a.nombre"
-                Using cmd As New OracleCommand(query, conn)
+                Using cmd As New OracleCommand("SP_LISTAR_DESTINOS_RUTA", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cursorParam.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(cursorParam)
+
                     conn.Open()
                     Using reader As OracleDataReader = cmd.ExecuteReader()
                         ddlDestino.Items.Clear()
                         ddlDestino.Items.Add(New ListItem("-- Seleccione Destino --", ""))
 
                         While reader.Read()
-                            Dim item As New ListItem(reader("DETALLE").ToString(), reader("ID_AEROPUERTO").ToString())
-                            ' Inyectamos los minutos en un atributo oculto para que JavaScript los lea
-                            item.Attributes.Add("data-minutos", reader("MINUTOS").ToString())
+                            Dim item As New ListItem(reader("detalle").ToString(), reader("id_aeropuerto").ToString())
+                            item.Attributes.Add("data-minutos", reader("minutos").ToString())
                             ddlDestino.Items.Add(item)
                         End While
                     End Using
@@ -73,8 +68,8 @@ Public Class ProgramasVuelo
         End Try
     End Sub
 
-    ' Cuando seleccionan aerolínea, cargamos solo SUS aviones
-    Protected Sub ddlAerolinea_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ddlAerolinea.SelectedIndexChanged
+    ' Filtro de Aviones (Depende de la Aerolínea)
+    Protected Sub ddlAerolinea_SelectedIndexChanged(sender As Object, e As EventArgs)
         ddlAeronave.Items.Clear()
         If String.IsNullOrEmpty(ddlAerolinea.SelectedValue) Then
             ddlAeronave.Items.Insert(0, New ListItem("-- Primero seleccione aerolínea --", ""))
@@ -103,15 +98,16 @@ Public Class ProgramasVuelo
     End Sub
 
     ' -------------------------------------------------------------
-    ' 2. GUARDAR EL VUELO (A PRUEBA DE BALAS)
+    ' 2. GUARDAR EL VUELO (USANDO EL PROCEDIMIENTO AUTOMÁTICO)
     ' -------------------------------------------------------------
     Protected Sub btnGuardar_Click(sender As Object, e As EventArgs) Handles btnGuardar.Click
+        Dim fechaSalida As DateTime
+
         If String.IsNullOrEmpty(ddlAerolinea.SelectedValue) OrElse String.IsNullOrEmpty(ddlAeronave.SelectedValue) OrElse String.IsNullOrEmpty(ddlDestino.SelectedValue) Then
-            MostrarMensaje("Por favor, complete todos los campos obligatorios.", False)
+            MostrarMensaje("Complete todos los campos obligatorios.", False)
             Return
         End If
 
-        Dim fechaSalida As DateTime
         If Not DateTime.TryParse(txtSalida.Text, fechaSalida) Then
             MostrarMensaje("La fecha de salida no es válida.", False)
             Return
@@ -148,12 +144,12 @@ Public Class ProgramasVuelo
                         MostrarMensaje($"¡Vuelo {txtCodigoVuelo.Text.ToUpper()} programado exitosamente!", True)
                         LimpiarCampos()
                     Else
-                        MostrarMensaje(resultado, False)
+                        MostrarMensaje("Error en base de datos: " & resultado, False)
                     End If
                 End Using
             End Using
         Catch ex As Exception
-            MostrarMensaje("Error de base de datos: " & ex.Message, False)
+            MostrarMensaje("Error de procesamiento: " & ex.Message, False)
         End Try
     End Sub
 
@@ -168,12 +164,17 @@ Public Class ProgramasVuelo
         txtLlegada.Text = ""
         ddlAerolinea.SelectedIndex = 0
         ddlAeronave.Items.Clear()
+        ddlAeronave.Items.Insert(0, New ListItem("-- Primero seleccione aerolínea --", ""))
         ddlDestino.SelectedIndex = 0
     End Sub
 
     Private Sub MostrarMensaje(mensaje As String, esExito As Boolean)
         pnlMensaje.Visible = True
         lblMensaje.Text = mensaje
-        pnlMensaje.CssClass = If(esExito, "alert alert-success text-center rounded-3 mb-4", "alert alert-danger text-center rounded-3 mb-4")
+        If esExito Then
+            pnlMensaje.CssClass = "alert alert-success text-center rounded-3 mb-4"
+        Else
+            pnlMensaje.CssClass = "alert alert-danger text-center rounded-3 mb-4"
+        End If
     End Sub
 End Class

@@ -40,6 +40,7 @@
                     <ul class="nav flex-column mb-5">
                         <li class="section-title">General</li>
                         <li class="nav-item"><a class="nav-link active" href="Default.aspx">📊 Panel Principal</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="Admin/Radar.aspx">Radar</a></li>
                         
                         <asp:Panel ID="pnlCliente" runat="server" Visible="false">
                             <li class="section-title text-light">Mi Cuenta</li>
@@ -55,6 +56,8 @@
                             <li class="nav-item"><a class="nav-link" href="Admin/ControlVuelos.aspx">📡 Torre de Control</a></li>
                             <li class="nav-item"><a class="nav-link" href="Empleado/RegistroEquipaje.aspx">⚖️ Registro Equipaje</a></li>
                             <li class="nav-item"><a class="nav-link" href="Empleado/CheckIn.aspx">✅ Validar Abordaje</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Empleado/CheckIn.aspx">✅ Validar Abordaje</a></li>
+                         
                         </asp:Panel>
 
                         <asp:Panel ID="pnlAdmin" runat="server" Visible="false">
@@ -67,7 +70,7 @@
                             <li class="section-title text-danger">Catálogos Fijos</li>
                             <li class="nav-item"><a class="nav-link" href="Admin/Aerolineas.aspx">🏢 Aerolíneas</a></li>
                             <li class="nav-item"><a class="nav-link" href="Admin/Aeronaves.aspx">🛩️ Aeronaves</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Admin/Aeropuertos.aspx">🛫 Aeropuertos</a></li>
+                            <li class="nav-item"><a class="nav-link" href="Admin/Aereopuertos.aspx">🛫 Aeropuertos</a></li>
                             <li class="nav-item"><a class="nav-link" href="Admin/Usuarios.aspx">👥 Usuarios y Roles</a></li>
                         </asp:Panel>
                     </ul>

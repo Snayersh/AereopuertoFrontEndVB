@@ -5,7 +5,6 @@ Public Class Aeropuertos
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        ' Seguridad: Solo Administradores
         If Session("UserRole") Is Nothing OrElse Session("UserRole").ToString() <> "Admin" Then
             Response.Redirect("~/Default.aspx")
         End If
@@ -19,15 +18,31 @@ Public Class Aeropuertos
         Dim db As New ConexionDB()
 
         Try
+            ' Convertimos los textos de coordenadas a Decimal de forma súper segura
+            Dim latitud As Decimal = 0
+            Dim longitud As Decimal = 0
+
+            ' Intentamos con la cultura actual, si falla forzamos el reemplazo de punto por coma
+            If Not Decimal.TryParse(txtLatitud.Text.Trim().Replace(".", ","), latitud) Then
+                Decimal.TryParse(txtLatitud.Text.Trim().Replace(",", "."), latitud)
+            End If
+
+            If Not Decimal.TryParse(txtLongitud.Text.Trim().Replace(".", ","), longitud) Then
+                Decimal.TryParse(txtLongitud.Text.Trim().Replace(",", "."), longitud)
+            End If
+
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_INSERTAR_AEROPUERTO", conn)
                     cmd.CommandType = CommandType.StoredProcedure
+                    cmd.BindByName = True
 
                     ' Parámetros de Entrada
                     cmd.Parameters.Add("p_nombre", OracleDbType.Varchar2).Value = txtNombre.Text.Trim()
-                    cmd.Parameters.Add("p_codigo_iata", OracleDbType.Varchar2).Value = txtIata.Text.Trim()
+                    cmd.Parameters.Add("p_codigo_iata", OracleDbType.Varchar2).Value = txtIata.Text.Trim().ToUpper()
                     cmd.Parameters.Add("p_pais", OracleDbType.Varchar2).Value = txtPais.Text.Trim()
                     cmd.Parameters.Add("p_ciudad", OracleDbType.Varchar2).Value = txtCiudad.Text.Trim()
+                    cmd.Parameters.Add("p_latitud", OracleDbType.Decimal).Value = latitud
+                    cmd.Parameters.Add("p_longitud", OracleDbType.Decimal).Value = longitud
 
                     ' Parámetro de Salida
                     Dim outResultado As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
@@ -40,7 +55,7 @@ Public Class Aeropuertos
                     Dim resultado As String = outResultado.Value.ToString()
 
                     If resultado = "EXITO" Then
-                        MostrarMensaje("¡Aeropuerto registrado exitosamente en el sistema!", True)
+                        MostrarMensaje("¡Aeropuerto registrado exitosamente con sus datos de geolocalización!", True)
                         LimpiarCampos()
                     Else
                         MostrarMensaje("Error en base de datos: " & resultado, False)
@@ -63,16 +78,13 @@ Public Class Aeropuertos
         txtIata.Text = ""
         txtPais.Text = ""
         txtCiudad.Text = ""
+        txtLatitud.Text = ""
+        txtLongitud.Text = ""
     End Sub
 
     Private Sub MostrarMensaje(mensaje As String, esExito As Boolean)
         pnlMensaje.Visible = True
         lblMensaje.Text = mensaje
-        If esExito Then
-            pnlMensaje.CssClass = "alert alert-success text-center rounded-3 mb-4"
-        Else
-            pnlMensaje.CssClass = "alert alert-danger text-center rounded-3 mb-4"
-        End If
+        pnlMensaje.CssClass = If(esExito, "alert alert-success text-center rounded-3 mb-4", "alert alert-danger text-center rounded-3 mb-4")
     End Sub
-
 End Class

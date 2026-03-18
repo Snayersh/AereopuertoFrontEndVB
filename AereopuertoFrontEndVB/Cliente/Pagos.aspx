@@ -13,11 +13,10 @@
         .form-control { height: 50px; border-radius: 8px; font-size: 1.1rem; }
         .btn-success { background-color: #2e7d32; border: none; height: 50px; font-weight: bold; border-radius: 8px; font-size: 1.1rem; transition: 0.3s; }
         .btn-success:hover { background-color: #1b5e20; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3); }
-        
-        /* Estilos de la tarjeta de crédito simulada */
         .cc-box { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; border-radius: 15px; padding: 25px; margin-bottom: 25px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
         .cc-chip { width: 50px; height: 35px; background: #ffd54f; border-radius: 5px; margin-bottom: 15px; opacity: 0.8; }
         .section-title { font-size: 0.9rem; font-weight: bold; color: #81c784; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+        .receipt-box { background-color: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 10px; padding: 20px; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -40,12 +39,23 @@
                             <asp:Label ID="lblError" runat="server" CssClass="fw-bold"></asp:Label>
                         </asp:Panel>
 
-                        <asp:Panel ID="pnlExito" runat="server" Visible="false" CssClass="alert alert-success text-center rounded-3 mb-4 p-4 border-2 border-success">
-                            <h3 class="fw-bold text-success mb-2">¡Pago Procesado con Éxito! ✅</h3>
-                            <p class="fs-5 mb-1">Tus boletos ahora están confirmados.</p>
-                            <p class="m-0 text-muted">Número de Factura generada: <strong class="text-dark fs-4"><asp:Label ID="lblFactura" runat="server"></asp:Label></strong></p>
-                            <div class="mt-4">
-                                <a href="MisBoletos.aspx" class="btn btn-outline-success fw-bold px-4 rounded-pill">Ver Mis Boletos</a>
+                        <asp:Panel ID="pnlExito" runat="server" Visible="false" CssClass="text-center mb-4">
+                            <div class="alert alert-success rounded-3 p-4 border-2 border-success shadow-sm">
+                                <h3 class="fw-bold text-success mb-2">¡Pago Procesado con Éxito! ✅</h3>
+                                <p class="fs-5 mb-1">Tus boletos ahora están confirmados.</p>
+                                
+                                <div class="receipt-box text-start mt-4 mb-4">
+                                    <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                                        <span class="text-muted fw-bold">Localizador:</span>
+                                        <span class="fw-bold fs-5"><asp:Label ID="lblLocalizadorExito" runat="server"></asp:Label></span>
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-muted fw-bold">Factura Generada:</span>
+                                        <span class="fw-bold text-dark"><asp:Label ID="lblFactura" runat="server"></asp:Label></span>
+                                    </div>
+                                </div>
+
+                                <a href="MisBoletos.aspx" class="btn btn-success fw-bold px-5 py-3 rounded-pill shadow">Ir a Imprimir Pase de Abordar 🎫</a>
                             </div>
                         </asp:Panel>
 
@@ -63,21 +73,21 @@
                                 <div class="cc-chip"></div>
                                 <div class="mb-3">
                                     <label class="form-label small text-white-50 mb-1">Número de Tarjeta</label>
-                                    <asp:TextBox ID="txtTarjeta" runat="server" CssClass="form-control bg-light border-0" placeholder="0000 0000 0000 0000" MaxLength="19" required="true"></asp:TextBox>
+                                    <asp:TextBox ID="txtTarjeta" runat="server" CssClass="form-control bg-light border-0 fw-bold" placeholder="0000 0000 0000 0000" MaxLength="19" required="true"></asp:TextBox>
                                 </div>
                                 <div class="row">
                                     <div class="col-6">
                                         <label class="form-label small text-white-50 mb-1">Vencimiento</label>
-                                        <asp:TextBox ID="txtVencimiento" runat="server" CssClass="form-control bg-light border-0" placeholder="MM/YY" MaxLength="5" required="true"></asp:TextBox>
+                                        <asp:TextBox ID="txtVencimiento" runat="server" CssClass="form-control bg-light border-0 fw-bold" placeholder="MM/YY" MaxLength="5" required="true"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label small text-white-50 mb-1">CVV</label>
-                                        <asp:TextBox ID="txtCVV" runat="server" CssClass="form-control bg-light border-0" placeholder="123" MaxLength="4" TextMode="Password" required="true"></asp:TextBox>
+                                        <asp:TextBox ID="txtCVV" runat="server" CssClass="form-control bg-light border-0 fw-bold" placeholder="123" MaxLength="4" TextMode="Password" required="true"></asp:TextBox>
                                     </div>
                                 </div>
                                 <div class="mt-3">
                                     <label class="form-label small text-white-50 mb-1">Nombre en la tarjeta</label>
-                                    <asp:TextBox ID="txtNombreTitular" runat="server" CssClass="form-control bg-light border-0 text-uppercase" placeholder="JUAN PEREZ" required="true"></asp:TextBox>
+                                    <asp:TextBox ID="txtNombreTitular" runat="server" CssClass="form-control bg-light border-0 text-uppercase fw-bold" placeholder="JUAN PEREZ" required="true"></asp:TextBox>
                                 </div>
                             </div>
 
@@ -91,5 +101,24 @@
             </div>
         </div>
     </form>
+
+    <script>
+        document.getElementById('<%= txtTarjeta.ClientID %>').addEventListener('input', function (e) {
+            var target = e.target;
+            var position = target.selectionEnd;
+            var length = target.value.length;
+            target.value = target.value.replace(/[^\d]/g, '').replace(/(.{4})/g, '$1 ').trim();
+            target.selectionEnd = position += ((target.value.charAt(position - 1) === ' ' && target.value.charAt(length - 1) === ' ' && length !== target.value.length) ? 1 : 0);
+        });
+
+        document.getElementById('<%= txtVencimiento.ClientID %>').addEventListener('input', function (e) {
+            var target = e.target;
+            target.value = target.value.replace(/[^\d]/g, '').replace(/^(\d{2})(\d{1,2})/, '$1/$2').trim();
+        });
+
+        document.getElementById('<%= txtCVV.ClientID %>').addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^\d]/g, '');
+        });
+    </script>
 </body>
 </html>

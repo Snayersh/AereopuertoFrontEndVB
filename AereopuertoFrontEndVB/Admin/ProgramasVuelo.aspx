@@ -14,7 +14,6 @@
         .btn-success { background-color: #2e7d32; border: none; height: 45px; font-weight: bold; border-radius: 8px; transition: 0.3s; }
         .btn-success:hover { background-color: #1b5e20; transform: translateY(-2px); }
         .section-title { color: #0d47a1; font-weight: bold; font-size: 1.1rem; border-bottom: 2px solid #e3f2fd; padding-bottom: 5px; margin-bottom: 15px; }
-        /* Estilo para los campos bloqueados */
         .readonly-field { background-color: #e9ecef !important; cursor: not-allowed; color: #6c757d; font-weight: bold; }
     </style>
 </head>
@@ -84,7 +83,7 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold text-secondary">Fecha y Hora de Llegada (Calculada)</label>
+                                    <label class="form-label fw-bold text-secondary">Fecha y Hora de Llegada (Automática)</label>
                                     <asp:TextBox ID="txtLlegada" runat="server" CssClass="form-control readonly-field" TextMode="DateTimeLocal" ReadOnly="true"></asp:TextBox>
                                 </div>
                             </div>
@@ -107,15 +106,12 @@
             let txtLlegada = document.getElementById('<%= txtLlegada.ClientID %>');
 
             if (txtSalida.value && ddlDestino.value) {
-                // Leemos los minutos ocultos que VB nos inyectó
                 let opcionSeleccionada = ddlDestino.options[ddlDestino.selectedIndex];
-                let minutosViaje = parseInt(opcionSeleccionada.getAttribute('data-minutos')) || 120; // 120 por defecto
+                let minutosViaje = parseInt(opcionSeleccionada.getAttribute('data-minutos')) || 120;
 
-                // Hacemos la matemática
                 let fechaSalida = new Date(txtSalida.value);
                 fechaSalida.setMinutes(fechaSalida.getMinutes() + minutosViaje);
 
-                // Ajustamos el formato para que lo acepte el input DateTimeLocal
                 let tzoffset = (new Date()).getTimezoneOffset() * 60000;
                 let localISOTime = (new Date(fechaSalida - tzoffset)).toISOString().slice(0, 16);
                 
@@ -125,7 +121,6 @@
             }
         }
 
-        // Le decimos que calcule cada vez que cambien el destino o la fecha de salida
         document.getElementById('<%= ddlDestino.ClientID %>').addEventListener('change', calcularLlegada);
         document.getElementById('<%= txtSalida.ClientID %>').addEventListener('input', calcularLlegada);
     </script>
