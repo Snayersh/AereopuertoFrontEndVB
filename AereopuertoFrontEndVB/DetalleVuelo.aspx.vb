@@ -81,6 +81,31 @@ Public Class DetalleVuelo
                             hfLlegadaISO.Value = fechaLlegada.ToString("yyyy-MM-ddTHH:mm:ss")
                             hfEstadoActual.Value = estadoActual.ToUpper()
 
+                            ' ========================================================
+                            ' LÓGICA DE ESCALAS (Nuevo)
+                            ' ========================================================
+                            If Not IsDBNull(row("escala_iata")) Then
+                                ' Sí tiene escala: Llenamos los datos y mostramos los paneles
+                                lblEscalaIataMap.Text = row("escala_iata").ToString()
+                                lblEscalaCiudadMap.Text = row("escala_ciudad").ToString()
+
+                                lblEscalaAero.Text = row("escala_aeropuerto").ToString()
+                                lblEscalaPais.Text = row("escala_pais").ToString()
+
+                                ' Formatear las horas de llegada y salida de la escala
+                                Dim escLlegada As DateTime = Convert.ToDateTime(row("escala_llegada"))
+                                Dim escSalida As DateTime = Convert.ToDateTime(row("escala_salida"))
+                                lblEscalaHoraLlegada.Text = escLlegada.ToString("HH:mm")
+                                lblEscalaHoraSalida.Text = escSalida.ToString("HH:mm")
+
+                                pnlEscalaMap.Visible = True
+                                pnlEscalaDetalle.Visible = True
+                            Else
+                                ' Vuelo directo: Ocultamos los paneles de escala
+                                pnlEscalaMap.Visible = False
+                                pnlEscalaDetalle.Visible = False
+                            End If
+
                             pnlDetalle.Visible = True
                             pnlError.Visible = False
                         Else

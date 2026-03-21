@@ -77,6 +77,24 @@ Partial Public Class ProgramasVuelo
     Protected WithEvents ddlDestino As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
+    '''chkEscala control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents chkEscala As Global.System.Web.UI.WebControls.CheckBox
+
+    '''<summary>
+    '''ddlEscala control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents ddlEscala As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
     '''txtSalida control.
     '''</summary>
     '''<remarks>

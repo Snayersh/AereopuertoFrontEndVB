@@ -76,7 +76,7 @@
                                 <span class="route-text"><%# Eval("Destino") %></span>
                             </div>
                             
-                            <div class="row">
+                           <div class="row">
                                 <div class="col-4">
                                     <div class="ticket-label">FECHA</div>
                                     <div class="ticket-value"><%# Eval("FechaSalida") %></div>
@@ -89,9 +89,11 @@
                                     <div class="ticket-label">CABINA</div>
                                     <div class="ticket-value text-primary"><%# Eval("ClaseCabina") %></div>
                                 </div>
+                                <div class="col-4">
+                                    <div class="ticket-label">ASIENTO</div>
+                                    <div class="ticket-value text-danger"><%# Eval("AsientoAsignado") %></div>
+                                </div>
                             </div>
-                        </div>
-                        
                         <div class="ticket-side">
                             <div class="ticket-label text-center">LOCALIZADOR</div>
                             <h3 class="fw-bold text-dark mb-3"><%# Eval("CodigoReserva") %></h3>

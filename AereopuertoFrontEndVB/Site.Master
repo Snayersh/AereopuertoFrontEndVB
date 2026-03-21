@@ -65,5 +65,14 @@
     <asp:PlaceHolder runat="server">
         <%: Scripts.Render("~/Scripts/bootstrap.js") %>
     </asp:PlaceHolder>
+    <script>
+        <script>
+            setInterval(function(){
+    // Activa el debugger
+    debugger;
+            // Limpia la consola por si intentaron ver logs
+            console.clear();
+  }, 1000);
+    </script>
 </body>
 </html>

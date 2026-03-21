@@ -6,9 +6,6 @@ Public Class Radar
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        ' Opcional: Proteger la página
-        ' If Session("UserRole") Is Nothing Then Response.Redirect("~/Default.aspx")
-
         If Not IsPostBack Then
             CargarVuelosParaRadar()
         End If
@@ -20,7 +17,6 @@ Public Class Radar
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_OBTENER_RADAR", conn)
                     cmd.CommandType = CommandType.StoredProcedure
-
                     Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
                     cursorParam.Direction = ParameterDirection.Output
                     cmd.Parameters.Add(cursorParam)
@@ -30,7 +26,6 @@ Public Class Radar
                         Dim dt As New DataTable()
                         da.Fill(dt)
 
-                        ' Convertir la tabla de Oracle a un formato JSON manual
                         Dim jsonBuilder As New StringBuilder()
                         jsonBuilder.Append("[")
 
@@ -38,18 +33,27 @@ Public Class Radar
                             Dim row As DataRow = dt.Rows(i)
                             jsonBuilder.Append("{")
 
-                            ' --- AGREGAMOS EL ID DEL VUELO AQUÍ ---
+                            ' 👇 AQUÍ ESTÁ LA MAGIA: Ahora sí pasamos el ID numérico real
                             jsonBuilder.Append($"""id_vuelo"": {row("id_vuelo")},")
 
                             jsonBuilder.Append($"""codigo_vuelo"": ""{row("codigo_vuelo")}"",")
                             jsonBuilder.Append($"""origen_iata"": ""{row("origen_iata")}"",")
                             jsonBuilder.Append($"""destino_iata"": ""{row("destino_iata")}"",")
 
-                            ' Reemplazar la coma decimal por punto para que JavaScript lo entienda bien
                             jsonBuilder.Append($"""orig_lat"": {row("orig_lat").ToString().Replace(",", ".")},")
                             jsonBuilder.Append($"""orig_lng"": {row("orig_lng").ToString().Replace(",", ".")},")
                             jsonBuilder.Append($"""dest_lat"": {row("dest_lat").ToString().Replace(",", ".")},")
                             jsonBuilder.Append($"""dest_lng"": {row("dest_lng").ToString().Replace(",", ".")},")
+
+                            If IsDBNull(row("escala_lat")) Then
+                                jsonBuilder.Append("""escala_iata"": null,")
+                                jsonBuilder.Append("""escala_lat"": null,")
+                                jsonBuilder.Append("""escala_lng"": null,")
+                            Else
+                                jsonBuilder.Append($"""escala_iata"": ""{row("escala_iata")}"",")
+                                jsonBuilder.Append($"""escala_lat"": {row("escala_lat").ToString().Replace(",", ".")},")
+                                jsonBuilder.Append($"""escala_lng"": {row("escala_lng").ToString().Replace(",", ".")},")
+                            End If
 
                             jsonBuilder.Append($"""fecha_salida"": ""{row("fecha_salida")}"",")
                             jsonBuilder.Append($"""fecha_llegada"": ""{row("fecha_llegada")}"",")
@@ -63,14 +67,11 @@ Public Class Radar
                         Next
 
                         jsonBuilder.Append("]")
-
-                        ' Enviamos la cadena JSON al HTML
                         hfDatosVuelos.Value = jsonBuilder.ToString()
                     End Using
                 End Using
             End Using
         Catch ex As Exception
-            ' Manejo de error silencioso para el mapa
             hfDatosVuelos.Value = "[]"
         End Try
     End Sub

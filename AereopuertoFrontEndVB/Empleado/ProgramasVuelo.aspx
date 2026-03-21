@@ -15,6 +15,7 @@
         .btn-success:hover { background-color: #1b5e20; transform: translateY(-2px); }
         .section-title { color: #0d47a1; font-weight: bold; font-size: 1.1rem; border-bottom: 2px solid #e3f2fd; padding-bottom: 5px; margin-bottom: 15px; }
         .readonly-field { background-color: #e9ecef !important; cursor: not-allowed; color: #6c757d; font-weight: bold; }
+        .escala-box { background-color: #fff8e1; border-left: 4px solid #ffb300; padding: 15px; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -30,10 +31,10 @@
                     <div class="admin-card">
                         <div class="text-center mb-4">
                             <h3 class="fw-bold" style="color: #0d47a1;">📅 Creación de Vuelo</h3>
-                            <p class="text-muted m-0">Define las rutas, horarios y aeronaves para la operación.</p>
+                            <p class="text-muted m-0">Define las rutas, escalas, horarios y aeronaves para la operación.</p>
                         </div>
 
-                        <asp:Panel ID="pnlMensaje" runat="server" Visible="false" CssClass="alert alert-info text-center rounded-3 mb-4">
+                        <asp:Panel ID="pnlMensaje" runat="server" Visible="false" CssClass="alert alert-info text-center rounded-3 mb-4 shadow-sm">
                             <asp:Label ID="lblMensaje" runat="server" CssClass="fw-bold"></asp:Label>
                         </asp:Panel>
 
@@ -73,18 +74,29 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold text-secondary">Aeropuerto de Destino</label>
+                                    <label class="form-label fw-bold text-secondary">Aeropuerto de Destino (Final)</label>
                                     <asp:DropDownList ID="ddlDestino" runat="server" CssClass="form-select" required="true"></asp:DropDownList>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold text-secondary">Fecha y Hora de Salida</label>
-                                    <asp:TextBox ID="txtSalida" runat="server" CssClass="form-control" TextMode="DateTimeLocal" required="true"></asp:TextBox>
+                                <div class="mb-3 escala-box">
+                                    <div class="form-check form-switch mb-2">
+                                        <asp:CheckBox ID="chkEscala" runat="server" CssClass="form-check-input" onchange="toggleEscala()" />
+                                        <label class="form-check-label fw-bold text-dark" for="chkEscala">¿Este vuelo tiene Escala?</label>
+                                    </div>
+                                    <asp:DropDownList ID="ddlEscala" runat="server" CssClass="form-select" Enabled="false">
+                                        <asp:ListItem Text="-- Seleccione Aeropuerto de Escala --" Value=""></asp:ListItem>
+                                    </asp:DropDownList>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label fw-bold text-secondary">Fecha y Hora de Llegada (Automática)</label>
-                                    <asp:TextBox ID="txtLlegada" runat="server" CssClass="form-control readonly-field" TextMode="DateTimeLocal" ReadOnly="true"></asp:TextBox>
+                                <div class="row">
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label fw-bold text-secondary small">Fecha/Hora de Salida</label>
+                                        <asp:TextBox ID="txtSalida" runat="server" CssClass="form-control" TextMode="DateTimeLocal" required="true"></asp:TextBox>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <label class="form-label fw-bold text-secondary small">Llegada Aprox.</label>
+                                        <asp:TextBox ID="txtLlegada" runat="server" CssClass="form-control readonly-field" TextMode="DateTimeLocal" ReadOnly="true"></asp:TextBox>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -100,6 +112,22 @@
     </form>
 
     <script>
+        // Lógica para habilitar/deshabilitar el menú de escala
+        function toggleEscala() {
+            let chk = document.getElementById('<%= chkEscala.ClientID %>');
+            let ddl = document.getElementById('<%= ddlEscala.ClientID %>');
+
+            if (chk.checked) {
+                ddl.disabled = false;
+                ddl.required = true;
+            } else {
+                ddl.disabled = true;
+                ddl.required = false;
+                ddl.selectedIndex = 0; // Lo regresa a la opción por defecto
+            }
+        }
+
+        // Lógica del cálculo de hora (Mantiene tu misma lógica impecable)
         function calcularLlegada() {
             let txtSalida = document.getElementById('<%= txtSalida.ClientID %>');
             let ddlDestino = document.getElementById('<%= ddlDestino.ClientID %>');
@@ -121,6 +149,7 @@
             }
         }
 
+        // Eventos
         document.getElementById('<%= ddlDestino.ClientID %>').addEventListener('change', calcularLlegada);
         document.getElementById('<%= txtSalida.ClientID %>').addEventListener('input', calcularLlegada);
     </script>

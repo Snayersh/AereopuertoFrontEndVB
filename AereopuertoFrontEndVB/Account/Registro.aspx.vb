@@ -38,7 +38,7 @@ Public Class Registro
                     cmd.Parameters.Add("p_apellido_casada", OracleDbType.Varchar2).Value = txtApellidoCasada.Text.Trim()
                     cmd.Parameters.Add("p_fecha_nacimiento", OracleDbType.Date).Value = Convert.ToDateTime(txtFechaNac.Text)
                     cmd.Parameters.Add("p_telefono", OracleDbType.Varchar2).Value = txtTelefono.Text.Trim()
-                    cmd.Parameters.Add("p_correo", OracleDbType.Varchar2).Value = txtEmail.Text.Trim()
+                    cmd.Parameters.Add("p_correo", OracleDbType.Varchar2).Value = txtEmail.Text.Trim().ToLower()
 
                     ' --- Parámetros de Dirección ---
                     cmd.Parameters.Add("p_pais", OracleDbType.Varchar2).Value = txtPais.Text.Trim()
@@ -67,7 +67,7 @@ Public Class Registro
 
                     If resultado = "EXITO" Then
                         ' 1. Mandamos el correo
-                        EnviarCorreoActivacion(txtEmail.Text.Trim(), txtPrimerNombre.Text.Trim(), tokenActivacion)
+                        EnviarCorreoActivacion(txtEmail.Text.Trim().ToLower(), txtPrimerNombre.Text.Trim(), tokenActivacion)
 
                         ' 2. Limpiamos todos los TextBox del formulario
                         LimpiarCampos()

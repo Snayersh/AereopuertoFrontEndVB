@@ -36,10 +36,20 @@
         /* Efecto de apagado para asientos que no son de la clase seleccionada */
         .seat.dimmed { 
             opacity: 0.2; 
-            pointer-events: none; /* Evita que le den clic */
+            pointer-events: none; 
             background-color: #f5f5f5 !important; 
             border-color: #e0e0e0 !important; 
             color: #bdbdbd !important; 
+        }
+
+        /* 🔥 ASIENTOS BLOQUEADOS EN TIEMPO REAL POR OTRA PERSONA */
+        .seat.locked-by-other { 
+            background-color: #ff9800 !important; 
+            color: white !important; 
+            border-color: #f57c00 !important; 
+            cursor: not-allowed; 
+            pointer-events: none; 
+            transform: scale(0.95);
         }
 
         /* Caja de precio total */
@@ -92,7 +102,8 @@
 
                                 <div class="mb-4">
                                     <label class="form-label fw-bold text-secondary">Clase de Cabina</label>
-<asp:DropDownList ID="ddlClase" runat="server" CssClass="form-select shadow-sm"></asp:DropDownList>                                </div>
+                                    <asp:DropDownList ID="ddlClase" runat="server" CssClass="form-select shadow-sm"></asp:DropDownList>                                
+                                </div>
 
                                 <asp:HiddenField ID="hfAsientoSeleccionado" runat="server" />
                                 
@@ -104,13 +115,14 @@
                             <div class="col-lg-7 ps-lg-5 mt-4 mt-lg-0">
                                 <h5 class="fw-bold text-primary mb-4 text-center">2. Selección de Asiento</h5>
                                 
-                              <div class="d-flex justify-content-center flex-wrap mb-4 small fw-bold gap-3">
-    <div><span style="display:inline-block; width:15px; height:15px; background:#fffde7; border:2px solid #ffd700; border-radius:3px; vertical-align: middle;"></span> Primera</div>
-    <div><span style="display:inline-block; width:15px; height:15px; background:#f3e5f5; border:2px solid #ab47bc; border-radius:3px; vertical-align: middle;"></span> Ejecutiva</div>
-    <div><span style="display:inline-block; width:15px; height:15px; background:#e3f2fd; border:2px solid #90caf9; border-radius:3px; vertical-align: middle;"></span> Económica</div>
-    <div><span style="display:inline-block; width:15px; height:15px; background:#e0e0e0; border:2px solid #bdbdbd; border-radius:3px; vertical-align: middle;"></span> Ocupado</div>
-    <div><span style="display:inline-block; width:15px; height:15px; background:#0d47a1; border-radius:3px; vertical-align: middle;"></span> Tu Selección</div>
-</div>
+                                <div class="d-flex justify-content-center flex-wrap mb-4 small fw-bold gap-3">
+                                    <div><span style="display:inline-block; width:15px; height:15px; background:#fffde7; border:2px solid #ffd700; border-radius:3px; vertical-align: middle;"></span> Primera</div>
+                                    <div><span style="display:inline-block; width:15px; height:15px; background:#f3e5f5; border:2px solid #ab47bc; border-radius:3px; vertical-align: middle;"></span> Ejecutiva</div>
+                                    <div><span style="display:inline-block; width:15px; height:15px; background:#e3f2fd; border:2px solid #90caf9; border-radius:3px; vertical-align: middle;"></span> Económica</div>
+                                    <div><span style="display:inline-block; width:15px; height:15px; background:#e0e0e0; border:2px solid #bdbdbd; border-radius:3px; vertical-align: middle;"></span> Ocupado</div>
+                                    <div><span style="display:inline-block; width:15px; height:15px; background:#ff9800; border:2px solid #f57c00; border-radius:3px; vertical-align: middle;"></span> En Proceso</div>
+                                    <div><span style="display:inline-block; width:15px; height:15px; background:#0d47a1; border-radius:3px; vertical-align: middle;"></span> Tu Selección</div>
+                                </div>
 
                                 <div class="plane-fuselage shadow-sm" id="panelAvion" runat="server" visible="false">
                                     <asp:Literal ID="litMapaAsientos" runat="server"></asp:Literal>
@@ -132,82 +144,138 @@
         </div>
     </form>
 
- <script>
-     // Array para guardar los asientos elegidos en formato "1A:3" (Asiento : IdClase)
-     let asientosSeleccionados = [];
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/signalr.js/2.4.3/jquery.signalR.min.js"></script> 
+    <script src='<%= ResolveClientUrl("~/signalr/hubs") %>'></script> 
 
-     function siExisteFuncion(nombre) {
-         if (typeof window[nombre] === "function") window[nombre]();
-     }
+    <script>
+        let asientosSeleccionados = [];
+        let asientoshub;
+        let hubConectado = false;
 
-     // 1. Efecto Visual de Filtrado (Ya no borra los asientos seleccionados)
-     function actualizarFiltroYPrecio() {
-         let ddl = document.getElementById('<%= ddlClase.ClientID %>');
-         if (!ddl) return;
+        function siExisteFuncion(nombre) {
+            if (typeof window[nombre] === "function") window[nombre]();
+        }
 
-         let valor = ddl.value;
-         let claseActualCSS = "";
-         if (valor === "1") claseActualCSS = "economica";
-         else if (valor === "2") claseActualCSS = "ejecutiva";
-         else if (valor === "3") claseActualCSS = "primera";
+        $(document).ready(function () {
+            // 🔥 TRUCO MAESTRO: Guardamos el ID real del asiento
+            document.querySelectorAll('.seat').forEach(btn => {
+                if (!btn.hasAttribute('data-asiento')) {
+                    btn.setAttribute('data-asiento', btn.innerText.trim());
+                }
+            });
 
-         let todosLosAsientos = document.querySelectorAll('.seat');
-         todosLosAsientos.forEach(asiento => {
-             if (asiento.classList.contains('occupied')) return;
+            // Verificamos si la librería de SignalR cargó bien
+            if ($.connection && $.connection.asientosHub) {
+                asientoshub = $.connection.asientosHub;
 
-             // Si no hay filtro, o el asiento coincide con el filtro, lo encendemos
-             if (claseActualCSS === "" || asiento.classList.contains(claseActualCSS)) {
-                 asiento.classList.remove('dimmed');
-             } else {
-                 // Si no coincide, lo opacamos
-                 asiento.classList.add('dimmed');
-             }
-         });
-     }
+                // ¿QUÉ HACER CUANDO ALGUIEN MÁS BLOQUEA UN ASIENTO?
+                asientoshub.client.alguienBloqueoAsiento = function (vueloNotificado, asiento) {
+                    let vueloActual = document.getElementById('<%= ddlVuelos.ClientID %>').value;
+                    if (vueloActual === vueloNotificado) {
+                        document.querySelectorAll('.seat').forEach(btn => {
+                            // 🔥 Usamos coincidencia exacta (===) y el data-asiento
+                            if (btn.getAttribute('data-asiento') === asiento) {
+                                btn.classList.add('locked-by-other');
+                            }
+                        });
+                    }
+                };
 
-     // 2. Selección Multi-Clase
-     function seleccionarAsiento(elemento, numeroAsiento) {
-         if (elemento.classList.contains('dimmed') || elemento.classList.contains('occupied')) return;
+                // ¿QUÉ HACER CUANDO ALGUIEN MÁS LO LIBERA?
+                asientoshub.client.alguienLiberoAsiento = function (vueloNotificado, asiento) {
+                    let vueloActual = document.getElementById('<%= ddlVuelos.ClientID %>').value;
+                    if (vueloActual === vueloNotificado) {
+                        document.querySelectorAll('.seat').forEach(btn => {
+                            // 🔥 Usamos coincidencia exacta (===) y el data-asiento
+                            if (btn.getAttribute('data-asiento') === asiento) {
+                                btn.classList.remove('locked-by-other');
+                            }
+                        });
+                    }
+                };
 
-         // Obtenemos el ID de la clase de este asiento en particular
-         let idClaseAsiento = elemento.getAttribute('data-idclase');
-         let comboDatos = numeroAsiento + ":" + idClaseAsiento; // Ej: "1A:3"
+                // ARRANCAR EL RADAR
+                $.connection.hub.start().done(function () {
+                    console.log("Conectados al Radar en Tiempo Real 🚀");
+                    hubConectado = true;
+                }).fail(function (error) {
+                    console.error("Fallo la conexión de SignalR. Error: " + error);
+                    hubConectado = false;
+                });
+            } else {
+                console.warn("No se detectó SignalR. El tiempo real está apagado.");
+            }
+        });
 
-         if (elemento.classList.contains('selected')) {
-             // Deseleccionar
-             elemento.classList.remove('selected');
-             asientosSeleccionados = asientosSeleccionados.filter(a => a !== comboDatos);
-             elemento.innerText = numeroAsiento;
-         } else {
-             // Seleccionar
-             elemento.classList.add('selected');
-             asientosSeleccionados.push(comboDatos);
-             elemento.innerText = '✖';
-         }
+        function actualizarFiltroYPrecio() {
+            let ddl = document.getElementById('<%= ddlClase.ClientID %>');
+            if (!ddl) return;
 
-         // Guardamos en el HiddenField para mandarlo a Visual Basic
-         document.getElementById('<%= hfAsientoSeleccionado.ClientID %>').value = asientosSeleccionados.join(',');
+            let valor = ddl.value;
+            let claseActualCSS = "";
+            if (valor === "1") claseActualCSS = "economica";
+            else if (valor === "2") claseActualCSS = "ejecutiva";
+            else if (valor === "3") claseActualCSS = "primera";
+
+            let todosLosAsientos = document.querySelectorAll('.seat');
+            todosLosAsientos.forEach(asiento => {
+                if (asiento.classList.contains('occupied') || asiento.classList.contains('locked-by-other')) return;
+
+                if (claseActualCSS === "" || asiento.classList.contains(claseActualCSS)) {
+                    asiento.classList.remove('dimmed');
+                } else {
+                    asiento.classList.add('dimmed');
+                }
+            });
+        }
+
+        function seleccionarAsiento(elemento, numeroAsiento) {
+            if (elemento.classList.contains('dimmed') || 
+                elemento.classList.contains('occupied') || 
+                elemento.classList.contains('locked-by-other')) return;
+
+            let idClaseAsiento = elemento.getAttribute('data-idclase');
+            let comboDatos = numeroAsiento + ":" + idClaseAsiento; 
+            let idVueloActual = document.getElementById('<%= ddlVuelos.ClientID %>').value;
+
+            if (elemento.classList.contains('selected')) {
+                // DESELECCIONAR
+                elemento.classList.remove('selected');
+                asientosSeleccionados = asientosSeleccionados.filter(a => a !== comboDatos);
+                elemento.innerText = numeroAsiento; 
+                
+                if (hubConectado) {
+                    asientoshub.server.liberarAsientoTemporal(idVueloActual, numeroAsiento);
+                }
+            } else {
+                // SELECCIONAR
+                elemento.classList.add('selected');
+                asientosSeleccionados.push(comboDatos);
+                elemento.innerText = '✖'; 
+                
+                if (hubConectado) {
+                    asientoshub.server.bloquearAsientoTemporal(idVueloActual, numeroAsiento);
+                }
+            }
+
+            document.getElementById('<%= hfAsientoSeleccionado.ClientID %>').value = asientosSeleccionados.join(',');
             
-            // Extraemos solo los números para mostrarlos en pantalla (limpiando el ":1")
             let soloNumeros = asientosSeleccionados.map(a => a.split(':')[0]);
             document.getElementById('lblAsientoMostrado').innerText = soloNumeros.length > 0 ? soloNumeros.join(', ') : 'Ninguno';
 
             calcularTotal();
         }
 
-        // 3. Calculadora Inteligente
         function calcularTotal() {
             let total = 0;
             let cantidad = 0;
-            
-            // Buscamos todos los asientos que tengan la clase "selected" y sumamos sus precios
             document.querySelectorAll('.seat.selected').forEach(asiento => {
                 total += parseFloat(asiento.getAttribute('data-precio'));
                 cantidad++;
             });
 
             let cajaPrecio = document.getElementById('cajaPrecio');
-
             if (cantidad > 0) {
                 document.getElementById('lblTotalPrecio').innerText = "Q " + total.toFixed(2);
                 document.getElementById('lblDetallePrecio').innerText = cantidad + " asientos seleccionados";
@@ -219,12 +287,75 @@
 
         function ValidarAsiento() {
             var asiento = document.getElementById('<%= hfAsientoSeleccionado.ClientID %>').value;
-         if (asiento === "") {
-             alert("Por favor, selecciona al menos un asiento en el mapa del avión.");
-             return false;
-         }
-         return true;
-     }
- </script>
+            if (asiento === "") {
+                alert("Por favor, selecciona al menos un asiento en el mapa del avión.");
+                return false;
+            }
+            return true;
+        }
+
+
+        // =================================================================
+        // BARREDOR SILENCIOSO: SE EJECUTA CADA 30 SEGUNDOS (30000 ms)
+        // =================================================================
+        setInterval(sincronizarAsientosDB, 30000);
+
+        function sincronizarAsientosDB() {
+            let ddlVuelo = document.getElementById('<%= ddlVuelos.ClientID %>');
+            if (!ddlVuelo || ddlVuelo.value === "") return; // Si no hay vuelo, no hacemos nada
+
+            let idVueloActual = parseInt(ddlVuelo.value);
+
+            // Llamada AJAX secreta al servidor
+            $.ajax({
+                type: "POST",
+                url: "Reservas.aspx/ObtenerAsientosOcupados",
+                data: JSON.stringify({ idVuelo: idVueloActual }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    // ASP.NET envuelve la respuesta en la propiedad 'd'
+                    let ocupadosDB = response.d; 
+                    
+                    document.querySelectorAll('.seat').forEach(btn => {
+                        let idAsiento = btn.getAttribute('data-asiento');
+                        let comboDatos = idAsiento + ":" + btn.getAttribute('data-idclase');
+                        
+                        // Si la Base de Datos dice que SÍ está ocupado (pagado/reservado de verdad)
+                        if (ocupadosDB.includes(idAsiento)) {
+                            
+                            // Si por casualidad nosotros lo teníamos seleccionado, ¡nos lo ganaron!
+                            if (btn.classList.contains('selected')) {
+                                asientosSeleccionados = asientosSeleccionados.filter(a => a !== comboDatos);
+                                document.getElementById('<%= hfAsientoSeleccionado.ClientID %>').value = asientosSeleccionados.join(',');
+                                let soloNumeros = asientosSeleccionados.map(a => a.split(':')[0]);
+                                document.getElementById('lblAsientoMostrado').innerText = soloNumeros.length > 0 ? soloNumeros.join(', ') : 'Ninguno';
+                                calcularTotal();
+                            }
+
+                            // Lo marcamos como ocupado definitivamente (gris)
+                            btn.className = 'seat occupied'; // Reseteamos clases y dejamos solo las básicas
+                            btn.innerText = idAsiento;
+                            btn.onclick = function () { alert('Este asiento acaba de ser ocupado.'); };
+
+                        } else {
+                            // Si la Base de Datos dice que está LIBRE, pero en nuestra pantalla estaba OCUPADO (gris)
+                            // Significa que alguien canceló su reserva. ¡Hay que liberarlo visualmente!
+                            if (btn.classList.contains('occupied')) {
+                                btn.classList.remove('occupied');
+                                btn.classList.add('available');
+                                // Le devolvemos su función original para poder hacerle clic
+                                btn.onclick = function () { seleccionarAsiento(btn, idAsiento); };
+                                actualizarFiltroYPrecio(); // Le regresamos el color de su clase (Ejecutiva, Primera, etc.)
+                            }
+                        }
+                    });
+                },
+                error: function (error) {
+                    console.log("Error en sincronización silenciosa", error);
+                }
+            });
+        }
+    </script>
 </body>
 </html>

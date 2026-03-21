@@ -1,6 +1,7 @@
 ﻿Imports System.Data
 Imports Oracle.ManagedDataAccess.Client
 Imports System.Text
+Imports System.Web.Services
 
 Public Class Reservas
     Inherits System.Web.UI.Page
@@ -266,5 +267,40 @@ Public Class Reservas
         pnlError.Visible = True
         lblError.Text = mensaje
     End Sub
+    ' ====================================================================
+    ' 5. SINCRONIZACIÓN SILENCIOSA CADA 30 SEGUNDOS
+    ' ====================================================================
+    <WebMethod()>
+    Public Shared Function ObtenerAsientosOcupados(idVuelo As Integer) As List(Of String)
+        Dim ocupados As New List(Of String)()
+        Dim db As New ConexionDB()
 
+        Try
+            Using conn As OracleConnection = db.ObtenerConexion()
+                Using cmd As New OracleCommand("SP_OBTENER_MAPA_ASIENTOS", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+                    cmd.Parameters.Add("p_id_vuelo", OracleDbType.Int32).Value = idVuelo
+                    Dim outCapacidad As New OracleParameter("p_capacidad", OracleDbType.Int32)
+                    outCapacidad.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(outCapacidad)
+                    Dim cursorParam As New OracleParameter("p_cursor_ocupados", OracleDbType.RefCursor)
+                    cursorParam.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(cursorParam)
+
+                    conn.Open()
+                    Using reader As OracleDataReader = cmd.ExecuteReader()
+                        While reader.Read()
+                            ' Guardamos solo el número (Ej: "1A", "2B")
+                            ocupados.Add(reader("numero").ToString().ToUpper())
+                        End While
+                    End Using
+                End Using
+            End Using
+        Catch ex As Exception
+            ' Como es un proceso silencioso de fondo, si hay un micro-corte de red,
+            ' simplemente ignoramos el error y devolverá la lista vacía para no asustar al usuario.
+        End Try
+
+        Return ocupados
+    End Function
 End Class

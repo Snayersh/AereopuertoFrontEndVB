@@ -19,10 +19,9 @@ Public Class Login
     End Sub
 
     Protected Sub btnLogin_Click(sender As Object, e As EventArgs) Handles btnLogin.Click
-        ' Si hace clic en login, apagamos el mensaje de éxito por si acaso
         pnlExito.Visible = False
 
-        Dim email As String = txtEmail.Text.Trim()
+        Dim email As String = txtEmail.Text.Trim().ToLower()
         Dim passPlana As String = txtPassword.Text.Trim()
 
         If String.IsNullOrEmpty(email) OrElse String.IsNullOrEmpty(passPlana) Then
@@ -30,9 +29,7 @@ Public Class Login
             Return
         End If
 
-        ' 1. Convertimos la contraseña plana a su equivalente en Hash SHA-256
         Dim passHasheada As String = EncriptarSHA256(passPlana)
-
         Dim db As New ConexionDB()
 
         Try
@@ -40,7 +37,6 @@ Public Class Login
                 Using cmd As New OracleCommand("SP_VALIDAR_LOGIN", conn)
                     cmd.CommandType = CommandType.StoredProcedure
 
-                    ' 2. Enviamos el hash a la base de datos, ¡NUNCA la clave plana!
                     cmd.Parameters.Add("p_correo", OracleDbType.Varchar2).Value = email
                     cmd.Parameters.Add("p_password_hash", OracleDbType.Varchar2).Value = passHasheada
 
@@ -52,6 +48,11 @@ Public Class Login
                     outNombre.Direction = ParameterDirection.Output
                     cmd.Parameters.Add(outNombre)
 
+                    ' 🔥 AGREGAMOS EL PARÁMETRO DEL TOKEN PARA QUE ORACLE NO FALLE
+                    Dim outToken As New OracleParameter("p_token_sesion", OracleDbType.Varchar2, 255)
+                    outToken.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(outToken)
+
                     Dim outResultado As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
                     outResultado.Direction = ParameterDirection.Output
                     cmd.Parameters.Add(outResultado)
@@ -61,14 +62,13 @@ Public Class Login
 
                     Dim resultado As String = outResultado.Value.ToString()
 
-                    ' 3. Manejo de todos los posibles escenarios que nos responde Oracle
-
                     If resultado = "EXITO" Then
                         Dim idRol As Integer = Convert.ToInt32(outRol.Value.ToString())
                         Session("UserName") = outNombre.Value.ToString()
-
-                        ' Importante: Guardamos el correo en sesión para que la pantalla de Reservas lo pueda usar
                         Session("UserEmail") = email
+
+                        ' Guardamos el token en sesión web también por si luego quieres aplicar la sesión única en la página
+                        Session("TokenSesion") = If(IsDBNull(outToken.Value), "", outToken.Value.ToString())
 
                         If idRol = 1 Then
                             Session("UserRole") = "Admin"
@@ -81,6 +81,9 @@ Public Class Login
                         End If
 
                         Response.Redirect("~/Default.aspx")
+
+                    ElseIf resultado = "BLOQUEO_TEMPORAL" Then
+                        MostrarError("⛔ Demasiados intentos fallidos. Tu cuenta ha sido bloqueada temporalmente por 1 minuto por seguridad.")
 
                     ElseIf resultado = "CUENTA_PENDIENTE" Then
                         MostrarError("Tu cuenta aún no está activada. Por favor revisa la bandeja de entrada de tu correo electrónico.")
@@ -103,9 +106,6 @@ Public Class Login
         End Try
     End Sub
 
-    ' =========================================================
-    ' FUNCIÓN PARA ENCRIPTAR LA CONTRASEÑA (SHA-256)
-    ' =========================================================
     Private Function EncriptarSHA256(texto As String) As String
         Using sha256 As SHA256 = SHA256.Create()
             Dim bytes As Byte() = sha256.ComputeHash(Encoding.UTF8.GetBytes(texto))

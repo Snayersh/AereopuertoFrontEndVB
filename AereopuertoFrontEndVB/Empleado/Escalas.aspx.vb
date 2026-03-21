@@ -11,6 +11,7 @@ Public Class Escalas
 
         If Not IsPostBack Then
             pnlMensaje.Visible = False
+            CargarListas()
         End If
     End Sub
 
