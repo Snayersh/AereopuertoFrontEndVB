@@ -20,19 +20,6 @@
         .flight-label:hover { background: rgba(0, 255, 0, 0.2); border-color: #fff; color: #fff; transform: scale(1.05); }
         
         .clic-texto { color: #90caf9; font-size: 9px; display: block; margin-top: 2px; }
-
-        /* =========================================
-           👇 BLOQUE DE BROMA 1: CSS (BORRAR MAÑANA) 👇
-           ========================================= */
-        #mapaRadar { cursor: crosshair !important; }
-        @keyframes boom {
-            0% { transform: scale(0.5); opacity: 1; }
-            50% { transform: scale(3); opacity: 1; text-shadow: 0 0 30px red, 0 0 50px yellow; }
-            100% { transform: scale(5); opacity: 0; }
-        }
-        /* =========================================
-           👆 FIN BLOQUE DE BROMA 1 👆
-           ========================================= */
     </style>
 </head>
 <body>
@@ -50,10 +37,7 @@
     </form>
 
     <script>
-        var limitesMundo = [
-            [-90, -180],
-            [90, 180]
-        ];
+        var limitesMundo = [[-90, -180], [90, 180]];
 
         var map = L.map('mapaRadar', {
             maxBounds: limitesMundo,
@@ -66,22 +50,6 @@
             noWrap: true,
             bounds: limitesMundo
         }).addTo(map);
-
-        // =========================================
-        // 👇 BLOQUE DE BROMA 2: EXPLOSIÓN GLOBAL (BORRAR MAÑANA) 👇
-        // =========================================
-        map.on('click', function (e) {
-            var explosionIcon = L.divIcon({
-                html: '<div style="font-size: 50px; animation: boom 1s forwards; margin-top: -25px; margin-left: -25px;">💥</div>',
-                className: 'dummy',
-                iconSize: [50, 50]
-            });
-            var tempBoom = L.marker(e.latlng, { icon: explosionIcon }).addTo(map);
-            setTimeout(function () { map.removeLayer(tempBoom); }, 1000);
-        });
-        // =========================================
-        // 👆 FIN BLOQUE DE BROMA 2 👆
-        // =========================================
 
         var avionIcon = L.divIcon({
             html: '<div style="font-size: 26px; color: #4fc3f7; transform: rotate(-45deg); cursor: pointer; text-shadow: 0 0 10px rgba(79,195,247,0.8);">✈️</div>',
@@ -102,56 +70,53 @@
             vuelos.forEach(function (v) {
                 var tSalida = new Date(v.fecha_salida).getTime();
                 var tLlegada = new Date(v.fecha_llegada).getTime();
-
                 var latActual, lngActual;
 
+                // Lógica de Movimiento (Directo vs Escala)
                 if (ahora < tSalida || v.id_estado_vuelo == 1) {
-                    latActual = v.orig_lat;
-                    lngActual = v.orig_lng;
+                    latActual = v.orig_lat; lngActual = v.orig_lng;
                 } else if (ahora > tLlegada) {
-                    latActual = v.dest_lat;
-                    lngActual = v.dest_lng;
+                    latActual = v.dest_lat; lngActual = v.dest_lng;
                 } else {
                     var duracionTotal = tLlegada - tSalida;
                     var tiempoTranscurrido = ahora - tSalida;
                     var porcentaje = tiempoTranscurrido / duracionTotal;
 
-                    latActual = v.orig_lat + ((v.dest_lat - v.orig_lat) * porcentaje);
-                    lngActual = v.orig_lng + ((v.dest_lng - v.orig_lng) * porcentaje);
+                    if (v.escala_lat !== null) {
+                        if (porcentaje <= 0.5) {
+                            var pctTramo1 = porcentaje * 2;
+                            latActual = v.orig_lat + ((v.escala_lat - v.orig_lat) * pctTramo1);
+                            lngActual = v.orig_lng + ((v.escala_lng - v.orig_lng) * pctTramo1);
+                        } else {
+                            var pctTramo2 = (porcentaje - 0.5) * 2;
+                            latActual = v.escala_lat + ((v.dest_lat - v.escala_lat) * pctTramo2);
+                            lngActual = v.escala_lng + ((v.dest_lng - v.escala_lng) * pctTramo2);
+                        }
+                    } else {
+                        latActual = v.orig_lat + ((v.dest_lat - v.orig_lat) * porcentaje);
+                        lngActual = v.orig_lng + ((v.dest_lng - v.orig_lng) * porcentaje);
+                    }
                 }
 
                 if (marcadoresAviones[v.codigo_vuelo]) {
                     marcadoresAviones[v.codigo_vuelo].setLatLng([latActual, lngActual]);
                 } else {
-                    L.polyline([[v.orig_lat, v.orig_lng], [v.dest_lat, v.dest_lng]], { color: '#1e88e5', weight: 1, dashArray: '5, 5', opacity: 0.5 }).addTo(map);
+                    // Trazar las líneas de la ruta
+                    if (v.escala_lat !== null) {
+                        L.polyline([[v.orig_lat, v.orig_lng], [v.escala_lat, v.escala_lng], [v.dest_lat, v.dest_lng]], { color: '#ffb300', weight: 2, dashArray: '5, 5', opacity: 0.6 }).addTo(map);
+                    } else {
+                        L.polyline([[v.orig_lat, v.orig_lng], [v.dest_lat, v.dest_lng]], { color: '#1e88e5', weight: 1, dashArray: '5, 5', opacity: 0.5 }).addTo(map);
+                    }
 
                     var marcador = L.marker([latActual, lngActual], { icon: avionIcon }).addTo(map);
 
-                    // --- CÓDIGO NORMAL: MAÑANA QUÍTALE LAS BARRAS (//) A ESTAS 3 LÍNEAS ---
-                    // marcador.on('click', function () {
-                    //     window.location.href = '../DetalleVuelo.aspx?id=' + v.id_vuelo;
-                    // });
-
-                    // =========================================
-                    // 👇 BLOQUE DE BROMA 3: EXPLOSIÓN DE AVIÓN (BORRAR MAÑANA) 👇
-                    // =========================================
+                    // Redirección directa al hacer clic
                     marcador.on('click', function () {
-                        var explosionIcon = L.divIcon({
-                            html: '<div style="font-size: 50px; animation: boom 1s forwards; margin-top: -25px; margin-left: -25px;">💥</div>',
-                            className: 'dummy',
-                            iconSize: [50, 50],
-                            iconAnchor: [25, 25]
-                        });
-                        marcador.setIcon(explosionIcon);
-                        setTimeout(function () {
-                            window.location.href = '../DetalleVuelo.aspx?id=' + v.id_vuelo;
-                        }, 1000);
+                        window.location.href = '../DetalleVuelo.aspx?id=' + v.id_vuelo;
                     });
-                    // =========================================
-                    // 👆 FIN BLOQUE DE BROMA 3 👆
-                    // =========================================
 
-                    var textoTooltip = v.codigo_vuelo + " (" + v.origen_iata + " ➔ " + v.destino_iata + ")<br><span class='clic-texto'>👉 Clic para ver detalles</span>";
+                    var textoRuta = v.escala_iata !== null ? (v.origen_iata + " ➔ " + v.escala_iata + " ➔ " + v.destino_iata) : (v.origen_iata + " ➔ " + v.destino_iata);
+                    var textoTooltip = v.codigo_vuelo + " (" + textoRuta + ")<br><span class='clic-texto'>👉 Clic para ver detalles</span>";
 
                     marcador.bindTooltip(textoTooltip, {
                         permanent: true, direction: 'right', className: 'flight-label', offset: [15, 0]

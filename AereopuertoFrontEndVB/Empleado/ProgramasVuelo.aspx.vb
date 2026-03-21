@@ -39,7 +39,7 @@ Public Class ProgramasVuelo
         End Try
     End Sub
 
-    ' Carga los destinos e inyecta los minutos para que JavaScript los lea
+    ' Carga los destinos Y TAMBIÉN llena el menú de escalas
     Private Sub CargarDestinosConMinutos()
         Dim db As New ConexionDB()
         Try
@@ -53,12 +53,18 @@ Public Class ProgramasVuelo
                     conn.Open()
                     Using reader As OracleDataReader = cmd.ExecuteReader()
                         ddlDestino.Items.Clear()
+                        ddlEscala.Items.Clear()
+
                         ddlDestino.Items.Add(New ListItem("-- Seleccione Destino --", ""))
+                        ddlEscala.Items.Add(New ListItem("-- Seleccione Aeropuerto de Escala --", ""))
 
                         While reader.Read()
-                            Dim item As New ListItem(reader("detalle").ToString(), reader("id_aeropuerto").ToString())
-                            item.Attributes.Add("data-minutos", reader("minutos").ToString())
-                            ddlDestino.Items.Add(item)
+                            Dim itemDestino As New ListItem(reader("detalle").ToString(), reader("id_aeropuerto").ToString())
+                            itemDestino.Attributes.Add("data-minutos", reader("minutos").ToString())
+
+                            ' Llenamos ambos menús al mismo tiempo
+                            ddlDestino.Items.Add(itemDestino)
+                            ddlEscala.Items.Add(New ListItem(reader("detalle").ToString(), reader("id_aeropuerto").ToString()))
                         End While
                     End Using
                 End Using
@@ -68,7 +74,7 @@ Public Class ProgramasVuelo
         End Try
     End Sub
 
-    ' Filtro de Aviones (Depende de la Aerolínea y de su Disponibilidad)
+    ' Filtro de Aviones (Depende de la Aerolínea)
     Protected Sub ddlAerolinea_SelectedIndexChanged(sender As Object, e As EventArgs)
         ddlAeronave.Items.Clear()
         If String.IsNullOrEmpty(ddlAerolinea.SelectedValue) Then
@@ -105,13 +111,19 @@ Public Class ProgramasVuelo
     End Sub
 
     ' -------------------------------------------------------------
-    ' 2. GUARDAR EL VUELO (USANDO EL PROCEDIMIENTO AUTOMÁTICO)
+    ' 2. GUARDAR EL VUELO 
     ' -------------------------------------------------------------
     Protected Sub btnGuardar_Click(sender As Object, e As EventArgs) Handles btnGuardar.Click
         Dim fechaSalida As DateTime
 
         If String.IsNullOrEmpty(ddlAerolinea.SelectedValue) OrElse String.IsNullOrEmpty(ddlAeronave.SelectedValue) OrElse String.IsNullOrEmpty(ddlDestino.SelectedValue) Then
             MostrarMensaje("Complete todos los campos obligatorios.", False)
+            Return
+        End If
+
+        ' Si marcó que tiene escala, exigimos que seleccione el aeropuerto
+        If chkEscala.Checked AndAlso String.IsNullOrEmpty(ddlEscala.SelectedValue) Then
+            MostrarMensaje("Seleccione el aeropuerto de escala, o desmarque la opción.", False)
             Return
         End If
 
@@ -137,6 +149,13 @@ Public Class ProgramasVuelo
                     cmd.Parameters.Add("p_id_aerolinea", OracleDbType.Int32).Value = Convert.ToInt32(ddlAerolinea.SelectedValue)
                     cmd.Parameters.Add("p_id_aeronave", OracleDbType.Int32).Value = Convert.ToInt32(ddlAeronave.SelectedValue)
                     cmd.Parameters.Add("p_id_destino", OracleDbType.Int32).Value = Convert.ToInt32(ddlDestino.SelectedValue)
+
+                    ' Enviamos la escala (Si no está checkeado, mandamos NULL)
+                    If chkEscala.Checked Then
+                        cmd.Parameters.Add("p_id_escala", OracleDbType.Int32).Value = Convert.ToInt32(ddlEscala.SelectedValue)
+                    Else
+                        cmd.Parameters.Add("p_id_escala", OracleDbType.Int32).Value = DBNull.Value
+                    End If
 
                     Dim outResultado As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
                     outResultado.Direction = ParameterDirection.Output
@@ -173,15 +192,16 @@ Public Class ProgramasVuelo
         ddlAeronave.Items.Clear()
         ddlAeronave.Items.Insert(0, New ListItem("-- Primero seleccione aerolínea --", ""))
         ddlDestino.SelectedIndex = 0
+
+        ' Limpiamos la escala
+        chkEscala.Checked = False
+        ddlEscala.SelectedIndex = 0
+        ddlEscala.Enabled = False
     End Sub
 
     Private Sub MostrarMensaje(mensaje As String, esExito As Boolean)
         pnlMensaje.Visible = True
         lblMensaje.Text = mensaje
-        If esExito Then
-            pnlMensaje.CssClass = "alert alert-success text-center rounded-3 mb-4"
-        Else
-            pnlMensaje.CssClass = "alert alert-danger text-center rounded-3 mb-4"
-        End If
+        pnlMensaje.CssClass = If(esExito, "alert alert-success text-center rounded-3 mb-4 shadow-sm", "alert alert-danger text-center rounded-3 mb-4 shadow-sm")
     End Sub
 End Class

@@ -140,6 +140,33 @@ Partial Public Class DetalleVuelo
     Protected WithEvents lblDestinoCiudad As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
+    '''pnlEscalaMap control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents pnlEscalaMap As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''lblEscalaIataMap control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblEscalaIataMap As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''lblEscalaCiudadMap control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblEscalaCiudadMap As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
     '''lblFechaSalida control.
     '''</summary>
     '''<remarks>
@@ -174,6 +201,51 @@ Partial Public Class DetalleVuelo
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents lblOrigenPais As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''pnlEscalaDetalle control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents pnlEscalaDetalle As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''lblEscalaAero control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblEscalaAero As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''lblEscalaPais control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblEscalaPais As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''lblEscalaHoraLlegada control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblEscalaHoraLlegada As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''lblEscalaHoraSalida control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblEscalaHoraSalida As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
     '''lblDestinoAero control.

@@ -32,6 +32,10 @@
         .progress-container { position: relative; height: 12px; background-color: #e9ecef; border-radius: 10px; margin: 20px 0; overflow: visible; }
         .progress-bar-custom { background: linear-gradient(90deg, #1976d2, #4fc3f7); height: 100%; border-radius: 10px; position: relative; transition: width 1s linear; }
         .airplane-icon { position: absolute; right: -15px; top: -12px; font-size: 24px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        
+        /* Estilos de la Escala */
+        .escala-container { background-color: #fff8e1; border: 1px dashed #ffb300; border-radius: 10px; padding: 15px; margin: 15px 0; display: flex; align-items: center; justify-content: center; }
+        .escala-iata { font-size: 1.5rem; font-weight: 900; color: #f57c00; margin: 0 15px; }
     </style>
 </head>
 <body>
@@ -42,7 +46,7 @@
 
         <div class="container">
             <div class="mb-4">
-                <a href="Default.aspx" class="btn btn-outline-secondary fw-bold rounded-pill px-4 shadow-sm">← Volver al Radar / Tablero</a>
+                <a href="Radar.aspx" class="btn btn-outline-secondary fw-bold rounded-pill px-4 shadow-sm">← Volver al Radar</a>
             </div>
 
             <asp:Panel ID="pnlError" runat="server" Visible="false" CssClass="alert alert-danger text-center rounded-3 shadow py-5">
@@ -70,14 +74,22 @@
                                 <div class="iata-code"><asp:Label ID="lblOrigenIata" runat="server"></asp:Label></div>
                                 <div class="fw-bold text-secondary"><asp:Label ID="lblOrigenCiudad" runat="server"></asp:Label></div>
                             </div>
+                            
                             <div class="text-center flex-grow-1 px-4">
                                 <span class="badge bg-primary rounded-pill px-3 mb-2"><asp:Label ID="lblDuracion" runat="server"></asp:Label> Total</span>
                             </div>
+
                             <div class="text-end">
                                 <div class="iata-code"><asp:Label ID="lblDestinoIata" runat="server"></asp:Label></div>
                                 <div class="fw-bold text-secondary"><asp:Label ID="lblDestinoCiudad" runat="server"></asp:Label></div>
                             </div>
                         </div>
+
+                        <asp:Panel ID="pnlEscalaMap" runat="server" Visible="false" CssClass="escala-container text-center">
+                            <div class="text-muted fw-bold">Escala en:</div>
+                            <div class="escala-iata"><asp:Label ID="lblEscalaIataMap" runat="server"></asp:Label></div>
+                            <div class="text-muted fw-bold"><asp:Label ID="lblEscalaCiudadMap" runat="server"></asp:Label></div>
+                        </asp:Panel>
 
                         <div class="progress-container">
                             <div id="flightProgressBar" class="progress-bar-custom" style="width: 0%;">
@@ -111,7 +123,13 @@
                             <div class="data-label mt-3">📍 Terminal de Origen</div>
                             <div class="data-value fs-6 text-muted"><asp:Label ID="lblOrigenAero" runat="server"></asp:Label>, <asp:Label ID="lblOrigenPais" runat="server"></asp:Label></div>
 
-                            <div class="data-label">📍 Terminal de Destino</div>
+                            <asp:Panel ID="pnlEscalaDetalle" runat="server" Visible="false">
+                                <div class="data-label text-warning mt-3">⚠️ Parada Técnica (Escala)</div>
+                                <div class="data-value fs-6 text-dark mb-0 fw-bold"><asp:Label ID="lblEscalaAero" runat="server"></asp:Label>, <asp:Label ID="lblEscalaPais" runat="server"></asp:Label></div>
+                                <small class="text-muted d-block mb-3">Arribo: <asp:Label ID="lblEscalaHoraLlegada" runat="server"></asp:Label> | Salida: <asp:Label ID="lblEscalaHoraSalida" runat="server"></asp:Label></small>
+                            </asp:Panel>
+
+                            <div class="data-label mt-3">📍 Terminal de Destino</div>
                             <div class="data-value fs-6 text-muted mb-0"><asp:Label ID="lblDestinoAero" runat="server"></asp:Label>, <asp:Label ID="lblDestinoPais" runat="server"></asp:Label></div>
                         </div>
 
@@ -134,6 +152,7 @@
     </form>
 
     <script>
+        // Mantiene la misma lógica de cronómetro en tiempo real
         function actualizarProgreso() {
             let salidaStr = document.getElementById('<%= hfSalidaISO.ClientID %>').value;
             let llegadaStr = document.getElementById('<%= hfLlegadaISO.ClientID %>').value;
@@ -149,7 +168,6 @@
             let txtTranscurrido = document.getElementById('txtTiempoTranscurrido');
             let txtRestante = document.getElementById('txtTiempoRestante');
 
-            // Lógica si el vuelo fue cancelado
             if (estado === "CANCELADO") {
                 bar.style.width = '0%';
                 bar.style.background = '#e53935';
@@ -158,30 +176,24 @@
                 return;
             }
 
-            // Lógica de cálculo de tiempo
             if (ahora < tSalida || estado === "PROGRAMADO") {
                 bar.style.width = '0%';
                 txtTranscurrido.innerText = "Aún no despega";
-
                 let diff = tSalida - ahora;
                 if (diff > 0) {
                     txtRestante.innerText = "Despega en: " + formatMsToHM(diff);
                 } else {
                     txtRestante.innerText = "Retrasado en tierra";
                 }
-
             } else if (ahora > tLlegada || estado === "ATERRIZÓ" || estado === "ATERRIZADO" || estado === "FINALIZADO") {
                 bar.style.width = '100%';
-                bar.style.background = '#43a047'; // Verde
+                bar.style.background = '#43a047';
                 txtTranscurrido.innerText = "Vuelo Finalizado";
                 txtRestante.innerText = "¡Aterrizó con éxito!";
-
             } else {
-                // EL VUELO ESTÁ EN EL AIRE
                 let duracionTotal = tLlegada - tSalida;
                 let tiempoPasado = ahora - tSalida;
                 let tiempoFalta = tLlegada - ahora;
-
                 let porcentaje = (tiempoPasado / duracionTotal) * 100;
 
                 bar.style.width = porcentaje + '%';
@@ -190,7 +202,6 @@
             }
         }
 
-        // Función para convertir milisegundos a "2h 15m"
         function formatMsToHM(ms) {
             let totalMinutos = Math.floor(ms / 60000);
             let horas = Math.floor(totalMinutos / 60);
@@ -198,7 +209,6 @@
             return horas + "h " + minutos + "m";
         }
 
-        // Ejecutar inmediatamente y luego cada 30 segundos
         actualizarProgreso();
         setInterval(actualizarProgreso, 30000);
     </script>
