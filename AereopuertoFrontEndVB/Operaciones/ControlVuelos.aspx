@@ -23,6 +23,7 @@
         .estado-4 { color: #81c784; font-weight: bold; } /* 4: Aterrizado */
         .estado-5 { color: #e57373; font-weight: bold; text-decoration: line-through; } /* 5: Cancelado */
         .estado-6 { color: #ffb74d; font-weight: bold; } /* 6: Retrasado */
+        .estado-7 { color: #ce93d8; font-weight: bold; } /* 7: Cierre de Puertas (Morado) */
 
         /* Estilo para los filtros */
         .filter-section { background-color: #272727; padding: 15px; border-radius: 8px; border-left: 4px solid #0d47a1; }
@@ -130,8 +131,7 @@
 
                     // Lógica de coincidencia exacta con tus IDs de Base de Datos
                     if (estadoId == 1 && chkProg) mostrar = true;
-                    if ((estadoId == 2 || estadoId == 3) && chkAbordVuelo) mostrar = true;
-                    if (estadoId == 4 && chkAterr) mostrar = true;
+                    if ((estadoId == 2 || estadoId == 7 || estadoId == 3) && chkAbordVuelo) mostrar = true;                    if (estadoId == 4 && chkAterr) mostrar = true;
                     if (estadoId == 5 && chkCanc) mostrar = true;
                     if (estadoId == 6 && chkRetr) mostrar = true;
 

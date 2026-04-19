@@ -196,6 +196,7 @@
     <Content Include="Admin\ReportePasajeros.aspx" />
     <Content Include="Admin\ReporteVuelosAire.aspx" />
     <Content Include="Admin\ReporteVuelosGral.aspx" />
+    <Content Include="RRHH\EvaluacionPersonal.aspx" />
     <Content Include="Seguridad\Arrestos.aspx" />
     <Content Include="Operaciones\ClimaAeropuerto.aspx" />
     <Content Include="Operaciones\EscanerRampa.aspx" />
@@ -424,6 +425,13 @@
     <Compile Include="ConexionDBReplica.vb" />
     <Compile Include="ApiServices.vb" />
     <Compile Include="config.vb" />
+    <Compile Include="RRHH\EvaluacionPersonal.aspx.designer.vb">
+      <DependentUpon>EvaluacionPersonal.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RRHH\EvaluacionPersonal.aspx.vb">
+      <DependentUpon>EvaluacionPersonal.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
     <Compile Include="Seguridad\Arrestos.aspx.designer.vb">
       <DependentUpon>Arrestos.aspx</DependentUpon>
     </Compile>

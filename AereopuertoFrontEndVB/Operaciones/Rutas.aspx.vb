@@ -6,6 +6,7 @@ Public Class Rutas
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        ' Rol 3 (Operaciones) es el correcto para gestionar las rutas aéreas.
         If Session("UserEmail") Is Nothing OrElse (idRol <> 3) Then
             Response.Redirect("~/Account/Login.aspx")
         End If
@@ -16,26 +17,35 @@ Public Class Rutas
         End If
     End Sub
 
+    ' -------------------------------------------------------------
+    ' 1. MÉTODO PARA LLENAR DESPLEGABLES (100% SP + OPTIMIZADO)
+    ' -------------------------------------------------------------
     Private Sub CargarAeropuertos()
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
-                ' Query para traer aeropuertos (Misma lista para origen y destino)
-                Dim query As String = "SELECT id_aeropuerto, nombre || ' (' || codigo_iata || ')' AS detalle FROM AUR_AEROPUERTO ORDER BY nombre"
+                Using cmd As New OracleCommand("SP_OBTENER_AEROPUERTOS_CBX", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
 
-                Using cmd As New OracleCommand(query, conn)
+                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cursorParam.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(cursorParam)
+
                     conn.Open()
-                    Using reader As OracleDataReader = cmd.ExecuteReader()
-                        ' Llenamos el combo de Origen
-                        ddlOrigen.DataSource = reader
+
+                    ' 🔥 OPTIMIZACIÓN: Llenamos un DataTable una sola vez
+                    Using da As New OracleDataAdapter(cmd)
+                        Dim dt As New DataTable()
+                        da.Fill(dt)
+
+                        ' Llenamos el combo de Origen con la data en memoria
+                        ddlOrigen.DataSource = dt
                         ddlOrigen.DataTextField = "detalle"
                         ddlOrigen.DataValueField = "id_aeropuerto"
                         ddlOrigen.DataBind()
-                    End Using
 
-                    ' Volvemos a leer para llenar el combo de Destino
-                    Using reader As OracleDataReader = cmd.ExecuteReader()
-                        ddlDestino.DataSource = reader
+                        ' Llenamos el combo de Destino reusando la misma data (¡Sin volver a consultar a la BD!)
+                        ddlDestino.DataSource = dt
                         ddlDestino.DataTextField = "detalle"
                         ddlDestino.DataValueField = "id_aeropuerto"
                         ddlDestino.DataBind()
@@ -51,11 +61,20 @@ Public Class Rutas
         End Try
     End Sub
 
+    ' -------------------------------------------------------------
+    ' 2. GUARDAR RUTA
+    ' -------------------------------------------------------------
     Protected Sub btnGuardar_Click(sender As Object, e As EventArgs) Handles btnGuardar.Click
         Dim duracion As Integer
 
         If String.IsNullOrEmpty(ddlOrigen.SelectedValue) OrElse String.IsNullOrEmpty(ddlDestino.SelectedValue) Then
             MostrarMensaje("Debe seleccionar un aeropuerto de Origen y uno de Destino.", False)
+            Return
+        End If
+
+        ' Validar que no elijan el mismo aeropuerto
+        If ddlOrigen.SelectedValue = ddlDestino.SelectedValue Then
+            MostrarMensaje("El aeropuerto de origen no puede ser el mismo que el de destino.", False)
             Return
         End If
 
@@ -112,6 +131,6 @@ Public Class Rutas
     Private Sub MostrarMensaje(mensaje As String, esExito As Boolean)
         pnlMensaje.Visible = True
         lblMensaje.Text = mensaje
-        pnlMensaje.CssClass = If(esExito, "alert alert-success text-center rounded-3 mb-4", "alert alert-danger text-center rounded-3 mb-4")
+        pnlMensaje.CssClass = If(esExito, "alert alert-success text-center rounded-3 mb-4 fw-bold", "alert alert-danger text-center rounded-3 mb-4 fw-bold")
     End Sub
 End Class

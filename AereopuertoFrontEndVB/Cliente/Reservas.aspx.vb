@@ -25,20 +25,20 @@ Public Class Reservas
     End Sub
 
     ' ====================================================================
-    ' 1. CARGA DE CATÁLOGOS
+    ' 1. CARGA DE CATÁLOGOS (100% PARAMETRIZADOS)
     ' ====================================================================
     Private Sub CargarVuelosDisponibles()
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
-                Dim query As String = "SELECT v.id_vuelo, " &
-                                      "v.codigo_vuelo || ' : ' || o.codigo_iata || ' ✈️ ' || d.codigo_iata || ' (' || TO_CHAR(v.fecha_salida, 'DD/MM/YYYY HH24:MI') || ')' AS DETALLE " &
-                                      "FROM AUR_VUELO v " &
-                                      "INNER JOIN AUR_AEROPUERTO o ON v.id_origen = o.id_aeropuerto " &
-                                      "INNER JOIN AUR_AEROPUERTO d ON v.id_destino = d.id_aeropuerto " &
-                                      "WHERE v.id_estado_vuelo = 1 " &
-                                      "ORDER BY v.fecha_salida ASC"
-                Using cmd As New OracleCommand(query, conn)
+                ' 🔥 REEMPLAZO: Usamos el nuevo SP
+                Using cmd As New OracleCommand("SP_OBTENER_VUELOS_RESERVA_CBX", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+
+                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cursorParam.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(cursorParam)
+
                     conn.Open()
                     Using reader As OracleDataReader = cmd.ExecuteReader()
                         ddlVuelos.DataSource = reader
@@ -58,8 +58,14 @@ Public Class Reservas
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
-                Dim query As String = "SELECT id_tipo_boleto, nombre FROM AUR_TIPO_BOLETO ORDER BY id_tipo_boleto"
-                Using cmd As New OracleCommand(query, conn)
+                ' 🔥 REEMPLAZO: Reusamos el SP de Clases de Boleto
+                Using cmd As New OracleCommand("SP_OBTENER_CLASES_BOLETO", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+
+                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cursorParam.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(cursorParam)
+
                     conn.Open()
                     Using reader As OracleDataReader = cmd.ExecuteReader()
                         ddlClase.DataSource = reader
@@ -268,6 +274,7 @@ Public Class Reservas
         pnlError.Visible = True
         lblError.Text = mensaje
     End Sub
+
     ' ====================================================================
     ' 5. SINCRONIZACIÓN SILENCIOSA CADA 30 SEGUNDOS
     ' ====================================================================
@@ -280,6 +287,7 @@ Public Class Reservas
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_OBTENER_MAPA_ASIENTOS", conn)
                     cmd.CommandType = CommandType.StoredProcedure
+                    cmd.BindByName = True ' 🔥 Agregado por seguridad
                     cmd.Parameters.Add("p_id_vuelo", OracleDbType.Int32).Value = idVuelo
                     Dim outCapacidad As New OracleParameter("p_capacidad", OracleDbType.Int32)
                     outCapacidad.Direction = ParameterDirection.Output

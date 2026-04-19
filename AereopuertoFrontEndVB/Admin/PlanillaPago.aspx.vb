@@ -5,6 +5,7 @@ Public Class PlanillaPago
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        ' Seguridad: Solo Administrador (1) y Recursos Humanos (4) pueden ver nóminas
         Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
         If Session("UserEmail") Is Nothing OrElse (idRol <> 1 AndAlso idRol <> 4) Then
             Response.Redirect("~/Account/Login.aspx")
@@ -65,32 +66,47 @@ Public Class PlanillaPago
         End Try
     End Sub
 
+    ' -------------------------------------------------------------
+    ' 1. MÉTODO PARA LLENAR DESPLEGABLES (100% SPs)
+    ' -------------------------------------------------------------
     Private Sub CargarCatalogos()
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 conn.Open()
 
-                ' 1. Cargar Empleados
-                Dim sqlEmp As String = "SELECT E.ID_EMPLEADO, P.PRIMER_NOMBRE || ' ' || P.PRIMER_APELLIDO AS NOMBRE FROM AUR_EMPLEADO E INNER JOIN AUR_PERSONA P ON E.ID_PERSONA = P.ID_PERSONA"
-                Using cmd As New OracleCommand(sqlEmp, conn)
-                    ddlEmpleado.DataSource = cmd.ExecuteReader()
-                    ddlEmpleado.DataTextField = "NOMBRE"
-                    ddlEmpleado.DataValueField = "ID_EMPLEADO"
-                    ddlEmpleado.DataBind()
-                    ddlEmpleado.Items.Insert(0, New ListItem("-- Seleccione Empleado --", ""))
+                ' 1. Cargar Empleados (Reutilizando el SP existente)
+                Using cmdEmp As New OracleCommand("SP_OBTENER_EMPLEADOS_CBX", conn)
+                    cmdEmp.CommandType = CommandType.StoredProcedure
+                    Dim cursorEmp As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cursorEmp.Direction = ParameterDirection.Output
+                    cmdEmp.Parameters.Add(cursorEmp)
+
+                    Using reader As OracleDataReader = cmdEmp.ExecuteReader()
+                        ddlEmpleado.DataSource = reader
+                        ddlEmpleado.DataTextField = "NOMBRE_COMPLETO"
+                        ddlEmpleado.DataValueField = "ID_EMPLEADO"
+                        ddlEmpleado.DataBind()
+                        ddlEmpleado.Items.Insert(0, New ListItem("-- Seleccione Empleado --", ""))
+                    End Using
                 End Using
 
-                ' 2. Cargar Planillas Maestras (Ej: 'Planilla Enero 2026')
-                ' Asumimos que la tabla AUR_PLANILLA tiene un campo DESCRIPCION o MES_ANIO
-                Dim sqlPla As String = "SELECT ID_PLANILLA, DESCRIPCION FROM AUR_PLANILLA ORDER BY ID_PLANILLA DESC"
-                Using cmd As New OracleCommand(sqlPla, conn)
-                    ddlPlanilla.DataSource = cmd.ExecuteReader()
-                    ddlPlanilla.DataTextField = "DESCRIPCION"
-                    ddlPlanilla.DataValueField = "ID_PLANILLA"
-                    ddlPlanilla.DataBind()
-                    ddlPlanilla.Items.Insert(0, New ListItem("-- Seleccione Periodo --", ""))
+                ' 2. Cargar Planillas Maestras (Nuevo SP)
+                Using cmdPla As New OracleCommand("SP_OBTENER_PLANILLAS_CBX", conn)
+                    cmdPla.CommandType = CommandType.StoredProcedure
+                    Dim cursorPla As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cursorPla.Direction = ParameterDirection.Output
+                    cmdPla.Parameters.Add(cursorPla)
+
+                    Using reader As OracleDataReader = cmdPla.ExecuteReader()
+                        ddlPlanilla.DataSource = reader
+                        ddlPlanilla.DataTextField = "DESCRIPCION"
+                        ddlPlanilla.DataValueField = "ID_PLANILLA"
+                        ddlPlanilla.DataBind()
+                        ddlPlanilla.Items.Insert(0, New ListItem("-- Seleccione Periodo --", ""))
+                    End Using
                 End Using
+
             End Using
         Catch ex As Exception
             MostrarMensaje("Error al cargar datos: " & ex.Message, False)

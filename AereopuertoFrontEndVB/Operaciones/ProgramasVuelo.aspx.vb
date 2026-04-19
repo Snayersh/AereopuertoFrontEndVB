@@ -17,13 +17,20 @@ Public Class ProgramasVuelo
     End Sub
 
     ' -------------------------------------------------------------
-    ' 1. CARGAR CATÁLOGOS
+    ' 1. CARGAR CATÁLOGOS (100% PROCEDIMIENTOS ALMACENADOS)
     ' -------------------------------------------------------------
     Private Sub CargarAerolineas()
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
-                Using cmd As New OracleCommand("SELECT id_aerolinea, nombre FROM AUR_AEROLINEA ORDER BY nombre", conn)
+                ' 🔥 CORRECCIÓN: Reusamos el SP de Aerolíneas
+                Using cmd As New OracleCommand("SP_OBTENER_AEROLINEAS_CBX", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+
+                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cursorParam.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(cursorParam)
+
                     conn.Open()
                     Using reader As OracleDataReader = cmd.ExecuteReader()
                         ddlAerolinea.DataSource = reader

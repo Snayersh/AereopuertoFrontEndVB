@@ -19,14 +19,19 @@ Public Class ControlVuelos
         End If
     End Sub
 
-    ' 1. Cargamos los estados posibles (Programado, En Vuelo, Retrasado...)
+    ' 1. Cargamos los estados posibles (100% PARAMETRIZADO CON SP)
     Private Sub CargarCatalogoEstados()
         Dim db As New ConexionDB()
         dtEstados = New DataTable()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
-                Dim query As String = "SELECT id_estado_vuelo, nombre FROM AUR_ESTADO_VUELO ORDER BY id_estado_vuelo"
-                Using cmd As New OracleCommand(query, conn)
+                Using cmd As New OracleCommand("SP_OBTENER_ESTADOS_VUELO_CBX", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+
+                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cursorParam.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(cursorParam)
+
                     Using da As New OracleDataAdapter(cmd)
                         da.Fill(dtEstados)
                     End Using
@@ -130,4 +135,5 @@ Public Class ControlVuelos
         lblMensaje.Text = texto
         pnlMensaje.CssClass = If(esExito, "alert alert-success fw-bold text-center", "alert alert-danger fw-bold text-center")
     End Sub
+
 End Class

@@ -6,11 +6,13 @@ Imports System.Web.Script.Serialization ' Usado para leer el JSON de la API
 Public Class ClimaAeropuerto
     Inherits System.Web.UI.Page
 
+    ' Asumiendo que Config.API_KEY existe en tu proyecto para ocultar la llave real
     Dim API_KEY As String = Config.API_KEY
     Private Const CIUDAD_AEROPUERTO As String = "Guatemala City"
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        ' Rol 3 (Operaciones) controla el clima de la pista
         If Session("UserEmail") Is Nothing OrElse (idRol <> 3) Then
             Response.Redirect("~/Account/Login.aspx")
         End If
@@ -75,14 +77,22 @@ Public Class ClimaAeropuerto
         End Using
     End Sub
 
+    ' -------------------------------------------------------------
+    ' MÉTODO CORREGIDO (100% SP, CERO SQL)
+    ' -------------------------------------------------------------
     Private Sub CargarHistorialDB(idAeropuerto As String)
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
-                ' Un simple query para traer los últimos 10 registros
-                Dim sql As String = "SELECT FECHA, TEMPERATURA, CONDICION FROM AUR_CLIMA WHERE ID_AEROPUERTO = :idAero ORDER BY FECHA DESC FETCH NEXT 10 ROWS ONLY"
-                Using cmd As New OracleCommand(sql, conn)
-                    cmd.Parameters.Add(New OracleParameter("idAero", idAeropuerto))
+                Using cmd As New OracleCommand("SP_HISTORIAL_CLIMA", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+
+                    cmd.Parameters.Add("p_id_aeropuerto", OracleDbType.Int32).Value = Convert.ToInt32(idAeropuerto)
+
+                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cursorParam.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(cursorParam)
+
                     conn.Open()
                     Using da As New OracleDataAdapter(cmd)
                         Dim dt As New DataTable()

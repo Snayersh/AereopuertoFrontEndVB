@@ -314,17 +314,18 @@ End Class
 ' SERVICIO DE VUELOS
 ' ==========================================
 Public Class VueloService
+
     Public Shared Function ListarVuelosActivos() As Object
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
-                Dim query As String = "SELECT v.id_vuelo, " &
-                                      "v.codigo_vuelo || ' : ' || o.codigo_iata || ' - ' || d.codigo_iata AS DETALLE " &
-                                      "FROM AUR_VUELO v " &
-                                      "INNER JOIN AUR_AEROPUERTO o ON v.id_origen = o.id_aeropuerto " &
-                                      "INNER JOIN AUR_AEROPUERTO d ON v.id_destino = d.id_aeropuerto " &
-                                      "WHERE v.id_estado_vuelo = 1 ORDER BY v.fecha_salida ASC"
-                Using cmd As New OracleCommand(query, conn)
+                Using cmd As New OracleCommand("SP_OBTENER_VUELOS_ACTIVOS", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+
+                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cursorParam.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(cursorParam)
+
                     conn.Open()
                     Using da As New OracleDataAdapter(cmd)
                         Dim dt As New DataTable()
@@ -342,7 +343,13 @@ Public Class VueloService
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
-                Using cmd As New OracleCommand("SELECT id_tipo_boleto, nombre FROM AUR_TIPO_BOLETO ORDER BY id_tipo_boleto", conn)
+                Using cmd As New OracleCommand("SP_OBTENER_CLASES_BOLETO", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+
+                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cursorParam.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(cursorParam)
+
                     conn.Open()
                     Using da As New OracleDataAdapter(cmd)
                         Dim dt As New DataTable()
@@ -396,7 +403,6 @@ Public Class VueloService
         End Try
     End Function
 End Class
-
 ' ==========================================
 ' SERVICIO DE RESERVAS
 ' ==========================================

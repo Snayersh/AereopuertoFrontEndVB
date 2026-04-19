@@ -6,6 +6,7 @@ Public Class GestionPuertas
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        ' Rol 3 (Operaciones) es correcto para asignar puertas
         If Session("UserEmail") Is Nothing OrElse (idRol <> 3) Then
             Response.Redirect("~/Account/Login.aspx")
         End If
@@ -32,6 +33,7 @@ Public Class GestionPuertas
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_ASIGNAR_PUERTA_VUELO", conn)
                     cmd.CommandType = CommandType.StoredProcedure
+                    cmd.BindByName = True
 
                     ' Pasamos los parámetros directo de los controles de la página
                     cmd.Parameters.Add("p_id_vuelo", OracleDbType.Int32).Value = Convert.ToInt32(ddlVuelos.SelectedValue)
@@ -66,7 +68,7 @@ Public Class GestionPuertas
     End Sub
 
     ' =======================================================
-    ' MÉTODOS DE APOYO (Llenar Dropdowns y Tabla)
+    ' MÉTODOS DE APOYO (100% PARAMETRIZADOS)
     ' =======================================================
     Private Sub CargarDesplegables()
         Dim db As New ConexionDB()
@@ -74,8 +76,14 @@ Public Class GestionPuertas
             Using conn As OracleConnection = db.ObtenerConexion()
                 conn.Open()
 
-                ' 1. Cargar Vuelos (Solo activos)
-                Using cmdVuelos As New OracleCommand("SELECT ID_VUELO, CODIGO_VUELO FROM AUR_VUELO WHERE ID_ESTADO_VUELO = 1", conn)
+                ' 1. Cargar Vuelos (Solo activos) usando SP
+                Using cmdVuelos As New OracleCommand("SP_OBTENER_VUELOS_ACTIVOS_CBX", conn)
+                    cmdVuelos.CommandType = CommandType.StoredProcedure
+
+                    Dim cursorVuelos As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cursorVuelos.Direction = ParameterDirection.Output
+                    cmdVuelos.Parameters.Add(cursorVuelos)
+
                     Using da As New OracleDataAdapter(cmdVuelos)
                         Dim dtVuelos As New DataTable()
                         da.Fill(dtVuelos)
@@ -87,8 +95,14 @@ Public Class GestionPuertas
                     End Using
                 End Using
 
-                ' 2. Cargar Puertas Físicas del Aeropuerto
-                Using cmdPuertas As New OracleCommand("SELECT ID_PUERTA, NOMBRE_PUERTA FROM AUR_PUERTA", conn)
+                ' 2. Cargar Puertas Físicas usando SP
+                Using cmdPuertas As New OracleCommand("SP_OBTENER_PUERTAS_CBX", conn)
+                    cmdPuertas.CommandType = CommandType.StoredProcedure
+
+                    Dim cursorPuertas As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cursorPuertas.Direction = ParameterDirection.Output
+                    cmdPuertas.Parameters.Add(cursorPuertas)
+
                     Using da As New OracleDataAdapter(cmdPuertas)
                         Dim dtPuertas As New DataTable()
                         da.Fill(dtPuertas)

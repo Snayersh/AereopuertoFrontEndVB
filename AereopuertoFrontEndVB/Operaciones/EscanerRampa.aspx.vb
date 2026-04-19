@@ -6,6 +6,7 @@ Public Class EscanerRampa
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        ' Rol 3 (Operaciones) es el correcto para la gente en rampa.
         If Session("UserEmail") Is Nothing OrElse (idRol <> 3) Then
             Response.Redirect("~/Account/Login.aspx")
         End If
@@ -16,14 +17,20 @@ Public Class EscanerRampa
         End If
     End Sub
 
-    ' Llenar el DropDown con los datos de AUR_ESTADO_EQUIPAJE
+    ' -------------------------------------------------------------
+    ' 1. Llenar el DropDown 100% parametrizado con SP
+    ' -------------------------------------------------------------
     Private Sub CargarEstadosEquipaje()
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
-                ' Consultamos directamente tu tabla catálogo
-                Dim sql As String = "SELECT ID_ESTADO_EQUIPAJE, NOMBRE FROM AUR_ESTADO_EQUIPAJE ORDER BY ID_ESTADO_EQUIPAJE"
-                Using cmd As New OracleCommand(sql, conn)
+                Using cmd As New OracleCommand("SP_OBTENER_ESTADOS_EQUIPAJE_CBX", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+
+                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cursorParam.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(cursorParam)
+
                     conn.Open()
                     Using reader As OracleDataReader = cmd.ExecuteReader()
                         ddlEstado.DataSource = reader
@@ -38,6 +45,9 @@ Public Class EscanerRampa
         End Try
     End Sub
 
+    ' -------------------------------------------------------------
+    ' 2. Actualizar el estado de la maleta
+    ' -------------------------------------------------------------
     Protected Sub btnActualizar_Click(sender As Object, e As EventArgs) Handles btnActualizar.Click
         Dim idEquipaje As String = txtIdEquipaje.Text.Trim()
         Dim idEstadoNuevo As String = ddlEstado.SelectedValue

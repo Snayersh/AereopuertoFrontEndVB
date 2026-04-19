@@ -6,6 +6,7 @@ Public Class Aeronaves
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        ' Ojo: Este módulo lo asignaste al rol 3 (Operaciones). Está perfecto.
         If Session("UserEmail") Is Nothing OrElse (idRol <> 3) Then
             Response.Redirect("~/Account/Login.aspx")
         End If
@@ -17,18 +18,20 @@ Public Class Aeronaves
     End Sub
 
     ' -------------------------------------------------------------
-    ' 1. MÉTODO PARA LLENAR EL DESPLEGABLE DESDE ORACLE
+    ' 1. MÉTODO PARA LLENAR EL DESPLEGABLE DESDE ORACLE (100% SP)
     ' -------------------------------------------------------------
     Private Sub CargarAerolineas()
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
-                ' Consulta sencilla para traer el ID y el Nombre
-                Dim query As String = "SELECT id_aerolinea, nombre FROM AUR_AEROLINEA ORDER BY nombre"
-                Using cmd As New OracleCommand(query, conn)
-                    conn.Open()
+                Using cmd As New OracleCommand("SP_OBTENER_AEROLINEAS_CBX", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
 
-                    ' Usamos un DataReader para leer los resultados
+                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cursorParam.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(cursorParam)
+
+                    conn.Open()
                     Using reader As OracleDataReader = cmd.ExecuteReader()
                         ddlAerolineas.DataSource = reader
                         ' Lo que el usuario lee
@@ -108,10 +111,9 @@ Public Class Aeronaves
         pnlMensaje.Visible = True
         lblMensaje.Text = mensaje
         If esExito Then
-            pnlMensaje.CssClass = "alert alert-success text-center rounded-3 mb-4"
+            pnlMensaje.CssClass = "alert alert-success text-center rounded-3 mb-4 fw-bold"
         Else
-            pnlMensaje.CssClass = "alert alert-danger text-center rounded-3 mb-4"
+            pnlMensaje.CssClass = "alert alert-danger text-center rounded-3 mb-4 fw-bold"
         End If
     End Sub
-
 End Class

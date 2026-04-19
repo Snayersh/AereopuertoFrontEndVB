@@ -5,8 +5,9 @@ Public Class GestionAsistencia
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        ' 🔥 CORRECCIÓN DE SEGURIDAD: Solo Admin (1) y Recursos Humanos (4)
         Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
-        If Session("UserEmail") Is Nothing OrElse (idRol <> 3) Then
+        If Session("UserEmail") Is Nothing OrElse (idRol <> 1 AndAlso idRol <> 4) Then
             Response.Redirect("~/Account/Login.aspx")
         End If
 
@@ -17,21 +18,27 @@ Public Class GestionAsistencia
         End If
     End Sub
 
-    ' --- CARGAR LISTA DE EMPLEADOS ---
+    ' --- CARGAR LISTA DE EMPLEADOS (100% SP REUTILIZADO) ---
     Private Sub CargarEmpleados()
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
-                conn.Open()
-                ' Unimos con la tabla Persona para mostrar nombres en lugar de IDs
-                Dim sql As String = "SELECT E.ID_EMPLEADO, P.PRIMER_NOMBRE || ' ' || P.PRIMER_APELLIDO AS NOMBRE_COMPLETO " &
-                                  "FROM AUR_EMPLEADO E INNER JOIN AUR_PERSONA P ON E.ID_PERSONA = P.ID_PERSONA"
-                Using cmd As New OracleCommand(sql, conn)
-                    ddlEmpleados.DataSource = cmd.ExecuteReader()
-                    ddlEmpleados.DataTextField = "NOMBRE_COMPLETO"
-                    ddlEmpleados.DataValueField = "ID_EMPLEADO"
-                    ddlEmpleados.DataBind()
-                    ddlEmpleados.Items.Insert(0, New ListItem("-- Seleccione un Empleado --", ""))
+                ' Reusamos el SP que ya tienes creado en Oracle
+                Using cmd As New OracleCommand("SP_OBTENER_EMPLEADOS_CBX", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+
+                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cursorParam.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(cursorParam)
+
+                    conn.Open()
+                    Using reader As OracleDataReader = cmd.ExecuteReader()
+                        ddlEmpleados.DataSource = reader
+                        ddlEmpleados.DataTextField = "NOMBRE_COMPLETO"
+                        ddlEmpleados.DataValueField = "ID_EMPLEADO"
+                        ddlEmpleados.DataBind()
+                        ddlEmpleados.Items.Insert(0, New ListItem("-- Seleccione un Empleado --", ""))
+                    End Using
                 End Using
             End Using
         Catch ex As Exception
@@ -108,4 +115,5 @@ Public Class GestionAsistencia
         lblMensaje.Text = mensaje
         pnlMensaje.CssClass = If(esExito, "alert alert-success fw-bold text-center mb-4", "alert alert-danger fw-bold text-center mb-4")
     End Sub
+
 End Class
