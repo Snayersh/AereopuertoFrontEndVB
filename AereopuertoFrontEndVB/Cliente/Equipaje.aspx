@@ -1,5 +1,4 @@
 ﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="Equipaje.aspx.vb" Inherits="AereopuertoFrontEndVB.Equipaje" %>
-
 <!DOCTYPE html>
 <html lang="es">
 <head runat="server">
@@ -46,7 +45,17 @@
                                     <h5 class="fw-bold text-primary mb-3">2. Agregar Nueva Maleta</h5>
                                     
                                     <div class="mb-3">
-                                        <label class="form-label fw-bold text-secondary">Peso Aproximado (Libras)</label>
+                                        <label class="form-label fw-bold text-secondary">Tipo de Equipaje *</label>
+                                        <asp:DropDownList ID="ddlTipoEquipaje" runat="server" CssClass="form-select" required="true">
+                                            <asp:ListItem Text="-- Seleccionar --" Value=""></asp:ListItem>
+                                            <asp:ListItem Text="Maleta de Bodega (Documentada)" Value="1"></asp:ListItem>
+                                            <asp:ListItem Text="Equipaje de Mano (Cabina)" Value="2"></asp:ListItem>
+                                            <asp:ListItem Text="Artículo Personal (Mochila)" Value="3"></asp:ListItem>
+                                        </asp:DropDownList>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold text-secondary">Peso Aproximado (Libras) *</label>
                                         <asp:TextBox ID="txtPeso" runat="server" CssClass="form-control" TextMode="Number" step="0.1" required="true" placeholder="Ej: 45.5"></asp:TextBox>
                                     </div>
 
@@ -73,6 +82,8 @@
                                                 <div>
                                                     <h6 class="fw-bold m-0 text-dark"><%# Eval("descripcion") %></h6>
                                                     <small class="text-muted fw-bold">Peso: <%# Eval("peso") %> Libras</small>
+                                                    <br />
+                                                    <span class="badge bg-secondary mt-1"><%# Eval("tipo_equipaje") %></span>
                                                 </div>
                                             </div>
                                         </ItemTemplate>

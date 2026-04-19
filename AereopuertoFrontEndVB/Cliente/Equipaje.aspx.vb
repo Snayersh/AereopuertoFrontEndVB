@@ -7,7 +7,8 @@ Public Class Equipaje
     Private CorreoUsuario As String
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        If Session("UserRole") Is Nothing Then
+        Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        If Session("UserEmail") Is Nothing OrElse (idRol <> 2) Then
             Response.Redirect("~/Account/Login.aspx")
         End If
 
@@ -18,9 +19,6 @@ Public Class Equipaje
         End If
     End Sub
 
-    ' =========================================================
-    ' CARGAR BOLETOS DEL USUARIO EN EL DROPDOWN
-    ' =========================================================
     Private Sub CargarBoletos()
         Dim db As New ConexionDB()
         Try
@@ -46,15 +44,11 @@ Public Class Equipaje
             End Using
 
             ddlBoletos.Items.Insert(0, New ListItem("-- Selecciona una de tus reservas --", ""))
-
         Catch ex As Exception
             MostrarMensaje("Error al cargar reservas: " & ex.Message, False)
         End Try
     End Sub
 
-    ' =========================================================
-    ' EVENTO: AL SELECCIONAR UN BOLETO, MOSTRAR SU EQUIPAJE
-    ' =========================================================
     Protected Sub ddlBoletos_SelectedIndexChanged(sender As Object, e As EventArgs)
         If String.IsNullOrEmpty(ddlBoletos.SelectedValue) Then
             pnlGestionEquipaje.Visible = False
@@ -97,20 +91,18 @@ Public Class Equipaje
                 End Using
             End Using
         Catch ex As Exception
-            MostrarMensaje("Error al cargar la lista de equipaje: " & ex.Message, False)
+            MostrarMensaje("Error al cargar la lista: " & ex.Message, False)
         End Try
     End Sub
 
-    ' =========================================================
-    ' EVENTO: BOTÓN DE REGISTRAR MALETA
-    ' =========================================================
     Protected Sub btnRegistrarEquipaje_Click(sender As Object, e As EventArgs) Handles btnRegistrarEquipaje.Click
         Dim codigoBoleto As String = ddlBoletos.SelectedValue
+        Dim tipoEquipaje As String = ddlTipoEquipaje.SelectedValue
         Dim peso As String = txtPeso.Text.Trim()
         Dim descripcion As String = txtDescripcion.Text.Trim()
 
-        If String.IsNullOrEmpty(codigoBoleto) Then
-            MostrarMensaje("Primero debes seleccionar un boleto.", False)
+        If String.IsNullOrEmpty(codigoBoleto) OrElse String.IsNullOrEmpty(tipoEquipaje) Then
+            MostrarMensaje("Por favor completa todos los campos obligatorios.", False)
             Return
         End If
 
@@ -124,6 +116,7 @@ Public Class Equipaje
                     cmd.Parameters.Add("p_codigo_boleto", OracleDbType.Varchar2).Value = codigoBoleto
                     cmd.Parameters.Add("p_peso", OracleDbType.Decimal).Value = Convert.ToDecimal(peso)
                     cmd.Parameters.Add("p_descripcion", OracleDbType.Varchar2).Value = descripcion
+                    cmd.Parameters.Add("p_id_tipo_equipaje", OracleDbType.Int32).Value = Convert.ToInt32(tipoEquipaje)
 
                     Dim outResultado As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
                     outResultado.Direction = ParameterDirection.Output
@@ -134,11 +127,20 @@ Public Class Equipaje
 
                     Dim resultado As String = outResultado.Value.ToString()
 
-                    If resultado = "EXITO" Then
-                        MostrarMensaje("¡Equipaje registrado exitosamente!", True)
+                    ' Si el mensaje inicia con EXITO, lo dividimos por si la BD nos manda una alerta de cobro extra
+                    If resultado.StartsWith("EXITO") Then
+                        Dim partes = resultado.Split("|"c)
+                        If partes.Length > 1 Then
+                            ' Hubo un recargo por peso
+                            MostrarMensaje("✅ " & partes(1), True)
+                        Else
+                            MostrarMensaje("¡Equipaje registrado exitosamente!", True)
+                        End If
+
                         txtPeso.Text = ""
                         txtDescripcion.Text = ""
-                        CargarListaEquipaje(codigoBoleto) ' Recargamos la tablita para ver la nueva maleta
+                        ddlTipoEquipaje.SelectedIndex = 0
+                        CargarListaEquipaje(codigoBoleto)
                     Else
                         MostrarMensaje("No se pudo registrar: " & resultado, False)
                     End If
@@ -158,5 +160,4 @@ Public Class Equipaje
             pnlMensaje.CssClass = "alert alert-danger text-center rounded-3 mb-4 fw-bold"
         End If
     End Sub
-
 End Class

@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class Equipaje
+Partial Public Class Arrestos
 
     '''<summary>
     '''form1 control.
@@ -41,74 +41,92 @@ Partial Public Class Equipaje
     Protected WithEvents lblMensaje As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''ddlBoletos control.
+    '''txtBusqueda control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlBoletos As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents txtBusqueda As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''pnlGestionEquipaje control.
+    '''btnBuscar control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlGestionEquipaje As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents btnBuscar As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''ddlTipoEquipaje control.
+    '''rptArrestos control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlTipoEquipaje As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents rptArrestos As Global.System.Web.UI.WebControls.Repeater
 
     '''<summary>
-    '''txtPeso control.
+    '''txtNombre control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtPeso As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtNombre As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''txtDescripcion control.
+    '''txtPasaporte control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtDescripcion As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtPasaporte As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''btnRegistrarEquipaje control.
+    '''txtIdAeropuerto control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents btnRegistrarEquipaje As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents txtIdAeropuerto As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''pnlVacio control.
+    '''txtIdVuelo control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlVacio As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents txtIdVuelo As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''rptEquipaje control.
+    '''txtMotivo control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents rptEquipaje As Global.System.Web.UI.WebControls.Repeater
+    Protected WithEvents txtMotivo As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''ddlAutoridad control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents ddlAutoridad As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
+    '''btnGuardarArresto control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents btnGuardarArresto As Global.System.Web.UI.WebControls.Button
 End Class

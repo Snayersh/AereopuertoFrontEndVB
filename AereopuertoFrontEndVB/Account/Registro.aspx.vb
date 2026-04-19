@@ -15,12 +15,33 @@ Public Class Registro
     End Sub
 
     Protected Sub btnRegistrar_Click(sender As Object, e As EventArgs) Handles btnRegistrar.Click
+
+        ' =========================================================
+        ' 1. VALIDACIÓN DE MAYORÍA DE EDAD (18 AÑOS)
+        ' =========================================================
+        Dim fechaNac As DateTime
+        If Not DateTime.TryParse(txtFechaNac.Text, fechaNac) Then
+            MostrarError("Por favor, ingresa una fecha de nacimiento válida.")
+            Return
+        End If
+
+        Dim edad As Integer = DateTime.Now.Year - fechaNac.Year
+        If DateTime.Now < fechaNac.AddYears(edad) Then
+            edad -= 1
+        End If
+
+        If edad < 18 Then
+            MostrarError("Debes ser mayor de 18 años para crear una cuenta en La Aurora.")
+            Return
+        End If
+        ' =========================================================
+
         Dim db As New ConexionDB()
 
-        ' 1. Ciframos la contraseña usando SHA-256
+        ' 2. Ciframos la contraseña usando SHA-256
         Dim contrasenaHasheada As String = EncriptarSHA256(txtPassword.Text.Trim())
 
-        ' 2. Generamos un código único para activar la cuenta
+        ' 3. Generamos un código único para activar la cuenta
         Dim tokenActivacion As String = Guid.NewGuid().ToString()
 
         Try
@@ -36,7 +57,7 @@ Public Class Registro
                     cmd.Parameters.Add("p_primer_apellido", OracleDbType.Varchar2).Value = txtPrimerApellido.Text.Trim()
                     cmd.Parameters.Add("p_segundo_apellido", OracleDbType.Varchar2).Value = txtSegundoApellido.Text.Trim()
                     cmd.Parameters.Add("p_apellido_casada", OracleDbType.Varchar2).Value = txtApellidoCasada.Text.Trim()
-                    cmd.Parameters.Add("p_fecha_nacimiento", OracleDbType.Date).Value = Convert.ToDateTime(txtFechaNac.Text)
+                    cmd.Parameters.Add("p_fecha_nacimiento", OracleDbType.Date).Value = fechaNac
                     cmd.Parameters.Add("p_telefono", OracleDbType.Varchar2).Value = txtTelefono.Text.Trim()
                     cmd.Parameters.Add("p_correo", OracleDbType.Varchar2).Value = txtEmail.Text.Trim().ToLower()
 
@@ -66,8 +87,8 @@ Public Class Registro
                     Dim resultado As String = paramOut.Value.ToString()
 
                     If resultado = "EXITO" Then
-                        ' 1. Mandamos el correo
-                        EnviarCorreoActivacion(txtEmail.Text.Trim().ToLower(), txtPrimerNombre.Text.Trim(), tokenActivacion)
+                        ' 1. Mandamos el correo usando la función que está abajo en este mismo archivo
+                        EnviarCorreoActivacionAPI(txtEmail.Text.Trim().ToLower(), txtPrimerNombre.Text.Trim(), tokenActivacion)
 
                         ' 2. Limpiamos todos los TextBox del formulario
                         LimpiarCampos()
@@ -108,7 +129,6 @@ Public Class Registro
         txtNumCasa.Text = ""
 
         txtEmail.Text = ""
-        ' Nota: Los TextMode="Password" se limpian solos, pero por seguridad lo forzamos.
         txtPassword.Attributes.Add("value", "")
     End Sub
 
@@ -127,9 +147,9 @@ Public Class Registro
     End Function
 
     ' =========================================================
-    ' FUNCIÓN PARA ENVIAR CORREO ELECTRÓNICO
+    ' FUNCIÓN PARA ENVIAR CORREO ELECTRÓNICO (COMPARTIDA)
     ' =========================================================
-    Private Sub EnviarCorreoActivacion(correoDestino As String, nombre As String, token As String)
+    Public Shared Sub EnviarCorreoActivacionAPI(correoDestino As String, nombre As String, token As String)
         Try
             Dim smtp As New SmtpClient("smtp.gmail.com", 587)
             smtp.EnableSsl = True
@@ -155,7 +175,7 @@ Public Class Registro
 
             smtp.Send(mensaje)
         Catch ex As Exception
-            ' Silencioso
+            ' Fallo silencioso: si el correo falla, la app no se cae, pero el usuario ya quedó guardado en BD.
         End Try
     End Sub
 
@@ -164,4 +184,5 @@ Public Class Registro
         pnlMensaje.CssClass = "alert alert-danger text-center rounded-3 mb-4"
         lblMensaje.Text = mensaje
     End Sub
+
 End Class

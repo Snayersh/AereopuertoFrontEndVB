@@ -1,11 +1,13 @@
 ﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="Pagos.aspx.vb" Inherits="AereopuertoFrontEndVB.Pagos" %>
-
 <!DOCTYPE html>
 <html lang="es">
 <head runat="server">
     <meta charset="utf-8" />
     <title>Pago de Reserva - La Aurora</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <style>
         body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .top-bar { background-color: #0d47a1; color: white; padding: 15px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -92,7 +94,7 @@
                             </div>
 
                             <div class="mt-4">
-                                <asp:Button ID="btnPagar" runat="server" Text="Procesar Pago Seguro 🔒" CssClass="btn btn-success w-100 shadow-sm" />
+                                <asp:Button ID="btnPagar" runat="server" Text="Procesar Pago Seguro 🔒" CssClass="btn btn-success w-100 shadow-sm" OnClientClick="return simularValidacion(this);" UseSubmitBehavior="false" />
                             </div>
                         </asp:Panel>
 
@@ -103,6 +105,7 @@
     </form>
 
     <script>
+        // Lógica de formateo visual de la tarjeta
         document.getElementById('<%= txtTarjeta.ClientID %>').addEventListener('input', function (e) {
             var target = e.target;
             var position = target.selectionEnd;
@@ -119,6 +122,45 @@
         document.getElementById('<%= txtCVV.ClientID %>').addEventListener('input', function (e) {
             this.value = this.value.replace(/[^\d]/g, '');
         });
+
+        // 🚀 NUEVA FUNCIÓN: Animación de Validación Falsa
+        function simularValidacion(boton) {
+            // 1. Validamos que el navegador vea que todos los campos tienen texto antes de animar
+            var form = document.getElementById('form1');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return false; // Si falta algún dato, se detiene
+            }
+
+            // 2. Disparamos la alerta de SweetAlert2
+            Swal.fire({
+                title: 'Conectando con el Banco',
+                html: 'Enviando transacción cifrada...<br><br>',
+                allowOutsideClick: false, // Evita que el usuario cierre dando clic afuera
+                showConfirmButton: false, // Oculta el botón de OK
+                didOpen: () => {
+                    Swal.showLoading(); // Muestra el spinner de carga
+                    
+                    // Fase 2: A los 1.5 segundos cambiamos el mensaje
+                    setTimeout(() => {
+                        const content = Swal.getHtmlContainer();
+                        if (content) {
+                            content.innerHTML = '<span style="color:#2e7d32; font-weight:bold;">Validando fondos y seguridad de la tarjeta...</span><br><br>';
+                        }
+                    }, 1500);
+
+                    // Fase 3: A los 3 segundos terminamos la animación y mandamos los datos al servidor .vb
+                    setTimeout(() => {
+                        Swal.close();
+                        // Ejecuta el PostBack real de ASP.NET
+                        __doPostBack('<%= btnPagar.UniqueID %>', '');
+                    }, 3000);
+                }
+            });
+
+            // Retornamos false para que el botón no haga PostBack INMEDIATAMENTE y nos deje mostrar la animación
+            return false;
+        }
     </script>
 </body>
 </html>

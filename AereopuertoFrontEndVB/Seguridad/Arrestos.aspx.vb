@@ -5,17 +5,16 @@ Public Class Arrestos
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        If Session("UserRole") Is Nothing OrElse (Session("UserRole").ToString() <> "Empleado" AndAlso Session("UserRole").ToString() <> "Admin") Then
-            Response.Redirect("~/Default.aspx")
+        Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        If Session("UserEmail") Is Nothing OrElse (idRol <> 5) Then
+            Response.Redirect("~/Account/Login.aspx")
         End If
 
         If Not IsPostBack Then
-            ' ¡Aquí está la magia! Ya sin la comilla, cargará todos al entrar.
             CargarHistorial("")
         End If
     End Sub
 
-    ' --- Buscar Historial ---
     Protected Sub btnBuscar_Click(sender As Object, e As EventArgs) Handles btnBuscar.Click
         CargarHistorial(txtBusqueda.Text.Trim())
     End Sub
@@ -50,17 +49,22 @@ Public Class Arrestos
         End Try
     End Sub
 
-    ' --- Guardar Nuevo Arresto ---
     Protected Sub btnGuardarArresto_Click(sender As Object, e As EventArgs) Handles btnGuardarArresto.Click
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_REGISTRAR_ARRESTO", conn)
                     cmd.CommandType = CommandType.StoredProcedure
+
+                    ' Parámetros de texto
                     cmd.Parameters.Add("p_nombre", OracleDbType.Varchar2).Value = txtNombre.Text.Trim()
                     cmd.Parameters.Add("p_pasaporte", OracleDbType.Varchar2).Value = If(String.IsNullOrEmpty(txtPasaporte.Text), DBNull.Value, txtPasaporte.Text.Trim().ToUpper())
                     cmd.Parameters.Add("p_motivo", OracleDbType.Varchar2).Value = txtMotivo.Text.Trim()
                     cmd.Parameters.Add("p_autoridad", OracleDbType.Varchar2).Value = ddlAutoridad.SelectedValue
+
+                    ' Parámetros numéricos (Opcionales)
+                    cmd.Parameters.Add("p_id_vuelo", OracleDbType.Int32).Value = If(String.IsNullOrEmpty(txtIdVuelo.Text), DBNull.Value, Convert.ToInt32(txtIdVuelo.Text))
+                    cmd.Parameters.Add("p_id_aeropuerto", OracleDbType.Int32).Value = If(String.IsNullOrEmpty(txtIdAeropuerto.Text), DBNull.Value, Convert.ToInt32(txtIdAeropuerto.Text))
 
                     Dim paramOut As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
                     paramOut.Direction = ParameterDirection.Output
@@ -71,11 +75,15 @@ Public Class Arrestos
 
                     If paramOut.Value.ToString() = "EXITO" Then
                         MostrarMensaje("🚨 Incidente registrado en el sistema. Alerta activa.", True)
+
+                        ' Limpiar formulario
                         txtNombre.Text = ""
                         txtPasaporte.Text = ""
+                        txtIdVuelo.Text = ""
+                        txtIdAeropuerto.Text = ""
                         txtMotivo.Text = ""
                         ddlAutoridad.SelectedIndex = 0
-                        ' Cargamos la búsqueda con el nombre que acabamos de meter para que lo vea en pantalla
+
                         CargarHistorial(txtNombre.Text.Trim())
                     Else
                         MostrarMensaje("⚠️ Error: " & paramOut.Value.ToString(), False)

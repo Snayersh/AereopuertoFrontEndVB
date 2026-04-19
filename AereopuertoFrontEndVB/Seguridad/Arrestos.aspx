@@ -1,5 +1,4 @@
 ﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="Arrestos.aspx.vb" Inherits="AereopuertoFrontEndVB.Arrestos" %>
-
 <!DOCTYPE html>
 <html lang="es">
 <head runat="server">
@@ -30,7 +29,6 @@
                 
                 <div class="input-group mb-4 shadow-sm">
                     <asp:TextBox ID="txtBusqueda" runat="server" CssClass="form-control" placeholder="Buscar por Nombre o Pasaporte..."></asp:TextBox>
-                    
                     <asp:Button ID="btnBuscar" runat="server" Text="Verificar Historial" CssClass="btn btn-dark fw-bold px-4" 
                         formnovalidate="formnovalidate" CausesValidation="false" />
                 </div>
@@ -75,6 +73,18 @@
                         <asp:TextBox ID="txtPasaporte" runat="server" CssClass="form-control"></asp:TextBox>
                     </div>
                 </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-secondary fw-bold small">ID Aeropuerto (Opcional)</label>
+                        <asp:TextBox ID="txtIdAeropuerto" runat="server" CssClass="form-control" TextMode="Number" placeholder="Ej: 1"></asp:TextBox>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-secondary fw-bold small">ID Vuelo (Opcional)</label>
+                        <asp:TextBox ID="txtIdVuelo" runat="server" CssClass="form-control" TextMode="Number" placeholder="Ej: 105"></asp:TextBox>
+                    </div>
+                </div>
+
                 <div class="mb-3">
                     <label class="form-label text-secondary fw-bold small">Motivo *</label>
                     <asp:TextBox ID="txtMotivo" runat="server" CssClass="form-control" required="true"></asp:TextBox>

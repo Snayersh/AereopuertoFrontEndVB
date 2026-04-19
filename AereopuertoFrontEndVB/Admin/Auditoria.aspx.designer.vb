@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class Arrestos
+Partial Public Class Auditoria
 
     '''<summary>
     '''form1 control.
@@ -41,74 +41,47 @@ Partial Public Class Arrestos
     Protected WithEvents lblMensaje As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''txtBusqueda control.
+    '''txtTabla control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtBusqueda As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents txtTabla As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''btnBuscar control.
+    '''txtUsuario control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents btnBuscar As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents txtUsuario As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''rptArrestos control.
+    '''ddlAccion control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents rptArrestos As Global.System.Web.UI.WebControls.Repeater
+    Protected WithEvents ddlAccion As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''txtNombre control.
+    '''btnFiltrar control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtNombre As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents btnFiltrar As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''txtPasaporte control.
+    '''rptAuditoria control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtPasaporte As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''txtMotivo control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents txtMotivo As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''ddlAutoridad control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents ddlAutoridad As Global.System.Web.UI.WebControls.DropDownList
-
-    '''<summary>
-    '''btnGuardarArresto control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents btnGuardarArresto As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents rptAuditoria As Global.System.Web.UI.WebControls.Repeater
 End Class

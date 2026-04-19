@@ -5,8 +5,9 @@ Public Class CheckIn
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        If Session("UserRole") Is Nothing OrElse (Session("UserRole").ToString() <> "Empleado" AndAlso Session("UserRole").ToString() <> "Admin") Then
-            Response.Redirect("~/Default.aspx")
+        Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        If Session("UserEmail") Is Nothing OrElse (idRol <> 3) Then
+            Response.Redirect("~/Account/Login.aspx")
         End If
 
         If Not IsPostBack Then
@@ -57,15 +58,19 @@ Public Class CheckIn
                             If estadoId = 2 Then ' PAGADO (Listo para abordar)
                                 MostrarAlerta("Boleto válido. Listo para abordar.", "alert-success")
                                 btnConfirmar.Visible = True
+                                divTipoCheckin.Visible = True
                             ElseIf estadoId = 4 Then ' ABORDADO
                                 MostrarAlerta("¡ALERTA! Este pasajero ya registró su abordaje.", "alert-danger")
                                 btnConfirmar.Visible = False
+                                divTipoCheckin.Visible = False
                             ElseIf estadoId = 3 Then ' CANCELADO
                                 MostrarAlerta("Boleto cancelado. No puede abordar.", "alert-danger")
                                 btnConfirmar.Visible = False
+                                divTipoCheckin.Visible = False
                             Else ' RESERVADO (No pagado)
                                 MostrarAlerta("El boleto aún no ha sido pagado.", "alert-warning")
                                 btnConfirmar.Visible = False
+                                divTipoCheckin.Visible = False
                             End If
 
                         Else
@@ -95,6 +100,8 @@ Public Class CheckIn
                     cmd.BindByName = True
 
                     cmd.Parameters.Add("p_codigo_boleto", OracleDbType.Varchar2).Value = codigo
+                    ' Nuevo parámetro para llenar la tabla AUR_CHECKIN
+                    cmd.Parameters.Add("p_id_tipo_checkin", OracleDbType.Int32).Value = Convert.ToInt32(ddlTipoCheckin.SelectedValue)
 
                     Dim outResultado As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
                     outResultado.Direction = ParameterDirection.Output
@@ -106,8 +113,8 @@ Public Class CheckIn
                     Dim res As String = outResultado.Value.ToString()
 
                     If res = "EXITO" Then
-                        MostrarAlerta("¡Ingreso autorizado con éxito!", "alert-success")
-                        btnConfirmar.Visible = False
+                        MostrarAlerta("¡Ingreso autorizado y Check-In registrado con éxito!", "alert-success")
+                        pnlResultado.Visible = False
                         txtCodigo.Text = "" ' Limpiamos para el siguiente pasajero
                     Else
                         MostrarAlerta("Error de validación: " & res, "alert-danger")

@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class Equipaje
+Partial Public Class ClimaAeropuerto
 
     '''<summary>
     '''form1 control.
@@ -41,74 +41,38 @@ Partial Public Class Equipaje
     Protected WithEvents lblMensaje As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''ddlBoletos control.
+    '''lblTemperatura control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlBoletos As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents lblTemperatura As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''pnlGestionEquipaje control.
+    '''lblCondicion control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlGestionEquipaje As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents lblCondicion As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''ddlTipoEquipaje control.
+    '''btnActualizarClima control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlTipoEquipaje As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents btnActualizarClima As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''txtPeso control.
+    '''rptHistorialClima control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtPeso As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''txtDescripcion control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents txtDescripcion As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''btnRegistrarEquipaje control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents btnRegistrarEquipaje As Global.System.Web.UI.WebControls.Button
-
-    '''<summary>
-    '''pnlVacio control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents pnlVacio As Global.System.Web.UI.WebControls.Panel
-
-    '''<summary>
-    '''rptEquipaje control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents rptEquipaje As Global.System.Web.UI.WebControls.Repeater
+    Protected WithEvents rptHistorialClima As Global.System.Web.UI.WebControls.Repeater
 End Class

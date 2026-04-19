@@ -5,10 +5,10 @@ Public Class ProgramasVuelo
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        If Session("UserRole") Is Nothing OrElse (Session("UserRole").ToString() <> "Empleado" AndAlso Session("UserRole").ToString() <> "Admin") Then
-            Response.Redirect("~/Default.aspx")
+        Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        If Session("UserEmail") Is Nothing OrElse (idRol <> 3) Then
+            Response.Redirect("~/Account/Login.aspx")
         End If
-
         If Not IsPostBack Then
             pnlMensaje.Visible = False
             CargarAerolineas()

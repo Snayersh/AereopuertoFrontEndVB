@@ -1,5 +1,4 @@
 ﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="CheckIn.aspx.vb" Inherits="AereopuertoFrontEndVB.CheckIn" %>
-
 <!DOCTYPE html>
 <html lang="es">
 <head runat="server">
@@ -20,7 +19,7 @@
 <body>
     <form id="form1" runat="server">
         <div class="top-bar d-flex justify-content-between align-items-center">
-            <h4 class="m-0 fw-bold">✅ Control de Abordaje</h4>
+            <h4 class="m-0 fw-bold">✅ Control de Abordaje / Check-In</h4>
             <a href="../Default.aspx" class="btn btn-outline-light btn-sm fw-bold rounded-pill px-4">← Volver al Panel</a>
         </div>
 
@@ -44,7 +43,7 @@
                         </asp:Panel>
 
                         <asp:Panel ID="pnlResultado" runat="server" Visible="false">
-                            <div class="info-box shadow-sm">
+                            <div class="info-box shadow-sm mb-4">
                                 <div class="row">
                                     <div class="col-12 text-center mb-3">
                                         <div class="info-label">Pasajero</div>
@@ -65,7 +64,16 @@
                                 </div>
                             </div>
 
-                            <asp:Button ID="btnConfirmar" runat="server" Text="Autorizar Ingreso al Avión ✈️" CssClass="btn btn-success w-100 py-3 mt-4 fw-bold fs-5 rounded-pill shadow" Visible="false" />
+                            <div class="mb-3" id="divTipoCheckin" runat="server">
+                                <label class="form-label text-secondary fw-bold small">Método de Validación *</label>
+                                <asp:DropDownList ID="ddlTipoCheckin" runat="server" CssClass="form-select form-select-lg">
+                                    <asp:ListItem Text="1 - Mostrador Físico" Value="1"></asp:ListItem>
+                                    <asp:ListItem Text="2 - Puerta de Embarque (Gate)" Value="2"></asp:ListItem>
+                                    <asp:ListItem Text="3 - Kiosco Automático" Value="3"></asp:ListItem>
+                                </asp:DropDownList>
+                            </div>
+
+                            <asp:Button ID="btnConfirmar" runat="server" Text="Autorizar Ingreso al Avión ✈️" CssClass="btn btn-success w-100 py-3 mt-2 fw-bold fs-5 rounded-pill shadow" Visible="false" />
                         </asp:Panel>
 
                     </div>

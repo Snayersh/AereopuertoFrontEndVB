@@ -5,11 +5,10 @@ Public Class Usuarios
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        ' SEGURIDAD CORREGIDA: Validamos que la sesión exista y que sea "Admin" (o "1")
-        If Session("UserRole") Is Nothing OrElse (Session("UserRole").ToString() <> "Admin" AndAlso Session("UserRole").ToString() <> "1") Then
-            Response.Redirect("~/Default.aspx")
+        Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        If Session("UserEmail") Is Nothing OrElse (idRol <> 4) Then
+            Response.Redirect("~/Account/Login.aspx")
         End If
-
         If Not IsPostBack Then
             pnlExito.Visible = False
             pnlError.Visible = False

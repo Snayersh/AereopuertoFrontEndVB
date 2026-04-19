@@ -8,9 +8,9 @@ Public Class ControlVuelos
     Private dtEstados As DataTable
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        ' Seguridad: Validamos que sea un administrador o empleado
-        If Session("UserRole") Is Nothing OrElse (Session("UserRole").ToString() <> "Admin" AndAlso Session("UserRole").ToString() <> "Empleado") Then
-            Response.Redirect("~/Default.aspx")
+        Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        If Session("UserEmail") Is Nothing OrElse (idRol <> 3) Then
+            Response.Redirect("~/Account/Login.aspx")
         End If
 
         If Not IsPostBack Then

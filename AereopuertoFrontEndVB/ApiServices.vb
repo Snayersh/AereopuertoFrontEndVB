@@ -121,7 +121,8 @@ Public Class AuthService
 
     ' ... (El resto de funciones como RegistrarUsuario y RecuperarPassword siguen igualitas abajo)
 
-    Public Shared Function RegistrarUsuario(pNombre As String, pApellido As String, pasaporte As String, telefono As String, pais As String, correo As String, password As String) As Object
+    ' 🔥 ACTUALIZADO: Agregamos el parámetro fechaNacimiento
+    Public Shared Function RegistrarUsuario(pNombre As String, pApellido As String, pasaporte As String, telefono As String, pais As String, correo As String, password As String, fechaNacimiento As String) As Object
         Dim db As New ConexionDB()
         Dim contrasenaHasheada As String = UtilidadesAPI.EncriptarSHA256(password)
         Dim tokenActivacion As String = Guid.NewGuid().ToString()
@@ -132,14 +133,17 @@ Public Class AuthService
                     cmd.CommandType = CommandType.StoredProcedure
                     cmd.BindByName = True
 
-                    ' Mapeamos los campos que vienen del celular y rellenamos el resto con vacíos para que Oracle no falle
+                    ' Mapeamos los campos que vienen del celular
                     cmd.Parameters.Add("p_primer_nombre", OracleDbType.Varchar2).Value = pNombre
                     cmd.Parameters.Add("p_segundo_nombre", OracleDbType.Varchar2).Value = ""
                     cmd.Parameters.Add("p_tercer_nombre", OracleDbType.Varchar2).Value = ""
                     cmd.Parameters.Add("p_primer_apellido", OracleDbType.Varchar2).Value = pApellido
                     cmd.Parameters.Add("p_segundo_apellido", OracleDbType.Varchar2).Value = ""
                     cmd.Parameters.Add("p_apellido_casada", OracleDbType.Varchar2).Value = ""
-                    cmd.Parameters.Add("p_fecha_nacimiento", OracleDbType.Date).Value = DateTime.Now.AddYears(-18) ' Fecha dummy si no la pide el app
+
+                    ' 🔥 Convertimos el string "YYYY-MM-DD" a una fecha real en Oracle
+                    cmd.Parameters.Add("p_fecha_nacimiento", OracleDbType.Date).Value = Convert.ToDateTime(fechaNacimiento)
+
                     cmd.Parameters.Add("p_telefono", OracleDbType.Varchar2).Value = telefono
                     cmd.Parameters.Add("p_correo", OracleDbType.Varchar2).Value = correo.ToLower()
 
@@ -164,6 +168,14 @@ Public Class AuthService
                     cmd.ExecuteNonQuery()
 
                     If paramOut.Value.ToString() = "EXITO" Then
+                        Dim linkActivacion As String = "https://localhost:44356/Account/Activar.aspx?token=" & tokenActivacion
+
+                        Try
+                            ServicioCorreo.EnviarCorreoActivacion(correo, pNombre, linkActivacion)
+                        Catch exCorreo As Exception
+                            Return New With {.success = True, .mensaje = "Usuario registrado, pero hubo un problema enviando el correo de activación."}
+                        End Try
+
                         Return New With {.success = True, .mensaje = "Usuario registrado correctamente. Revisa tu correo para activar la cuenta."}
                     Else
                         Return New With {.success = False, .mensaje = paramOut.Value.ToString()}
@@ -174,7 +186,6 @@ Public Class AuthService
             Return New With {.success = False, .mensaje = "Error al registrar: " & ex.Message}
         End Try
     End Function
-
     Public Shared Function RecuperarPassword(correo As String) As Object
         Dim db As New ConexionDB()
         Dim tokenRecuperacion As String = Guid.NewGuid().ToString()
@@ -616,8 +627,9 @@ Public Class PagoService
     End Function
 End Class
 
+
 ' ==========================================
-' SERVICIO DE EQUIPAJE
+' SERVICIO DE EQUIPAJE (API MÓVIL)
 ' ==========================================
 Public Class EquipajeService
     Public Shared Function ObtenerBoletosPagados(correo As String) As Object
@@ -672,16 +684,20 @@ Public Class EquipajeService
         End Try
     End Function
 
-    Public Shared Function RegistrarMaleta(codigoBoleto As String, peso As String, desc As String) As Object
+    ' 🔥 ACTUALIZADO: Ahora recibe el tipoEquipaje y maneja los recargos
+    Public Shared Function RegistrarMaleta(codigoBoleto As String, peso As String, desc As String, tipoEquipaje As String) As Object
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_REGISTRAR_EQUIPAJE", conn)
                     cmd.CommandType = CommandType.StoredProcedure
                     cmd.BindByName = True
+
                     cmd.Parameters.Add("p_codigo_boleto", OracleDbType.Varchar2).Value = codigoBoleto
                     cmd.Parameters.Add("p_peso", OracleDbType.Decimal).Value = Convert.ToDecimal(peso)
                     cmd.Parameters.Add("p_descripcion", OracleDbType.Varchar2).Value = desc
+                    ' Nuevo parámetro requerido por la BD
+                    cmd.Parameters.Add("p_id_tipo_equipaje", OracleDbType.Int32).Value = Convert.ToInt32(tipoEquipaje)
 
                     Dim outResultado As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
                     outResultado.Direction = ParameterDirection.Output
@@ -690,19 +706,28 @@ Public Class EquipajeService
                     conn.Open()
                     cmd.ExecuteNonQuery()
 
-                    If outResultado.Value.ToString() = "EXITO" Then
-                        Return New With {.success = True, .mensaje = "Maleta registrada"}
+                    Dim resultado As String = outResultado.Value.ToString()
+
+                    ' Manejo de respuesta con posible cobro extra
+                    If resultado.StartsWith("EXITO") Then
+                        Dim partes = resultado.Split("|"c)
+                        Dim mensajeFinal As String = "Maleta registrada exitosamente."
+
+                        If partes.Length > 1 Then
+                            mensajeFinal = partes(1) ' Aquí viene el texto "Tienes un recargo de Q..."
+                        End If
+
+                        Return New With {.success = True, .mensaje = mensajeFinal}
                     Else
-                        Return New With {.success = False, .mensaje = outResultado.Value.ToString()}
+                        Return New With {.success = False, .mensaje = resultado}
                     End If
                 End Using
             End Using
         Catch ex As Exception
-            Return New With {.success = False, .mensaje = ex.Message}
+            Return New With {.success = False, .mensaje = "Error en API: " & ex.Message}
         End Try
     End Function
 End Class
-
 ' ==========================================
 ' SERVICIO DE RADAR Y DASHBOARD
 ' ==========================================
@@ -855,4 +880,5 @@ Public Class OperacionesService
             Return New With {.success = False, .mensaje = ex.Message}
         End Try
     End Function
+
 End Class

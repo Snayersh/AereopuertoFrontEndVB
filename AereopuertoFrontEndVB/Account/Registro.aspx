@@ -147,6 +147,17 @@
             }
             return false;
         }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            var hoy = new Date();
+            var anioMaximo = hoy.getFullYear() - 18;
+            var mes = ("0" + (hoy.getMonth() + 1)).slice(-2);
+            var dia = ("0" + hoy.getDate()).slice(-2);
+            var fechaMax = anioMaximo + "-" + mes + "-" + dia;
+
+            // Asignamos la fecha máxima al input de Fecha de Nacimiento
+            document.getElementById('<%= txtFechaNac.ClientID %>').setAttribute("max", fechaMax);
+        });
     </script>
 </body>
 </html>

@@ -5,10 +5,9 @@ Public Class MisBoletos
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        ' 1. Verificación de Seguridad
-        If Session("UserEmail") Is Nothing Then
+        Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        If Session("UserEmail") Is Nothing OrElse (idRol <> 2) Then
             Response.Redirect("~/Account/Login.aspx")
-            Return
         End If
 
         If Not IsPostBack Then

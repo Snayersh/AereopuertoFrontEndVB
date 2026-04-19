@@ -9,7 +9,8 @@ Public Class Reservas
     Private CorreoUsuario As String
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        If Session("UserRole") Is Nothing Then
+        Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        If Session("UserEmail") Is Nothing OrElse (idRol <> 2) Then
             Response.Redirect("~/Account/Login.aspx")
         End If
 

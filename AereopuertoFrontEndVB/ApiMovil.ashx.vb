@@ -99,7 +99,7 @@ Public Class ApiMovil
                 Case "equipaje_boletos"
                     respuesta = EquipajeService.ObtenerBoletosPagados(ObtenerParam("correo"))
                 Case "equipaje_registrar"
-                    respuesta = EquipajeService.RegistrarMaleta(ObtenerParam("codigo_boleto"), ObtenerParam("peso"), ObtenerParam("descripcion"))
+                    respuesta = EquipajeService.RegistrarMaleta(ObtenerParam("codigo_boleto"), ObtenerParam("peso"), ObtenerParam("descripcion"), ObtenerParam("tipoEquipaje"))
                 Case "equipaje_lista"
                     respuesta = EquipajeService.ListarMaletasPorBoleto(ObtenerParam("codigo_boleto"))
                 Case "radar_estadisticas"
@@ -109,7 +109,7 @@ Public Class ApiMovil
                 Case "recuperar_password"
                     respuesta = AuthService.RecuperarPassword(ObtenerParam("correo"))
                 Case "registrar_usuario"
-                    respuesta = AuthService.RegistrarUsuario(ObtenerParam("primer_nombre"), ObtenerParam("primer_apellido"), ObtenerParam("pasaporte"), ObtenerParam("telefono"), ObtenerParam("pais"), ObtenerParam("correo"), ObtenerParam("password"))
+                    respuesta = AuthService.RegistrarUsuario(ObtenerParam("primer_nombre"), ObtenerParam("primer_apellido"), ObtenerParam("pasaporte"), ObtenerParam("telefono"), ObtenerParam("pais"), ObtenerParam("correo"), ObtenerParam("password"), ObtenerParam("fecha_nacimiento"))
                 Case "obtener_pase_abordar"
                     respuesta = OperacionesService.ObtenerPaseAbordar(ObtenerParam("codigo"), ObtenerParam("correo"))
                 Case "mis_boletos"
