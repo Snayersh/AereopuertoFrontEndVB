@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class ObjetosPerdidos
+Partial Public Class GestionPromociones
 
     '''<summary>
     '''form1 control.
@@ -50,58 +50,31 @@ Partial Public Class ObjetosPerdidos
     Protected WithEvents txtDescripcion As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''ddlLugar control.
+    '''txtDescuento control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlLugar As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents txtDescuento As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''btnGuardarObjeto control.
+    '''btnGuardar control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents btnGuardarObjeto As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents btnGuardar As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''ddlFiltroEstado control.
+    '''rptPromociones control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlFiltroEstado As Global.System.Web.UI.WebControls.DropDownList
-
-    '''<summary>
-    '''txtBusqueda control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents txtBusqueda As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''btnBuscar control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents btnBuscar As Global.System.Web.UI.WebControls.Button
-
-    '''<summary>
-    '''rptObjetos control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents rptObjetos As Global.System.Web.UI.WebControls.Repeater
+    Protected WithEvents rptPromociones As Global.System.Web.UI.WebControls.Repeater
 
     '''<summary>
     '''pnlVacio control.

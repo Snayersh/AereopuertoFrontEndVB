@@ -7,6 +7,7 @@ Public Class Pagos
     Private CorreoUsuario As String
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        ' 🔥 SEGURIDAD: Solo Pasajeros / Clientes (Rol 2)
         Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
         If Session("UserEmail") Is Nothing OrElse (idRol <> 2) Then
             Response.Redirect("~/Account/Login.aspx")
@@ -32,6 +33,7 @@ Public Class Pagos
             Return
         End If
 
+        ' Por regla de negocio web, asumimos que siempre es ID 1 (Tarjeta)
         Dim idMetodoPago As Integer = 1
         Dim db As New ConexionDB()
 
@@ -59,6 +61,7 @@ Public Class Pagos
                         pnlFormulario.Visible = False
                         pnlError.Visible = False
 
+                        ' Mostramos la factura formateada que nos devuelve el SP
                         lblFactura.Text = "FAC-" & partes(1).PadLeft(6, "0"c)
                         lblLocalizadorExito.Text = codigoReserva
                         pnlExito.Visible = True

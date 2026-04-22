@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class ObjetosPerdidos
+Partial Public Class MantenimientoAeronaves
 
     '''<summary>
     '''form1 control.
@@ -41,6 +41,33 @@ Partial Public Class ObjetosPerdidos
     Protected WithEvents lblMensaje As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
+    '''ddlAeronave control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents ddlAeronave As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
+    '''ddlTipo control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents ddlTipo As Global.System.Web.UI.WebControls.DropDownList
+
+    '''<summary>
+    '''txtFecha control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents txtFecha As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
     '''txtDescripcion control.
     '''</summary>
     '''<remarks>
@@ -50,58 +77,22 @@ Partial Public Class ObjetosPerdidos
     Protected WithEvents txtDescripcion As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''ddlLugar control.
+    '''btnGuardar control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlLugar As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents btnGuardar As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''btnGuardarObjeto control.
+    '''rptMantenimientos control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents btnGuardarObjeto As Global.System.Web.UI.WebControls.Button
-
-    '''<summary>
-    '''ddlFiltroEstado control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents ddlFiltroEstado As Global.System.Web.UI.WebControls.DropDownList
-
-    '''<summary>
-    '''txtBusqueda control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents txtBusqueda As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''btnBuscar control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents btnBuscar As Global.System.Web.UI.WebControls.Button
-
-    '''<summary>
-    '''rptObjetos control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents rptObjetos As Global.System.Web.UI.WebControls.Repeater
+    Protected WithEvents rptMantenimientos As Global.System.Web.UI.WebControls.Repeater
 
     '''<summary>
     '''pnlVacio control.

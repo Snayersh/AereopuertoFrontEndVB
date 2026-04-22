@@ -5,14 +5,14 @@ Public Class ObjetosPerdidos
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        ' Validación de seguridad: Solo Empleados y Admins
+        ' 🔥 SEGURIDAD: Solo Admins (1) o Empleados/Operaciones (3)
         Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
-        If Session("UserEmail") Is Nothing OrElse (idRol <> 6) Then
+        If Session("UserEmail") Is Nothing OrElse (idRol <> 1 AndAlso idRol <> 3) Then
             Response.Redirect("~/Account/Login.aspx")
         End If
 
         If Not IsPostBack Then
-            ' Magia UX: Al cargar la página por primera vez, mostramos solo lo que estorba en bodega
+            ' Cargar inicial: Solo los que estorban en bodega
             CargarObjetos("", "EN BODEGA")
         End If
     End Sub
@@ -24,6 +24,7 @@ Public Class ObjetosPerdidos
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_REGISTRAR_OBJETO", conn)
                     cmd.CommandType = CommandType.StoredProcedure
+                    cmd.BindByName = True
                     cmd.Parameters.Add("p_descripcion", OracleDbType.Varchar2).Value = txtDescripcion.Text.Trim()
                     cmd.Parameters.Add("p_lugar", OracleDbType.Varchar2).Value = ddlLugar.SelectedValue
 
@@ -35,45 +36,37 @@ Public Class ObjetosPerdidos
                     cmd.ExecuteNonQuery()
 
                     If paramOut.Value.ToString() = "EXITO" Then
-                        MostrarMensaje("✅ Objeto registrado en bodega.", True)
-                        ' Limpiamos el formulario de arriba
+                        MostrarMensaje("✅ Objeto registrado e ingresado a bodega correctamente.", True)
                         txtDescripcion.Text = ""
                         ddlLugar.SelectedIndex = 0
-
-                        ' Refrescamos la tabla manteniendo lo que sea que tengan seleccionado en los filtros
                         CargarObjetos(txtBusqueda.Text.Trim(), ddlFiltroEstado.SelectedValue)
                     Else
-                        MostrarMensaje("⚠️ Error: " & paramOut.Value.ToString(), False)
+                        MostrarMensaje("⚠️ Error en base de datos: " & paramOut.Value.ToString(), False)
                     End If
                 End Using
             End Using
         Catch ex As Exception
-            MostrarMensaje("❌ Error: " & ex.Message, False)
+            MostrarMensaje("❌ Error interno: " & ex.Message, False)
         End Try
     End Sub
 
-    ' --- Buscar y Filtrar Objetos ---
+    ' --- Buscar y Filtrar ---
     Protected Sub btnBuscar_Click(sender As Object, e As EventArgs) Handles btnBuscar.Click
-        ' Toma el texto del buscador y el valor del menú desplegable
         CargarObjetos(txtBusqueda.Text.Trim(), ddlFiltroEstado.SelectedValue)
     End Sub
 
-    ' --- Método Principal que se conecta a Oracle ---
+    ' --- Cargar Tabla (Lógica Principal) ---
     Private Sub CargarObjetos(busqueda As String, estado As String)
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_BUSCAR_OBJETOS", conn)
                     cmd.CommandType = CommandType.StoredProcedure
-
-                    ' 👇 ESTA ES LA LÍNEA MÁGICA QUE FALTABA 👇
                     cmd.BindByName = True
 
-                    ' Inyectamos los filtros
                     cmd.Parameters.Add("p_busqueda", OracleDbType.Varchar2).Value = If(String.IsNullOrEmpty(busqueda), DBNull.Value, busqueda)
                     cmd.Parameters.Add("p_estado", OracleDbType.Varchar2).Value = estado
 
-                    ' Parámetro de salida (el cursor con la tabla)
                     Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
                     cursorParam.Direction = ParameterDirection.Output
                     cmd.Parameters.Add(cursorParam)
@@ -83,34 +76,66 @@ Public Class ObjetosPerdidos
                         Dim dt As New DataTable()
                         da.Fill(dt)
 
-                        rptObjetos.DataSource = dt
-                        rptObjetos.DataBind()
-
-                        ' Detalle de UX
-                        If dt.Rows.Count = 0 Then
-                            MostrarMensaje("ℹ️ No hay registros que coincidan con la búsqueda actual.", True)
+                        If dt.Rows.Count > 0 Then
+                            rptObjetos.DataSource = dt
+                            rptObjetos.DataBind()
+                            rptObjetos.Visible = True
+                            pnlVacio.Visible = False
                         Else
-                            pnlMensaje.Visible = False
+                            rptObjetos.Visible = False
+                            pnlVacio.Visible = True
                         End If
                     End Using
                 End Using
             End Using
         Catch ex As Exception
-            MostrarMensaje("Error cargando tabla: " & ex.Message, False)
+            MostrarMensaje("Error cargando el inventario: " & ex.Message, False)
         End Try
     End Sub
 
-    ' --- Entregar Objeto (Botón que está dentro del Repeater) ---
+    ' =================================================================
+    ' EVENTO: Control Visual Fila por Fila (Paneles y Colores)
+    ' =================================================================
+    Protected Sub rptObjetos_ItemDataBound(sender As Object, e As RepeaterItemEventArgs) Handles rptObjetos.ItemDataBound
+        If e.Item.ItemType = ListItemType.Item OrElse e.Item.ItemType = ListItemType.AlternatingItem Then
+
+            Dim estadoStr As String = DataBinder.Eval(e.Item.DataItem, "estado_reclamo").ToString().ToUpper()
+
+            ' 1. Manejo del Badge (Color)
+            Dim lblBadgeEstado As Label = CType(e.Item.FindControl("lblBadgeEstado"), Label)
+            lblBadgeEstado.Text = estadoStr
+
+            If estadoStr = "EN BODEGA" Then
+                lblBadgeEstado.CssClass = "badge bg-warning text-dark shadow-sm px-2 py-1"
+            ElseIf estadoStr = "RECLAMADO" Then
+                lblBadgeEstado.CssClass = "badge bg-success shadow-sm px-2 py-1"
+            Else
+                lblBadgeEstado.CssClass = "badge bg-secondary shadow-sm px-2 py-1"
+            End If
+
+            ' 2. Manejo de Paneles (Visibilidad)
+            Dim pnlEntregar As Panel = CType(e.Item.FindControl("pnlEntregar"), Panel)
+            Dim pnlEntregado As Panel = CType(e.Item.FindControl("pnlEntregado"), Panel)
+
+            If estadoStr = "EN BODEGA" Then
+                pnlEntregar.Visible = True
+                pnlEntregado.Visible = False
+            Else
+                pnlEntregar.Visible = False
+                pnlEntregado.Visible = True
+            End If
+        End If
+    End Sub
+
+    ' --- Procesar Entrega ---
     Protected Sub rptObjetos_ItemCommand(source As Object, e As RepeaterCommandEventArgs)
         If e.CommandName = "Entregar" Then
             Dim idObjeto As Integer = Convert.ToInt32(e.CommandArgument)
-
-            ' Buscamos la caja de texto que está en la MISMA fila del botón que presionaron
             Dim txtEntregarA As TextBox = CType(e.Item.FindControl("txtEntregarA"), TextBox)
             Dim nombreDueno As String = txtEntregarA.Text.Trim()
 
             If String.IsNullOrEmpty(nombreDueno) Then
-                MostrarMensaje("⚠️ Debes ingresar el nombre de la persona a quien se le entrega el objeto.", False)
+                MostrarMensaje("⚠️ Por favor, ingrese el nombre de la persona que reclama el objeto.", False)
                 Return
             End If
 
@@ -119,6 +144,7 @@ Public Class ObjetosPerdidos
                 Using conn As OracleConnection = db.ObtenerConexion()
                     Using cmd As New OracleCommand("SP_ENTREGAR_OBJETO", conn)
                         cmd.CommandType = CommandType.StoredProcedure
+                        cmd.BindByName = True
                         cmd.Parameters.Add("p_id_objeto", OracleDbType.Int32).Value = idObjeto
                         cmd.Parameters.Add("p_entregado_a", OracleDbType.Varchar2).Value = nombreDueno
 
@@ -130,22 +156,19 @@ Public Class ObjetosPerdidos
                         cmd.ExecuteNonQuery()
 
                         If paramOut.Value.ToString() = "EXITO" Then
-                            MostrarMensaje("🎉 Objeto entregado exitosamente.", True)
-
-                            ' Volvemos a cargar la tabla respetando los filtros actuales
+                            MostrarMensaje("🎉 Objeto marcado como entregado exitosamente.", True)
                             CargarObjetos(txtBusqueda.Text.Trim(), ddlFiltroEstado.SelectedValue)
                         Else
-                            MostrarMensaje("Error: " & paramOut.Value.ToString(), False)
+                            MostrarMensaje("Error al actualizar: " & paramOut.Value.ToString(), False)
                         End If
                     End Using
                 End Using
             Catch ex As Exception
-                MostrarMensaje("Error al actualizar: " & ex.Message, False)
+                MostrarMensaje("Error de sistema al entregar: " & ex.Message, False)
             End Try
         End If
     End Sub
 
-    ' --- Función para mostrar alertas en pantalla ---
     Private Sub MostrarMensaje(mensaje As String, esExito As Boolean)
         pnlMensaje.Visible = True
         lblMensaje.Text = mensaje

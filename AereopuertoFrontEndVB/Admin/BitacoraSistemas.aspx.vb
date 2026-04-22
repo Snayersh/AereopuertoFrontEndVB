@@ -6,6 +6,7 @@ Public Class BitacoraSistemas
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        ' Solo Administrador (1)
         If Session("UserEmail") Is Nothing OrElse idRol <> 1 Then
             Response.Redirect("~/Account/Login.aspx")
         End If
@@ -54,9 +55,13 @@ Public Class BitacoraSistemas
         End Try
     End Sub
 
-    ' Estilos dinámicos para el Frontend
-    Protected Function ObtenerBadgeAccion(accion As String) As String
-        Select Case accion.ToUpper()
+    ' -------------------------------------------------------------
+    ' CORRECCIÓN: PUBLIC para que el HTML pueda leerla
+    ' -------------------------------------------------------------
+    Public Function ObtenerBadgeAccion(accion As Object) As String
+        If IsDBNull(accion) OrElse accion Is Nothing Then Return "badge-info"
+
+        Select Case accion.ToString().ToUpper()
             Case "ERROR", "CRITICO", "FALLO"
                 Return "badge-error"
             Case "SEGURIDAD", "ALERTA"
@@ -74,7 +79,6 @@ Public Class BitacoraSistemas
 
     ' =========================================================================
     ' 🌟 FUNCIÓN GLOBAL PARA GUARDAR LOGS DESDE CUALQUIER PARTE DE TU CÓDIGO 🌟
-    ' Puedes mover esta función a tu clase UtilidadesAPI o ConexionDB si deseas.
     ' =========================================================================
     Public Shared Sub RegistrarEventoApp(modulo As String, accion As String, usuario As String, descripcion As String)
         Dim db As New ConexionDB()

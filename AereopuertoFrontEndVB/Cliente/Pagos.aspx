@@ -5,26 +5,27 @@
     <meta charset="utf-8" />
     <title>Pago de Reserva - La Aurora</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
     <style>
         body { background-color: #f4f7f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .top-bar { background-color: #0d47a1; color: white; padding: 15px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .payment-card { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 40px; border-top: 5px solid #2e7d32; margin-top: 40px; margin-bottom: 40px; }
+        .payment-card { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 40px; border-top: 5px solid #1565c0; margin-top: 40px; margin-bottom: 40px; }
         .form-control { height: 50px; border-radius: 8px; font-size: 1.1rem; }
-        .btn-success { background-color: #2e7d32; border: none; height: 50px; font-weight: bold; border-radius: 8px; font-size: 1.1rem; transition: 0.3s; }
-        .btn-success:hover { background-color: #1b5e20; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3); }
-        .cc-box { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; border-radius: 15px; padding: 25px; margin-bottom: 25px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-        .cc-chip { width: 50px; height: 35px; background: #ffd54f; border-radius: 5px; margin-bottom: 15px; opacity: 0.8; }
-        .section-title { font-size: 0.9rem; font-weight: bold; color: #81c784; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
-        .receipt-box { background-color: #f8f9fa; border: 2px dashed #dee2e6; border-radius: 10px; padding: 20px; margin-top: 20px; }
+        
+        /* Botón Estandarizado al Azul Oficial */
+        .btn-custom { background-color: #0d47a1; color: white; border: none; height: 50px; font-weight: bold; border-radius: 8px; font-size: 1.1rem; transition: 0.3s; }
+        .btn-custom:hover { background-color: #1565c0; color: white; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(13, 71, 161, 0.3); }
+        
+        .cc-box { background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%); color: white; border-radius: 15px; padding: 25px; margin-bottom: 25px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        .cc-chip { width: 50px; height: 35px; background: #ffd54f; border-radius: 5px; margin-bottom: 15px; opacity: 0.9; box-shadow: inset 0 0 5px rgba(0,0,0,0.2); }
+        .section-title { font-size: 0.9rem; font-weight: bold; color: #1565c0; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+        .receipt-box { background-color: #f8f9fc; border: 2px dashed #bbdefb; border-radius: 10px; padding: 20px; margin-top: 20px; }
     </style>
 </head>
 <body>
     <form id="form1" runat="server">
         <div class="top-bar d-flex justify-content-between align-items-center">
-            <h4 class="m-0 fw-bold">💳 Pasarela de Pagos</h4>
+            <h4 class="m-0 fw-bold">💳 Pasarela de Pagos Segura</h4>
             <a href="../Default.aspx" class="btn btn-outline-light btn-sm fw-bold rounded-pill px-4">← Volver al Inicio</a>
         </div>
 
@@ -33,11 +34,11 @@
                 <div class="col-md-8 col-lg-6">
                     <div class="payment-card">
                         <div class="text-center mb-4">
-                            <h2 class="fw-bold" style="color: #2e7d32;">Completa tu Compra</h2>
+                            <h2 class="fw-bold" style="color: #0d47a1;">Completa tu Compra</h2>
                             <p class="text-muted">Ingresa tu código de reserva y los datos de pago.</p>
                         </div>
 
-                        <asp:Panel ID="pnlError" runat="server" Visible="false" CssClass="alert alert-danger text-center rounded-3 mb-4">
+                        <asp:Panel ID="pnlError" runat="server" Visible="false" CssClass="alert alert-danger text-center rounded-3 mb-4 shadow-sm">
                             <asp:Label ID="lblError" runat="server" CssClass="fw-bold"></asp:Label>
                         </asp:Panel>
 
@@ -47,17 +48,17 @@
                                 <p class="fs-5 mb-1">Tus boletos ahora están confirmados.</p>
                                 
                                 <div class="receipt-box text-start mt-4 mb-4">
-                                    <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
-                                        <span class="text-muted fw-bold">Localizador:</span>
-                                        <span class="fw-bold fs-5"><asp:Label ID="lblLocalizadorExito" runat="server"></asp:Label></span>
+                                    <div class="d-flex justify-content-between border-bottom pb-2 mb-2 border-primary border-opacity-25">
+                                        <span class="text-secondary fw-bold">Localizador:</span>
+                                        <span class="fw-bold fs-5 text-primary"><asp:Label ID="lblLocalizadorExito" runat="server"></asp:Label></span>
                                     </div>
                                     <div class="d-flex justify-content-between">
-                                        <span class="text-muted fw-bold">Factura Generada:</span>
+                                        <span class="text-secondary fw-bold">Factura Generada:</span>
                                         <span class="fw-bold text-dark"><asp:Label ID="lblFactura" runat="server"></asp:Label></span>
                                     </div>
                                 </div>
 
-                                <a href="MisBoletos.aspx" class="btn btn-success fw-bold px-5 py-3 rounded-pill shadow">Ir a Imprimir Pase de Abordar 🎫</a>
+                                <a href="MisBoletos.aspx" class="btn btn-custom px-5 py-3 rounded-pill shadow">Ir a Imprimir Pase de Abordar 🎫</a>
                             </div>
                         </asp:Panel>
 
@@ -65,7 +66,7 @@
                             <div class="section-title">1. Datos de la Reserva</div>
                             <div class="mb-4">
                                 <label class="form-label fw-bold text-secondary">Código de Reserva (Localizador)</label>
-                                <asp:TextBox ID="txtCodigoReserva" runat="server" CssClass="form-control text-uppercase" placeholder="Ej: B-A1B2C" required="true"></asp:TextBox>
+                                <asp:TextBox ID="txtCodigoReserva" runat="server" CssClass="form-control text-uppercase border-primary border-opacity-25" placeholder="Ej: B-A1B2C" required="true"></asp:TextBox>
                                 <div class="form-text">El código que obtuviste al seleccionar tus asientos.</div>
                             </div>
 
@@ -75,26 +76,26 @@
                                 <div class="cc-chip"></div>
                                 <div class="mb-3">
                                     <label class="form-label small text-white-50 mb-1">Número de Tarjeta</label>
-                                    <asp:TextBox ID="txtTarjeta" runat="server" CssClass="form-control bg-light border-0 fw-bold" placeholder="0000 0000 0000 0000" MaxLength="19" required="true"></asp:TextBox>
+                                    <asp:TextBox ID="txtTarjeta" runat="server" CssClass="form-control bg-light border-0 fw-bold text-dark" placeholder="0000 0000 0000 0000" MaxLength="19" required="true"></asp:TextBox>
                                 </div>
                                 <div class="row">
                                     <div class="col-6">
                                         <label class="form-label small text-white-50 mb-1">Vencimiento</label>
-                                        <asp:TextBox ID="txtVencimiento" runat="server" CssClass="form-control bg-light border-0 fw-bold" placeholder="MM/YY" MaxLength="5" required="true"></asp:TextBox>
+                                        <asp:TextBox ID="txtVencimiento" runat="server" CssClass="form-control bg-light border-0 fw-bold text-dark" placeholder="MM/YY" MaxLength="5" required="true"></asp:TextBox>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label small text-white-50 mb-1">CVV</label>
-                                        <asp:TextBox ID="txtCVV" runat="server" CssClass="form-control bg-light border-0 fw-bold" placeholder="123" MaxLength="4" TextMode="Password" required="true"></asp:TextBox>
+                                        <asp:TextBox ID="txtCVV" runat="server" CssClass="form-control bg-light border-0 fw-bold text-dark" placeholder="123" MaxLength="4" TextMode="Password" required="true"></asp:TextBox>
                                     </div>
                                 </div>
                                 <div class="mt-3">
                                     <label class="form-label small text-white-50 mb-1">Nombre en la tarjeta</label>
-                                    <asp:TextBox ID="txtNombreTitular" runat="server" CssClass="form-control bg-light border-0 text-uppercase fw-bold" placeholder="JUAN PEREZ" required="true"></asp:TextBox>
+                                    <asp:TextBox ID="txtNombreTitular" runat="server" CssClass="form-control bg-light border-0 text-uppercase fw-bold text-dark" placeholder="JUAN PEREZ" required="true"></asp:TextBox>
                                 </div>
                             </div>
 
                             <div class="mt-4">
-                                <asp:Button ID="btnPagar" runat="server" Text="Procesar Pago Seguro 🔒" CssClass="btn btn-success w-100 shadow-sm" OnClientClick="return simularValidacion(this);" UseSubmitBehavior="false" />
+                                <asp:Button ID="btnPagar" runat="server" Text="Procesar Pago Seguro 🔒" CssClass="btn btn-custom w-100 shadow-sm" OnClientClick="return simularValidacion(this);" UseSubmitBehavior="false" />
                             </div>
                         </asp:Panel>
 
@@ -123,42 +124,37 @@
             this.value = this.value.replace(/[^\d]/g, '');
         });
 
-        // 🚀 NUEVA FUNCIÓN: Animación de Validación Falsa
+        // Animación de Validación Segura (Ajustada a colores oficiales)
         function simularValidacion(boton) {
-            // 1. Validamos que el navegador vea que todos los campos tienen texto antes de animar
             var form = document.getElementById('form1');
             if (!form.checkValidity()) {
                 form.reportValidity();
-                return false; // Si falta algún dato, se detiene
+                return false;
             }
 
-            // 2. Disparamos la alerta de SweetAlert2
             Swal.fire({
                 title: 'Conectando con el Banco',
                 html: 'Enviando transacción cifrada...<br><br>',
-                allowOutsideClick: false, // Evita que el usuario cierre dando clic afuera
-                showConfirmButton: false, // Oculta el botón de OK
+                allowOutsideClick: false,
+                showConfirmButton: false,
                 didOpen: () => {
-                    Swal.showLoading(); // Muestra el spinner de carga
+                    Swal.showLoading();
                     
-                    // Fase 2: A los 1.5 segundos cambiamos el mensaje
                     setTimeout(() => {
                         const content = Swal.getHtmlContainer();
                         if (content) {
-                            content.innerHTML = '<span style="color:#2e7d32; font-weight:bold;">Validando fondos y seguridad de la tarjeta...</span><br><br>';
+                            // Cambiado al azul corporativo #0d47a1
+                            content.innerHTML = '<span style="color:#0d47a1; font-weight:bold;">Validando fondos y seguridad de la tarjeta...</span><br><br>';
                         }
                     }, 1500);
 
-                    // Fase 3: A los 3 segundos terminamos la animación y mandamos los datos al servidor .vb
                     setTimeout(() => {
                         Swal.close();
-                        // Ejecuta el PostBack real de ASP.NET
                         __doPostBack('<%= btnPagar.UniqueID %>', '');
                     }, 3000);
                 }
             });
 
-            // Retornamos false para que el botón no haga PostBack INMEDIATAMENTE y nos deje mostrar la animación
             return false;
         }
     </script>
