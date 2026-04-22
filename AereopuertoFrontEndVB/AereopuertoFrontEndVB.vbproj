@@ -188,6 +188,7 @@
     <Content Include="Account\NuevaPassword.aspx" />
     <Content Include="Account\RecuperarPassword.aspx" />
     <Content Include="Admin\Auditoria.aspx" />
+    <Content Include="Admin\AuditoriaVuelos.aspx" />
     <Content Include="Admin\BitacoraSistemas.aspx" />
     <Content Include="Admin\PlanillaPago.aspx" />
     <Content Include="Admin\ReporteAerolineas.aspx" />
@@ -196,6 +197,7 @@
     <Content Include="Admin\ReportePasajeros.aspx" />
     <Content Include="Admin\ReporteVuelosAire.aspx" />
     <Content Include="Admin\ReporteVuelosGral.aspx" />
+    <Content Include="Cliente\AuditoriaPagos.aspx" />
     <Content Include="RRHH\EvaluacionPersonal.aspx" />
     <Content Include="Seguridad\Arrestos.aspx" />
     <Content Include="Operaciones\ClimaAeropuerto.aspx" />
@@ -361,6 +363,13 @@
       <DependentUpon>Auditoria.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
+    <Compile Include="Admin\AuditoriaVuelos.aspx.designer.vb">
+      <DependentUpon>AuditoriaVuelos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\AuditoriaVuelos.aspx.vb">
+      <DependentUpon>AuditoriaVuelos.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
     <Compile Include="Admin\BitacoraSistemas.aspx.designer.vb">
       <DependentUpon>BitacoraSistemas.aspx</DependentUpon>
     </Compile>
@@ -421,6 +430,13 @@
       <DependentUpon>ApiMovil.ashx</DependentUpon>
     </Compile>
     <Compile Include="Cliente\AsientosHub.vb" />
+    <Compile Include="Cliente\AuditoriaPagos.aspx.designer.vb">
+      <DependentUpon>AuditoriaPagos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Cliente\AuditoriaPagos.aspx.vb">
+      <DependentUpon>AuditoriaPagos.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
     <Compile Include="Cliente\Startup.vb" />
     <Compile Include="ConexionDBReplica.vb" />
     <Compile Include="ApiServices.vb" />

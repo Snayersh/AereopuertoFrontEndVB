@@ -1,5 +1,4 @@
 ﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="MisFacturas.aspx.vb" Inherits="AereopuertoFrontEndVB.MisFacturas" %>
-
 <!DOCTYPE html>
 <html lang="es">
 <head runat="server">
@@ -12,8 +11,8 @@
         .invoice-card { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 40px; margin-top: 40px; border-top: 5px solid #00796b; }
         .table th { background-color: #f8f9fa; color: #555; font-weight: bold; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
         .table td { vertical-align: middle; font-size: 1.1rem; }
-        .badge-pagado { background-color: #e8f5e9; color: #2e7d32; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
-        .badge-anulado { background-color: #ffebee; color: #c62828; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+        .badge-pagado { background-color: #e8f5e9; color: #2e7d32; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; display: inline-block; }
+        .badge-anulado { background-color: #ffebee; color: #c62828; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; display: inline-block; }
     </style>
 </head>
 <body>
@@ -61,14 +60,15 @@
                                                 <tr>
                                                     <td class="fw-bold text-primary"><%# Eval("numero_factura") %></td>
                                                     <td><%# Eval("fecha_emision") %></td>
-                                                    <td class="text-end fw-bold text-dark">Q <%# Convert.ToDecimal(Eval("total")).ToString("N2") %></td>
-                                                    <td class="text-center">
-                                                        <span class='<%# If(Eval("estado").ToString().ToUpper() = "PAGADA", "badge-pagado", "badge-anulado") %>'>
-                                                            <%# Eval("estado") %>
-                                                        </span>
+                                                    <td class="text-end fw-bold text-dark">
+                                                        <asp:Label ID="lblTotal" runat="server"></asp:Label>
                                                     </td>
                                                     <td class="text-center">
-<a href='DetalleFactura.aspx?id=<%# Eval("id_factura") %>' target="_blank" class="btn btn-sm btn-outline-primary rounded-pill fw-bold">📄 Ver Detalle</a>                                                    </td>
+                                                        <asp:Label ID="lblEstado" runat="server"></asp:Label>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <a href='DetalleFactura.aspx?id=<%# Eval("id_factura") %>' target="_blank" class="btn btn-sm btn-outline-primary rounded-pill fw-bold">📄 Ver Detalle</a>
+                                                    </td>
                                                 </tr>
                                             </ItemTemplate>
                                         </asp:Repeater>
