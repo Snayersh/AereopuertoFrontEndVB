@@ -1,7 +1,7 @@
 ﻿Imports System.Data
 Imports Oracle.ManagedDataAccess.Client
 
-Public Class GestionPuertas
+Public Class AsignarPuertas
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
@@ -133,8 +133,16 @@ Public Class GestionPuertas
                     Using da As New OracleDataAdapter(cmd)
                         Dim dt As New DataTable()
                         da.Fill(dt)
-                        rptAsignaciones.DataSource = dt
-                        rptAsignaciones.DataBind()
+
+                        If dt.Rows.Count > 0 Then
+                            rptAsignaciones.DataSource = dt
+                            rptAsignaciones.DataBind()
+                            rptAsignaciones.Visible = True
+                            pnlVacio.Visible = False
+                        Else
+                            rptAsignaciones.Visible = False
+                            pnlVacio.Visible = True
+                        End If
                     End Using
                 End Using
             End Using
@@ -146,6 +154,6 @@ Public Class GestionPuertas
     Private Sub MostrarMensaje(mensaje As String, esExito As Boolean)
         pnlMensaje.Visible = True
         lblMensaje.Text = mensaje
-        pnlMensaje.CssClass = If(esExito, "alert alert-success fw-bold text-center mb-3", "alert alert-danger fw-bold text-center mb-3")
+        pnlMensaje.CssClass = If(esExito, "alert alert-success fw-bold text-center rounded-3 mb-4 shadow-sm", "alert alert-danger fw-bold text-center rounded-3 mb-4 shadow-sm")
     End Sub
 End Class

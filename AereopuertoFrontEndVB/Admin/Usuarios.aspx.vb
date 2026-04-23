@@ -5,16 +5,14 @@ Public Class Usuarios
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        ' 🔥 SEGURIDAD: Validación de Rol 4
         Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
         If Session("UserEmail") Is Nothing OrElse (idRol <> 4) Then
             Response.Redirect("~/Account/Login.aspx")
         End If
-        If Not IsPostBack Then
-            pnlExito.Visible = False
-            pnlError.Visible = False
-            pnlEditarRol.Visible = False
 
-            ' Cargamos las tablas de forma normal
+        If Not IsPostBack Then
+            pnlEditarRol.Visible = False
             CargarDirectorioUsuarios()
             CargarCatalogoRoles()
         End If
@@ -44,7 +42,7 @@ Public Class Usuarios
                 End Using
             End Using
         Catch ex As Exception
-            MostrarError("Error al cargar usuarios: " & ex.Message)
+            MostrarMensaje("Error al cargar usuarios: " & ex.Message, False)
         End Try
     End Sub
 
@@ -72,19 +70,60 @@ Public Class Usuarios
                 End Using
             End Using
         Catch ex As Exception
-            MostrarError("Error al cargar roles: " & ex.Message)
+            ' Silencioso
         End Try
     End Sub
 
     ' =========================================================
-    ' CUANDO SE HACE CLIC EN "MODIFICAR ROL" EN LA TABLA
+    ' LÓGICA DE COLORES Y BOTONES (SIN ERRORES HTML)
+    ' =========================================================
+    Protected Sub rptUsuarios_ItemDataBound(sender As Object, e As RepeaterItemEventArgs) Handles rptUsuarios.ItemDataBound
+        If e.Item.ItemType = ListItemType.Item OrElse e.Item.ItemType = ListItemType.AlternatingItem Then
+
+            ' 1. Badge del Rol
+            Dim rolStr As String = DataBinder.Eval(e.Item.DataItem, "nombre_rol").ToString()
+            Dim lblBadgeRol As Label = CType(e.Item.FindControl("lblBadgeRol"), Label)
+            lblBadgeRol.Text = rolStr
+
+            If rolStr = "Administrador" Then
+                lblBadgeRol.CssClass = "badge-admin shadow-sm"
+            ElseIf rolStr = "Empleado" Then
+                lblBadgeRol.CssClass = "badge-empleado shadow-sm"
+            Else
+                lblBadgeRol.CssClass = "badge-cliente shadow-sm"
+            End If
+
+            ' 2. Badge del Estado
+            Dim estadoStr As String = DataBinder.Eval(e.Item.DataItem, "estado").ToString().ToUpper()
+            Dim lblBadgeEstado As Label = CType(e.Item.FindControl("lblBadgeEstado"), Label)
+            lblBadgeEstado.Text = estadoStr
+
+            If estadoStr = "ACTIVO" Then
+                lblBadgeEstado.CssClass = "badge bg-success shadow-sm px-3 py-2"
+            Else
+                lblBadgeEstado.CssClass = "badge bg-danger shadow-sm px-3 py-2"
+            End If
+
+            ' 3. Botón Activar/Desactivar
+            Dim btnToggleEstado As LinkButton = CType(e.Item.FindControl("btnToggleEstado"), LinkButton)
+            If estadoStr = "ACTIVO" Then
+                btnToggleEstado.Text = "🚫 Desactivar"
+                btnToggleEstado.CssClass = "btn btn-sm btn-outline-danger fw-bold mb-1 shadow-sm"
+                btnToggleEstado.OnClientClick = "return confirm('¿Estás seguro que deseas DESACTIVAR a este usuario?');"
+            Else
+                btnToggleEstado.Text = "✅ Activar"
+                btnToggleEstado.CssClass = "btn btn-sm btn-outline-success fw-bold mb-1 shadow-sm"
+                btnToggleEstado.OnClientClick = "return confirm('¿Estás seguro que deseas ACTIVAR a este usuario?');"
+            End If
+        End If
+    End Sub
+
+    ' =========================================================
+    ' ACCIONES DE LA TABLA (EDITAR / TOGGLE)
     ' =========================================================
     Protected Sub rptUsuarios_ItemCommand(source As Object, e As RepeaterCommandEventArgs) Handles rptUsuarios.ItemCommand
-        ' Limpiamos mensajes anteriores
-        pnlExito.Visible = False
-        pnlError.Visible = False
+        pnlMensaje.Visible = False
 
-        ' === SI HIZO CLIC EN EDITAR ROL ===
         If e.CommandName = "EditarRol" Then
             Dim datos As String() = e.CommandArgument.ToString().Split("|"c)
             Dim idUsuario As String = datos(0)
@@ -101,20 +140,15 @@ Public Class Usuarios
 
             pnlEditarRol.Visible = True
 
-            ' === SI HIZO CLIC EN DESACTIVAR / ACTIVAR ===
         ElseIf e.CommandName = "ToggleEstado" Then
             Dim datos As String() = e.CommandArgument.ToString().Split("|"c)
             Dim idUsuario As String = datos(0)
             Dim estadoActual As String = datos(1).ToUpper()
-
-            ' Lógica de interruptor: Si está activo, lo volvemos inactivo, y viceversa
             Dim nuevoEstado As String = If(estadoActual = "ACTIVO", "Inactivo", "Activo")
-
             CambiarEstadoUsuario(idUsuario, nuevoEstado)
         End If
     End Sub
 
-    ' Nueva subrutina para comunicarse con Oracle
     Private Sub CambiarEstadoUsuario(idUsuario As String, nuevoEstado As String)
         Dim db As New ConexionDB()
         Try
@@ -136,21 +170,21 @@ Public Class Usuarios
                     Dim resultado As String = outResultado.Value.ToString()
 
                     If resultado = "EXITO" Then
-                        MostrarExito("El estado del usuario se actualizó a: " & nuevoEstado)
-                        CargarDirectorioUsuarios() ' Refrescamos la tabla
+                        MostrarMensaje("✅ El estado del usuario se actualizó a: " & nuevoEstado, True)
+                        CargarDirectorioUsuarios()
                         pnlEditarRol.Visible = False
                     Else
-                        MostrarError("Error al cambiar estado: " & resultado)
+                        MostrarMensaje("⚠️ Error al cambiar estado: " & resultado, False)
                     End If
                 End Using
             End Using
         Catch ex As Exception
-            MostrarError("Error de conexión al cambiar estado: " & ex.Message)
+            MostrarMensaje("❌ Error de conexión: " & ex.Message, False)
         End Try
     End Sub
 
     ' =========================================================
-    ' GUARDAR EL CAMBIO EN ORACLE
+    ' GUARDAR EL CAMBIO DE ROL
     ' =========================================================
     Protected Sub btnGuardarCambios_Click(sender As Object, e As EventArgs) Handles btnGuardarCambios.Click
         Dim idUsuario As String = hfUsuarioEditando.Value
@@ -179,34 +213,26 @@ Public Class Usuarios
 
                     If resultado = "EXITO" Then
                         pnlEditarRol.Visible = False
-                        MostrarExito("Rol actualizado correctamente.")
-                        CargarDirectorioUsuarios() ' Recargamos la tabla para ver el cambio
+                        MostrarMensaje("✅ Rol de usuario actualizado correctamente.", True)
+                        CargarDirectorioUsuarios()
                     Else
-                        MostrarError("Error en base de datos al guardar: " & resultado)
+                        MostrarMensaje("⚠️ Error en base de datos: " & resultado, False)
                     End If
                 End Using
             End Using
         Catch ex As Exception
-            MostrarError("Error de conexión al guardar: " & ex.Message)
+            MostrarMensaje("❌ Error de conexión: " & ex.Message, False)
         End Try
     End Sub
 
     Protected Sub btnCancelarEdicion_Click(sender As Object, e As EventArgs) Handles btnCancelarEdicion.Click
         pnlEditarRol.Visible = False
-        pnlExito.Visible = False
-        pnlError.Visible = False
+        pnlMensaje.Visible = False
     End Sub
 
-    Private Sub MostrarError(mensaje As String)
-        pnlExito.Visible = False
-        pnlError.Visible = True
-        lblError.Text = mensaje
+    Private Sub MostrarMensaje(mensaje As String, esExito As Boolean)
+        pnlMensaje.Visible = True
+        lblMensaje.Text = mensaje
+        pnlMensaje.CssClass = If(esExito, "alert alert-success text-center fw-bold rounded-3 mb-4 shadow-sm", "alert alert-danger text-center fw-bold rounded-3 mb-4 shadow-sm")
     End Sub
-
-    Private Sub MostrarExito(mensaje As String)
-        pnlError.Visible = False
-        pnlExito.Visible = True
-        lblExito.Text = mensaje
-    End Sub
-
 End Class

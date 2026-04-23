@@ -191,7 +191,9 @@
     <Content Include="Admin\Auditoria.aspx" />
     <Content Include="Admin\AuditoriaVuelos.aspx" />
     <Content Include="Admin\BitacoraSistemas.aspx" />
+    <Content Include="Admin\DetalleReportes.aspx" />
     <Content Include="Admin\GestionPromociones.aspx" />
+    <Content Include="Admin\HistorialReportes.aspx" />
     <Content Include="Admin\PlanillaPago.aspx" />
     <Content Include="Admin\ReporteAerolineas.aspx" />
     <Content Include="Admin\ReporteArrestos.aspx" />
@@ -201,6 +203,10 @@
     <Content Include="Admin\ReporteVuelosGral.aspx" />
     <Content Include="Cliente\AuditoriaPagos.aspx" />
     <Content Include="Cliente\MantenimientoAeronaves.aspx" />
+    <Content Include="Cliente\ReclamoEquipaje.aspx" />
+    <Content Include="Cliente\SoporteTickets.aspx" />
+    <Content Include="Operaciones\ControlSeguridad.aspx" />
+    <Content Include="Operaciones\DetalleReservas..aspx" />
     <Content Include="Operaciones\EmisionAlertas.aspx" />
     <Content Include="RRHH\EvaluacionPersonal.aspx" />
     <Content Include="RRHH\GestionPlanilla.aspx" />
@@ -208,7 +214,7 @@
     <Content Include="Operaciones\ClimaAeropuerto.aspx" />
     <Content Include="Operaciones\EscanerRampa.aspx" />
     <Content Include="Operaciones\GestionAsistencia.aspx" />
-    <Content Include="Operaciones\GestionPuertas.aspx" />
+    <Content Include="Operaciones\AsignarPuertas.aspx" />
     <Content Include="RRHH\GestionTurnos.aspx" />
     <Content Include="Soporte\ObjetosPerdidos.aspx" />
     <Content Include="RRHH\RegistroTripulacion.aspx" />
@@ -218,7 +224,7 @@
     <Content Include="Operaciones\Escalas.aspx" />
     <Content Include="Radar.aspx" />
     <Content Include="RRHH\Tripulacion.aspx" />
-    <Content Include="RRHH\Usuarios.aspx" />
+    <Content Include="Admin\Usuarios.aspx" />
     <Content Include="Cliente\Equipaje.aspx" />
     <Content Include="Cliente\Pagos.aspx" />
     <Content Include="Account\Registro.aspx" />
@@ -389,12 +395,26 @@
       <DependentUpon>BitacoraSistemas.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
+    <Compile Include="Admin\DetalleReportes.aspx.designer.vb">
+      <DependentUpon>DetalleReportes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\DetalleReportes.aspx.vb">
+      <DependentUpon>DetalleReportes.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
     <Compile Include="Admin\GestionPromociones.aspx.designer.vb">
       <DependentUpon>GestionPromociones.aspx</DependentUpon>
     </Compile>
     <Compile Include="Admin\GestionPromociones.aspx.vb">
       <DependentUpon>GestionPromociones.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Admin\HistorialReportes.aspx.designer.vb">
+      <DependentUpon>HistorialReportes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\HistorialReportes.aspx.vb">
+      <DependentUpon>HistorialReportes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Admin\PlanillaPago.aspx.designer.vb">
       <DependentUpon>PlanillaPago.aspx</DependentUpon>
@@ -463,10 +483,38 @@
       <DependentUpon>MantenimientoAeronaves.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
+    <Compile Include="Cliente\ReclamoEquipaje.aspx.designer.vb">
+      <DependentUpon>ReclamoEquipaje.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Cliente\ReclamoEquipaje.aspx.vb">
+      <DependentUpon>ReclamoEquipaje.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Cliente\SoporteTickets.aspx.designer.vb">
+      <DependentUpon>SoporteTickets.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Cliente\SoporteTickets.aspx.vb">
+      <DependentUpon>SoporteTickets.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
     <Compile Include="Cliente\Startup.vb" />
     <Compile Include="ConexionDBReplica.vb" />
     <Compile Include="ApiServices.vb" />
     <Compile Include="config.vb" />
+    <Compile Include="Operaciones\ControlSeguridad.aspx.designer.vb">
+      <DependentUpon>ControlSeguridad.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Operaciones\ControlSeguridad.aspx.vb">
+      <DependentUpon>ControlSeguridad.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="Operaciones\DetalleReservas..aspx.designer.vb">
+      <DependentUpon>DetalleReservas..aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Operaciones\DetalleReservas..aspx.vb">
+      <DependentUpon>DetalleReservas..aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
     <Compile Include="Operaciones\EmisionAlertas.aspx.designer.vb">
       <DependentUpon>EmisionAlertas.aspx</DependentUpon>
     </Compile>
@@ -516,12 +564,12 @@
       <DependentUpon>GestionAsistencia.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
-    <Compile Include="Operaciones\GestionPuertas.aspx.designer.vb">
-      <DependentUpon>GestionPuertas.aspx</DependentUpon>
+    <Compile Include="Operaciones\AsignarPuertas.aspx.designer.vb">
+      <DependentUpon>AsignarPuertas.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Operaciones\GestionPuertas.aspx.vb">
-      <DependentUpon>GestionPuertas.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
+    <Compile Include="Operaciones\AsignarPuertas.aspx.vb">
+      <DependentUpon>AsignarPuertas.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="RRHH\GestionTurnos.aspx.designer.vb">
       <DependentUpon>GestionTurnos.aspx</DependentUpon>
@@ -586,12 +634,12 @@
       <DependentUpon>Tripulacion.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
-    <Compile Include="RRHH\Usuarios.aspx.designer.vb">
+    <Compile Include="Admin\Usuarios.aspx.designer.vb">
       <DependentUpon>Usuarios.aspx</DependentUpon>
     </Compile>
-    <Compile Include="RRHH\Usuarios.aspx.vb">
+    <Compile Include="Admin\Usuarios.aspx.vb">
       <DependentUpon>Usuarios.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Cliente\Equipaje.aspx.designer.vb">
       <DependentUpon>Equipaje.aspx</DependentUpon>

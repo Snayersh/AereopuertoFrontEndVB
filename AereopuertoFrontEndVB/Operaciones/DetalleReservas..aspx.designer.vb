@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class Usuarios
+Partial Public Class DetalleReservas
 
     '''<summary>
     '''form1 control.
@@ -23,101 +23,83 @@ Partial Public Class Usuarios
     Protected WithEvents form1 As Global.System.Web.UI.HtmlControls.HtmlForm
 
     '''<summary>
-    '''pnlExito control.
+    '''pnlMensaje control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlExito As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents pnlMensaje As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''lblExito control.
+    '''lblMensaje control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents lblExito As Global.System.Web.UI.WebControls.Label
+    Protected WithEvents lblMensaje As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''pnlError control.
+    '''ddlReservas control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlError As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents ddlReservas As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''lblError control.
+    '''btnVerDetalles control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents lblError As Global.System.Web.UI.WebControls.Label
+    Protected WithEvents btnVerDetalles As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''rptUsuarios control.
+    '''pnlGestionDetalles control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents rptUsuarios As Global.System.Web.UI.WebControls.Repeater
+    Protected WithEvents pnlGestionDetalles As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''pnlEditarRol control.
+    '''ddlPromos control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlEditarRol As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents ddlPromos As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''lblNombreEdicion control.
+    '''btnGuardarPromo control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents lblNombreEdicion As Global.System.Web.UI.WebControls.Label
+    Protected WithEvents btnGuardarPromo As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''hfUsuarioEditando control.
+    '''rptPromos control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents hfUsuarioEditando As Global.System.Web.UI.WebControls.HiddenField
+    Protected WithEvents rptPromos As Global.System.Web.UI.WebControls.Repeater
 
     '''<summary>
-    '''ddlRoles control.
+    '''pnlVacio control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlRoles As Global.System.Web.UI.WebControls.DropDownList
-
-    '''<summary>
-    '''btnGuardarCambios control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents btnGuardarCambios As Global.System.Web.UI.WebControls.Button
-
-    '''<summary>
-    '''btnCancelarEdicion control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents btnCancelarEdicion As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents pnlVacio As Global.System.Web.UI.WebControls.Panel
 End Class

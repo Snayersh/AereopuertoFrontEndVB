@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class GestionPuertas
+Partial Public Class ReclamoEquipaje
 
     '''<summary>
     '''form1 control.
@@ -41,47 +41,47 @@ Partial Public Class GestionPuertas
     Protected WithEvents lblMensaje As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''ddlVuelos control.
+    '''ddlEquipaje control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlVuelos As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents ddlEquipaje As Global.System.Web.UI.WebControls.DropDownList
 
     '''<summary>
-    '''ddlPuertas control.
+    '''txtDescripcion control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlPuertas As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents txtDescripcion As Global.System.Web.UI.WebControls.TextBox
 
     '''<summary>
-    '''txtHora control.
+    '''btnGuardar control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtHora As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents btnGuardar As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''btnAsignar control.
+    '''rptReclamos control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents btnAsignar As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents rptReclamos As Global.System.Web.UI.WebControls.Repeater
 
     '''<summary>
-    '''rptAsignaciones control.
+    '''pnlVacio control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents rptAsignaciones As Global.System.Web.UI.WebControls.Repeater
+    Protected WithEvents pnlVacio As Global.System.Web.UI.WebControls.Panel
 End Class
