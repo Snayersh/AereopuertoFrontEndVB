@@ -66,11 +66,7 @@
 
                             <div class="mb-3" id="divTipoCheckin" runat="server">
                                 <label class="form-label text-secondary fw-bold small">Método de Validación *</label>
-                                <asp:DropDownList ID="ddlTipoCheckin" runat="server" CssClass="form-select form-select-lg">
-                                    <asp:ListItem Text="1 - Mostrador Físico" Value="1"></asp:ListItem>
-                                    <asp:ListItem Text="2 - Puerta de Embarque (Gate)" Value="2"></asp:ListItem>
-                                    <asp:ListItem Text="3 - Kiosco Automático" Value="3"></asp:ListItem>
-                                </asp:DropDownList>
+                                <asp:DropDownList ID="ddlTipoCheckin" runat="server" CssClass="form-select form-select-lg"></asp:DropDownList>
                             </div>
 
                             <asp:Button ID="btnConfirmar" runat="server" Text="Autorizar Ingreso al Avión ✈️" CssClass="btn btn-success w-100 py-3 mt-2 fw-bold fs-5 rounded-pill shadow" Visible="false" />

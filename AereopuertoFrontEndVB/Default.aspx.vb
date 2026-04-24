@@ -13,27 +13,59 @@ Public Class _Default
     End Sub
 
     ' -------------------------------------------------------------
-    ' LÓGICA DE CONTROL DE ACCESO (RBAC) - ¡Tu código original impecable!
+    ' LÓGICA DE CONTROL DE ACCESO (RBAC) - Roles Separados
     ' -------------------------------------------------------------
     Private Sub AplicarSeguridadYBienvenida()
+        ' 1. Ocultar todos los paneles por defecto por seguridad
         pnlAdmin.Visible = False
-        pnlEmpleado.Visible = False
         pnlCliente.Visible = False
+        pnlEmpleado.Visible = False
+        pnlRRHH.Visible = False
+        pnlSeguridadSoporte.Visible = False
 
-        ' Nota: Asegúrate de usar los mismos nombres de Session que usas en el Login
         If Session("UserEmail") IsNot Nothing Then
-            Dim rolId As Integer = Convert.ToInt32(Session("IdRol"))
-            Dim nombre As String = Session("NombreUsuario").ToString()
+
+            ' 2. Leer el ROL usando "UserRole" (que es lo que manda Login.aspx)
+            Dim rolStr As String = ""
+            If Session("UserRole") IsNot Nothing Then
+                rolStr = Session("UserRole").ToString()
+            End If
+
+            ' 3. Leer el NOMBRE usando "UserName" (que es lo que manda Login.aspx)
+            Dim nombre As String = "Usuario"
+            If Session("UserName") IsNot Nothing Then
+                nombre = Session("UserName").ToString()
+            End If
 
             lblSaludo.Text = $"Hola, {nombre}"
             pnlBotonesAcceso.Visible = False
             pnlBotonSalir.Visible = True
 
-            ' RBAC por ID de Rol
-            Select Case rolId
-                Case 1 : pnlAdmin.Visible = True
-                Case 3 : pnlEmpleado.Visible = True
-                Case 2 : pnlCliente.Visible = True
+            ' 4. RBAC por Nombre de Rol (Totalmente separados)
+            Select Case rolStr
+                Case "Admin"
+                    pnlAdmin.Visible = True
+
+                Case "Pasajero"
+                    pnlCliente.Visible = True
+
+                Case "Operaciones"
+                    pnlEmpleado.Visible = True
+
+                Case "Recursos_Humanos"
+                    pnlRRHH.Visible = True
+
+                Case "Seguridad"
+                    pnlSeguridadSoporte.Visible = True
+
+                Case "Servicio_Al_Cliente"
+                    ' A servicio al cliente le habilitamos el panel de Soporte/Tickets
+                    pnlSeguridadSoporte.Visible = True
+
+                Case "Mantenimiento_Tecnico"
+                    ' Los técnicos necesitan ver el módulo de Mantenimiento de Aeronaves que está en Operaciones
+                    pnlEmpleado.Visible = True
+
             End Select
         Else
             lblSaludo.Text = "Bienvenido, Invitado. Inicia sesión para más opciones."
@@ -97,7 +129,7 @@ Public Class _Default
     End Sub
 
     ' -------------------------------------------------------------
-    ' FUNCIONES VISUALES (Se mantienen tus estilos geniales)
+    ' FUNCIONES VISUALES 
     ' -------------------------------------------------------------
     Public Function ObtenerClaseEstado(estado As String) As String
         If String.IsNullOrEmpty(estado) Then Return "badge bg-secondary"
@@ -125,4 +157,5 @@ Public Class _Default
             Case Else : Return "⚪"
         End Select
     End Function
+
 End Class

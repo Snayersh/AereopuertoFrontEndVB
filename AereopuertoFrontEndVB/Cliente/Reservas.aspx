@@ -1,5 +1,4 @@
 ﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="Reservas.aspx.vb" Inherits="AereopuertoFrontEndVB.Reservas" %>
-
 <!DOCTYPE html>
 <html lang="es">
 <head runat="server">
@@ -27,7 +26,7 @@
         .seat.occupied { background-color: #e0e0e0; color: #9e9e9e; cursor: not-allowed; border-color: #bdbdbd; text-decoration: line-through; }
         
         .ticket-result { background-color: #e8f5e9; border: 2px dashed #4caf50; border-radius: 10px; padding: 20px; margin-top: 20px; }
-  
+
         /* Colores por clase de cabina */
         .seat.primera { border-color: #ffd700; color: #b8860b; background-color: #fffde7; }
         .seat.ejecutiva { border-color: #ab47bc; color: #6a1b9a; background-color: #f3e5f5; }
@@ -231,12 +230,12 @@
         }
 
         function seleccionarAsiento(elemento, numeroAsiento) {
-            if (elemento.classList.contains('dimmed') || 
-                elemento.classList.contains('occupied') || 
+            if (elemento.classList.contains('dimmed') ||
+                elemento.classList.contains('occupied') ||
                 elemento.classList.contains('locked-by-other')) return;
 
             let idClaseAsiento = elemento.getAttribute('data-idclase');
-            let comboDatos = numeroAsiento + ":" + idClaseAsiento; 
+            let comboDatos = numeroAsiento + ":" + idClaseAsiento;
             let idVueloActual = document.getElementById('<%= ddlVuelos.ClientID %>').value;
 
             if (elemento.classList.contains('selected')) {
@@ -296,9 +295,9 @@
 
 
         // =================================================================
-        // BARREDOR SILENCIOSO: SE EJECUTA CADA 30 SEGUNDOS (30000 ms)
+        // BARREDOR SILENCIOSO: SE EJECUTA CADA 1 SEGUNDO (1000 ms)
         // =================================================================
-        setInterval(sincronizarAsientosDB, 30000);
+        setInterval(sincronizarAsientosDB, 1000);
 
         function sincronizarAsientosDB() {
             let ddlVuelo = document.getElementById('<%= ddlVuelos.ClientID %>');

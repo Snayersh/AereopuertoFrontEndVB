@@ -5,6 +5,7 @@ Public Class RegistroTripulacion
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        ' 🔥 SEGURIDAD: Solo Recursos Humanos (Rol 4)
         Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
         If Session("UserEmail") Is Nothing OrElse (idRol <> 4) Then
             Response.Redirect("~/Account/Login.aspx")
@@ -12,7 +13,33 @@ Public Class RegistroTripulacion
 
         If Not IsPostBack Then
             pnlMensaje.Visible = False
+            CargarTurnos() ' Llenar combo de base de datos
         End If
+    End Sub
+
+    Private Sub CargarTurnos()
+        Dim db As New ConexionDB()
+        Try
+            Using conn As OracleConnection = db.ObtenerConexion()
+                Using cmd As New OracleCommand("SP_OBTENER_TURNOS_CBX", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+                    Dim cur As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cur.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(cur)
+
+                    conn.Open()
+                    Using reader As OracleDataReader = cmd.ExecuteReader()
+                        ddlTurno.DataSource = reader
+                        ddlTurno.DataTextField = "NOMBRE_TURNO"
+                        ddlTurno.DataValueField = "ID_TURNO"
+                        ddlTurno.DataBind()
+                    End Using
+                End Using
+            End Using
+            ddlTurno.Items.Insert(0, New ListItem("-- Selecciona un Turno --", ""))
+        Catch ex As Exception
+            MostrarMensaje("Error al cargar los turnos: " & ex.Message, False)
+        End Try
     End Sub
 
     Protected Sub btnGuardar_Click(sender As Object, e As EventArgs) Handles btnGuardar.Click
@@ -22,22 +49,18 @@ Public Class RegistroTripulacion
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_REGISTRAR_TRIPULANTE", conn)
                     cmd.CommandType = CommandType.StoredProcedure
-
-                    ' ESTA LÍNEA ES VITAL: Evita el error de "argumentos erróneos" en Oracle
                     cmd.BindByName = True
 
-                    ' Agregamos los parámetros tal cual los pide el SP
                     cmd.Parameters.Add("p_nombre", OracleDbType.Varchar2).Value = txtNombre.Text.Trim()
                     cmd.Parameters.Add("p_puesto", OracleDbType.Varchar2).Value = ddlPuesto.SelectedValue
+                    cmd.Parameters.Add("p_id_turno", OracleDbType.Int32).Value = Convert.ToInt32(ddlTurno.SelectedValue)
 
-                    ' Si la licencia viene vacía, mandamos NULL a la DB
                     If String.IsNullOrEmpty(txtLicencia.Text.Trim()) Then
                         cmd.Parameters.Add("p_licencia", OracleDbType.Varchar2).Value = DBNull.Value
                     Else
                         cmd.Parameters.Add("p_licencia", OracleDbType.Varchar2).Value = txtLicencia.Text.Trim().ToUpper()
                     End If
 
-                    ' Parámetro de salida para confirmar el éxito
                     Dim paramOut As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
                     paramOut.Direction = ParameterDirection.Output
                     cmd.Parameters.Add(paramOut)
@@ -48,7 +71,7 @@ Public Class RegistroTripulacion
                     Dim resultado As String = paramOut.Value.ToString()
 
                     If resultado = "EXITO" Then
-                        MostrarMensaje("✅ Personal registrado correctamente en el sistema.", True)
+                        MostrarMensaje("✅ Personal y turno registrados correctamente en el sistema.", True)
                         LimpiarCampos()
                     Else
                         MostrarMensaje("⚠️ Error al registrar: " & resultado, False)
@@ -70,6 +93,7 @@ Public Class RegistroTripulacion
     Private Sub LimpiarCampos()
         txtNombre.Text = ""
         ddlPuesto.SelectedIndex = 0
+        ddlTurno.SelectedIndex = 0
         txtLicencia.Text = ""
     End Sub
 End Class

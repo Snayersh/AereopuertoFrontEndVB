@@ -82,13 +82,13 @@
                                             <tr>
                                                 <td class="text-muted fw-bold"><%# Eval("FECHA") %></td>
                                                 <td class="fw-bold text-primary">✈️ <%# Eval("MATRICULA") %></td>
-                                              <td>
-    <asp:Label ID="lblBadgeTipo" runat="server"></asp:Label>
-</td>
+                                                <td>
+                                                    <asp:Label ID="lblBadgeTipo" runat="server"></asp:Label>
+                                                </td>
                                                 <td class="small text-secondary"><%# Eval("DESCRIPCION") %></td>
                                             </tr>
                                         </ItemTemplate>
-                                    </asp:Repeater>
+                                    </asp:Repeater> 
                                 </tbody>
                             </table>
                             

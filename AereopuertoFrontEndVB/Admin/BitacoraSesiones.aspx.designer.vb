@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class RegistroTripulacion
+Partial Public Class BitacoraSesiones
 
     '''<summary>
     '''form1 control.
@@ -41,47 +41,29 @@ Partial Public Class RegistroTripulacion
     Protected WithEvents lblMensaje As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''txtNombre control.
+    '''btnActualizar control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtNombre As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents btnActualizar As Global.System.Web.UI.WebControls.Button
 
     '''<summary>
-    '''ddlPuesto control.
+    '''rptSesiones control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlPuesto As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents rptSesiones As Global.System.Web.UI.WebControls.Repeater
 
     '''<summary>
-    '''ddlTurno control.
+    '''pnlVacio control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlTurno As Global.System.Web.UI.WebControls.DropDownList
-
-    '''<summary>
-    '''txtLicencia control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents txtLicencia As Global.System.Web.UI.WebControls.TextBox
-
-    '''<summary>
-    '''btnGuardar control.
-    '''</summary>
-    '''<remarks>
-    '''Auto-generated field.
-    '''To modify move field declaration from designer file to code-behind file.
-    '''</remarks>
-    Protected WithEvents btnGuardar As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents pnlVacio As Global.System.Web.UI.WebControls.Panel
 End Class

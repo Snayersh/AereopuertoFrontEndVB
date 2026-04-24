@@ -9,11 +9,22 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <style>
         body { background-color: #f4f7f6; overflow-x: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        /* Estilos del Sidebar y Acordeón */
         .sidebar { background: linear-gradient(180deg, #0d47a1 0%, #1565c0 100%); min-height: 100vh; color: white; padding-top: 2rem; box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
         .sidebar-brand { font-size: 1.6rem; font-weight: 900; padding: 0 1.5rem; margin-bottom: 2rem; display: block; color: white; text-decoration: none; letter-spacing: 1px; }
-        .nav-link { color: rgba(255,255,255,0.7); font-weight: 500; padding: 0.8rem 1.5rem; transition: all 0.3s; border-left: 4px solid transparent; display: flex; align-items: center; gap: 10px; }
+        .nav-link { color: rgba(255,255,255,0.7); font-weight: 500; padding: 0.8rem 1.5rem; transition: all 0.3s; border-left: 4px solid transparent; display: flex; align-items: center; gap: 10px; cursor: pointer; }
         .nav-link:hover, .nav-link.active { color: white; background-color: rgba(255,255,255,0.15); border-left-color: #64b5f6; }
         .section-title { font-size: 0.75rem; font-weight: bold; letter-spacing: 1.5px; color: #90caf9; margin: 1.5rem 1.5rem 0.5rem 1.5rem; text-transform: uppercase; opacity: 0.8; }
+        
+        /* Animación de flechas en el menú */
+        .toggle-icon { font-size: 0.7rem; transition: transform 0.3s ease; }
+        .nav-link:not(.collapsed) .toggle-icon { transform: rotate(180deg); }
+        .submenu { background-color: rgba(0,0,0,0.1); margin-bottom: 5px; }
+        .submenu .nav-link { padding: 0.5rem 1.5rem 0.5rem 2.5rem; font-size: 0.9rem; border-left: none; }
+        .submenu .nav-link:hover { background-color: transparent; color: #64b5f6; padding-left: 2.8rem; }
+
+        /* Estilos Principales */
         .main-content { padding: 2.5rem; height: 100vh; overflow-y: auto; background-color: #f8f9fc; }
         .dashboard-header { background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%); color: white; border-radius: 15px; padding: 2rem; margin-bottom: 2.5rem; box-shadow: 0 10px 25px rgba(13, 71, 161, 0.2); }
         .stat-card { border-radius: 15px; border: none; transition: all 0.3s ease; overflow: hidden; position: relative; }
@@ -30,7 +41,6 @@
         .badge-llegada { background-color: #e3f2fd; color: #0d47a1; padding: 8px 12px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
         .badge-salida { background-color: #fff3e0; color: #e65100; padding: 8px 12px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
 
-        /* Estilo para los filtros */
         .filter-section { background-color: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #0d47a1; margin-bottom: 20px; }
         .btn-check:checked + .btn-outline-custom { background-color: #0d47a1; color: white; border-color: #0d47a1; }
         .btn-outline-custom { color: #0d47a1; border-color: #0d47a1; font-weight: bold; }
@@ -41,53 +51,199 @@
     <form id="form1" runat="server">
         <div class="container-fluid p-0">
             <div class="row g-0">
-                <div class="col-md-2 sidebar d-none d-md-block">
+                
+                <div class="col-md-2 sidebar d-none d-md-block" style="height: 100vh; overflow-y: auto;">
                     <a href="Default.aspx" class="sidebar-brand">✈️ LA AURORA</a>
-                    <ul class="nav flex-column mb-5">
+                    <ul class="nav flex-column mb-5 pb-5">
                         <li class="section-title">General</li>
                         <li class="nav-item"><a class="nav-link active" href="Default.aspx">📊 Panel Principal</a></li>
                         <li class="nav-item"><a class="nav-link" href="Radar.aspx">🌍 Radar en Vivo</a></li>
                         
                         <asp:Panel ID="pnlCliente" runat="server" Visible="false">
-                            <li class="section-title text-light">Mi Cuenta</li>
-                            <li class="nav-item"><a class="nav-link" href="Account/MiPerfil.aspx">👤 Mi Perfil</a></li>
-                            <li class="nav-item"><a class="nav-link text-warning fw-bold" href="Cliente/Reservas.aspx">🛒 Reservar Vuelo</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Cliente/MisBoletos.aspx">🎫 Mis Boletos</a></li>
-                            <li class="nav-item"><a class="nav-link text-success fw-bold" href="Cliente/Pagos.aspx">💳 Pagar Reserva</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Cliente/Equipaje.aspx">🧳 Mi Equipaje</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Cliente/MisFacturas.aspx">🧾 Mis Facturas</a></li>
+                            <li class="section-title text-light">Módulo Pasajero</li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link collapsed d-flex justify-content-between" data-bs-toggle="collapse" href="#collapseMiViaje">
+                                    <span>✈️ Mi Viaje</span><span class="toggle-icon">▼</span>
+                                </a>
+                                <div class="collapse submenu" id="collapseMiViaje">
+                                    <ul class="nav flex-column py-2">
+                                        <li class="nav-item"><a class="nav-link text-warning fw-bold" href="Cliente/Reservas.aspx">🛒 Reservas</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Cliente/MisBoletos.aspx">🎫 Mis Boletos</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Cliente/PaseAbordar.aspx">📱 Pase Abordar</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link collapsed d-flex justify-content-between" data-bs-toggle="collapse" href="#collapseEquipajeCliente">
+                                    <span>🧳 Mi Equipaje</span><span class="toggle-icon">▼</span>
+                                </a>
+                                <div class="collapse submenu" id="collapseEquipajeCliente">
+                                    <ul class="nav flex-column py-2">
+                                        <li class="nav-item"><a class="nav-link" href="Cliente/Equipaje.aspx">⚖️ Equipaje</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Cliente/ReclamoEquipaje.aspx">🔎 Reclamo Equipaje</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link collapsed d-flex justify-content-between" data-bs-toggle="collapse" href="#collapseFinanzas">
+                                    <span>💳 Pagos y Facturas</span><span class="toggle-icon">▼</span>
+                                </a>
+                                <div class="collapse submenu" id="collapseFinanzas">
+                                    <ul class="nav flex-column py-2">
+                                        <li class="nav-item"><a class="nav-link text-success fw-bold" href="Cliente/Pagos.aspx">💲 Pagos</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Cliente/MisFacturas.aspx">🧾 Mis Facturas</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Cliente/DetalleFactura.aspx">📄 Detalle Factura</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="Cliente/SoporteTickets.aspx">🎧 Soporte Tickets</a>
+                            </li>
                         </asp:Panel>
 
                         <asp:Panel ID="pnlEmpleado" runat="server" Visible="false">
-                            <li class="section-title text-info">Operativa de Pasajeros</li>
-                            <li class="nav-item"><a class="nav-link" href="Empleado/CheckIn.aspx">✅ Validar Abordaje</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Empleado/RegistroEquipaje.aspx">⚖️ Registro Equipaje</a></li>
+                            <li class="section-title text-info">Operaciones GUA</li>
                             
-                            <li class="section-title text-danger">Seguridad e Incidencias</li>
-                            <li class="nav-item"><a class="nav-link" href="Empleado/ObjetosPerdidos.aspx">🎒 Objetos Perdidos</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Empleado/Arrestos.aspx">🚔 Arrestos (Infracciones)</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link collapsed d-flex justify-content-between" data-bs-toggle="collapse" href="#collapseMostrador">
+                                    <span>👥 Mostrador & Gate</span><span class="toggle-icon">▼</span>
+                                </a>
+                                <div class="collapse submenu" id="collapseMostrador">
+                                    <ul class="nav flex-column py-2">
+                                        <li class="nav-item"><a class="nav-link" href="Operaciones/Checkin.aspx">✅ Check-In</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Operaciones/RegistroEquipaje.aspx">⚖️ Registro Equipaje</a></li>
+                                    </ul>
+                                </div>
+                            </li>
 
-                            <li class="section-title text-warning">Logística de Vuelos</li>
-                            <li class="nav-item"><a class="nav-link" href="Empleado/ControlVuelos.aspx">📡 Torre de Control</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Empleado/ProgramasVuelo.aspx">📅 Crear Vuelo</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Empleado/Tripulacion.aspx">👨‍✈️ Asignar Tripulación</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Empleado/RegistroTripulacion.aspx">🧑‍✈️ Registrar Personal</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Empleado/Escalas.aspx">🛑 Gestión Escalas</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link collapsed d-flex justify-content-between" data-bs-toggle="collapse" href="#collapseVuelosRutas">
+                                    <span>📡 Vuelos y Rutas</span><span class="toggle-icon">▼</span>
+                                </a>
+                                <div class="collapse submenu" id="collapseVuelosRutas">
+                                    <ul class="nav flex-column py-2">
+                                        <li class="nav-item"><a class="nav-link" href="Operaciones/ControlVuelos.aspx">🎛️ Control Vuelo</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Operaciones/ProgramasVuelo.aspx">📅 Programas Vuelos</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Operaciones/Escalas.aspx">🛑 Escalas</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Operaciones/Rutas.aspx">🗺️ Rutas</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Operaciones/ClimaAeropuerto.aspx">🌤️ Clima Aeropuerto</a></li>
+                                    </ul>
+                                </div>
+                            </li>
 
-                            <li class="section-title text-secondary">Catálogos Fijos</li>
-                            <li class="nav-item"><a class="nav-link" href="Empleado/Aerolineas.aspx">🏢 Aerolíneas</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Empleado/Aeronaves.aspx">🛩️ Aeronaves</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Empleado/Aereopuertos.aspx">🛫 Aeropuertos</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link collapsed d-flex justify-content-between" data-bs-toggle="collapse" href="#collapseRampaMantenimiento">
+                                    <span>🛠️ Rampa & Mant.</span><span class="toggle-icon">▼</span>
+                                </a>
+                                <div class="collapse submenu" id="collapseRampaMantenimiento">
+                                    <ul class="nav flex-column py-2">
+                                        <li class="nav-item"><a class="nav-link" href="Operaciones/AsignarPuertas.aspx">🚪 Asignar Puertas</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Operaciones/EscanerRampa.aspx">📟 Escanear Rampa</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Operaciones/MantenimientoAeronaves.aspx">🔧 Mantenimiento</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link collapsed d-flex justify-content-between" data-bs-toggle="collapse" href="#collapseReservasSeguridad">
+                                    <span>⚠️ Alertas & Reservas</span><span class="toggle-icon">▼</span>
+                                </a>
+                                <div class="collapse submenu" id="collapseReservasSeguridad">
+                                    <ul class="nav flex-column py-2">
+                                        <li class="nav-item"><a class="nav-link" href="Operaciones/GestionReservas.aspx">📂 Gestión Reservas</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Operaciones/DetalleReservas.aspx">📋 Detalle Reservas</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Operaciones/ControlSeguridad.aspx">🛂 Control Seguridad</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Operaciones/EmisionAlertas.aspx">🔔 Emisión Alertas</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link collapsed d-flex justify-content-between" data-bs-toggle="collapse" href="#collapseCatalogosOpe">
+                                    <span>🏢 Catálogos Fijos</span><span class="toggle-icon">▼</span>
+                                </a>
+                                <div class="collapse submenu" id="collapseCatalogosOpe">
+                                    <ul class="nav flex-column py-2">
+                                        <li class="nav-item"><a class="nav-link" href="Operaciones/Aerolineas.aspx">🏢 Aerolíneas</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Operaciones/Aeronaves.aspx">🛩️ Aeronaves</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Operaciones/Aereopuertos.aspx">🛫 Aeropuertos</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </asp:Panel>
+
+                        <asp:Panel ID="pnlRRHH" runat="server" Visible="false">
+                            <li class="section-title" style="color: #ce93d8;">Recursos Humanos</li>
+                            <li class="nav-item">
+                                <a class="nav-link collapsed d-flex justify-content-between" data-bs-toggle="collapse" href="#collapseRRHH">
+                                    <span>🧑‍✈️ Gestión Personal</span><span class="toggle-icon">▼</span>
+                                </a>
+                                <div class="collapse submenu" id="collapseRRHH">
+                                    <ul class="nav flex-column py-2">
+                                        <li class="nav-item"><a class="nav-link" href="RRHH/RegistroTripulacion.aspx">📝 Registro Tripulación</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="RRHH/Tripulacion.aspx">👨‍✈️ Tripulación</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="RRHH/GestionTurnos.aspx">⏱️ Gestión Turnos</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="RRHH/EvaluacionPersonal.aspx">⭐ Evaluación Personal</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="RRHH/GestionAsistencia.aspx">♿ Gestión Asistencia</a></li>
+
+                                    </ul>
+                                </div>
+                            </li>
+                        </asp:Panel>
+
+                        <asp:Panel ID="pnlSeguridadSoporte" runat="server" Visible="false">
+                            <li class="section-title text-danger">Seguridad & Soporte</li>
+                            <li class="nav-item"><a class="nav-link" href="Seguridad/Arrestos.aspx">🚔 Arrestos</a></li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link collapsed d-flex justify-content-between" data-bs-toggle="collapse" href="#collapseSoporte">
+                                    <span>💻 Soporte Gral</span><span class="toggle-icon">▼</span>
+                                </a>
+                                <div class="collapse submenu" id="collapseSoporte">
+                                    <ul class="nav flex-column py-2">
+                                        <li class="nav-item"><a class="nav-link" href="Soporte/BandejaTickets.aspx">📥 Bandeja Tickets</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Soporte/ObjetosPerdidos.aspx">🎒 Objetos Perdidos</a></li>
+                                    </ul>
+                                </div>
+                            </li>
                         </asp:Panel>
 
                         <asp:Panel ID="pnlAdmin" runat="server" Visible="false">
-                            <li class="section-title text-warning" title="Conectado a Servidor Standby">📊 Reportería (Réplica)</li>
-                            <li class="nav-item"><a class="nav-link" href="Admin/ReportePasajeros.aspx">📄 Pasajeros por Vuelo</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Admin/ReporteVuelosGral.aspx">📋 Vuelos Prog / Canc</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Admin/ReporteAerolineas.aspx">✈️ Aerolíneas Activas</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Admin/ReporteVuelosAire.aspx">🌍 Vuelos en el Aire</a></li>
-                            <li class="nav-item"><a class="nav-link" href="Admin/Usuarios.aspx">👥 Usuarios y Roles</a></li>
+                            <li class="section-title text-warning" title="Conectado a Servidor Standby">Admin y Auditoría</li>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link collapsed d-flex justify-content-between" data-bs-toggle="collapse" href="#collapseReportes">
+                                    <span>📊 Reportería</span><span class="toggle-icon">▼</span>
+                                </a>
+                                <div class="collapse submenu" id="collapseReportes">
+                                    <ul class="nav flex-column py-2">
+                                        <li class="nav-item"><a class="nav-link" href="Admin/AdminPuertas.aspx">🚪 Admin Puertas</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Admin/Auditoria.aspx">🔍 Auditoría</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Admin/AuditoriaVuelos.aspx">✈️ Aud. Vuelos</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Admin/BitacoraSesiones.aspx">🔑 Bitácora Sesiones</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Admin/BitacoraSistemas.aspx">⚙️ Bitácora Sistemas</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Admin/DetalleReportes.aspx">📄 Detalle Reportes</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Admin/GestionPromociones.aspx">🏷️ Promociones</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Admin/HistorialReportes.aspx">📚 Historial Rep.</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Admin/PlanillaPago.aspx">💵 Plantilla Pago</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Admin/ReporteAerolineas.aspx">🏢 Rep. Aerolíneas</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Admin/ReporteArrestos.aspx">🚔 Rep. Arrestos</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Admin/ReporteObjetos.aspx">🎒 Rep. Objetos</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Admin/ReportePasajeros.aspx">👥 Rep. Pasajeros</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Admin/ReporteVuelosAire.aspx">🌍 Vuelos Aire</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Admin/ReporteVuelosGral.aspx">📋 Vuelos Gral.</a></li>
+                                        <li class="nav-item"><a class="nav-link" href="Admin/AuditoriaPagos.aspx">💳 Aud. Pagos</a></li>
+                                     <li class="nav-item"><a class="nav-link" href="Admin/GestionPlanilla.aspx">📋 Gestión Planilla</a></li>
 
+                                    </ul>
+                                </div>
+                            </li>
+
+                          
                         </asp:Panel>
                     </ul>
                 </div>
@@ -210,6 +366,8 @@
         </div>
     </form>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
         function aplicarFiltrosTablero() {
             let showLlegadas = document.getElementById('chkLlegadas').checked;

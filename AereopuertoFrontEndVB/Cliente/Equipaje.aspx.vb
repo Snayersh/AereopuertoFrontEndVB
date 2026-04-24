@@ -16,7 +16,33 @@ Public Class Equipaje
 
         If Not IsPostBack Then
             CargarBoletos()
+            CargarTiposEquipaje()
         End If
+    End Sub
+
+    Private Sub CargarTiposEquipaje()
+        Dim db As New ConexionDB()
+        Try
+            Using conn As OracleConnection = db.ObtenerConexion()
+                Using cmd As New OracleCommand("SP_OBTENER_TIPOS_EQUIPAJE_CBX", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+                    Dim cur As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cur.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(cur)
+
+                    conn.Open()
+                    Using reader As OracleDataReader = cmd.ExecuteReader()
+                        ddlTipoEquipaje.DataSource = reader
+                        ddlTipoEquipaje.DataTextField = "NOMBRE"
+                        ddlTipoEquipaje.DataValueField = "ID_TIPO_EQUIPAJE"
+                        ddlTipoEquipaje.DataBind()
+                    End Using
+                End Using
+            End Using
+            ddlTipoEquipaje.Items.Insert(0, New ListItem("-- Selecciona el Tipo --", ""))
+        Catch ex As Exception
+            MostrarMensaje("Error al cargar los tipos de equipaje: " & ex.Message, False)
+        End Try
     End Sub
 
     Private Sub CargarBoletos()
@@ -56,6 +82,7 @@ Public Class Equipaje
         End If
 
         pnlGestionEquipaje.Visible = True
+        pnlTracking.Visible = False ' Ocultamos tracking al cambiar de vuelo
         CargarListaEquipaje(ddlBoletos.SelectedValue)
     End Sub
 
@@ -127,11 +154,9 @@ Public Class Equipaje
 
                     Dim resultado As String = outResultado.Value.ToString()
 
-                    ' Si el mensaje inicia con EXITO, lo dividimos por si la BD nos manda una alerta de cobro extra
                     If resultado.StartsWith("EXITO") Then
                         Dim partes = resultado.Split("|"c)
                         If partes.Length > 1 Then
-                            ' Hubo un recargo por peso
                             MostrarMensaje("✅ " & partes(1), True)
                         Else
                             MostrarMensaje("¡Equipaje registrado exitosamente!", True)
@@ -141,6 +166,7 @@ Public Class Equipaje
                         txtDescripcion.Text = ""
                         ddlTipoEquipaje.SelectedIndex = 0
                         CargarListaEquipaje(codigoBoleto)
+                        pnlTracking.Visible = False
                     Else
                         MostrarMensaje("No se pudo registrar: " & resultado, False)
                     End If
@@ -149,6 +175,57 @@ Public Class Equipaje
         Catch ex As Exception
             MostrarMensaje("Error de conexión al registrar: " & ex.Message, False)
         End Try
+    End Sub
+
+    ' ====================================================================
+    ' EVENTO PARA CARGAR EL HISTORIAL DE TRACKING AL DAR CLIC EN RASTREAR
+    ' ====================================================================
+    Protected Sub rptEquipaje_ItemCommand(source As Object, e As RepeaterCommandEventArgs) Handles rptEquipaje.ItemCommand
+        If e.CommandName = "Rastrear" Then
+            Dim idEquipaje As String = e.CommandArgument.ToString()
+            CargarHistorialTracking(idEquipaje)
+            pnlTracking.Visible = True
+        End If
+    End Sub
+
+    Private Sub CargarHistorialTracking(idEquipaje As String)
+        Dim db As New ConexionDB()
+        Try
+            Using conn As OracleConnection = db.ObtenerConexion()
+                Using cmd As New OracleCommand("SP_VER_TRACKING_EQUIPAJE", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+                    cmd.BindByName = True
+
+                    cmd.Parameters.Add("p_id_equipaje", OracleDbType.Int32).Value = Convert.ToInt32(idEquipaje)
+
+                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cursorParam.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(cursorParam)
+
+                    conn.Open()
+                    Using da As New OracleDataAdapter(cmd)
+                        Dim dt As New DataTable()
+                        da.Fill(dt)
+
+                        If dt.Rows.Count > 0 Then
+                            rptTrackingLine.DataSource = dt
+                            rptTrackingLine.DataBind()
+                            rptTrackingLine.Visible = True
+                            pnlTrackingVacio.Visible = False
+                        Else
+                            rptTrackingLine.Visible = False
+                            pnlTrackingVacio.Visible = True
+                        End If
+                    End Using
+                End Using
+            End Using
+        Catch ex As Exception
+            MostrarMensaje("Error al cargar rastreo: " & ex.Message, False)
+        End Try
+    End Sub
+
+    Protected Sub btnCerrarTracking_Click(sender As Object, e As EventArgs)
+        pnlTracking.Visible = False
     End Sub
 
     Private Sub MostrarMensaje(mensaje As String, esExito As Boolean)

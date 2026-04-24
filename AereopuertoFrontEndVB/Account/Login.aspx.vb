@@ -64,6 +64,7 @@ Public Class Login
 
                     If resultado = "EXITO" Then
                         Dim idRol As Integer = Convert.ToInt32(outRol.Value.ToString())
+                        Session("IdRol") = idRol
                         Session("UserName") = outNombre.Value.ToString()
                         Session("UserEmail") = email
 
@@ -73,9 +74,18 @@ Public Class Login
                         If idRol = 1 Then
                             Session("UserRole") = "Admin"
                         ElseIf idRol = 2 Then
-                            Session("UserRole") = "Cliente"
+                            Session("UserRole") = "Pasajero"
                         ElseIf idRol = 3 Then
-                            Session("UserRole") = "Empleado"
+                            Session("UserRole") = "Operaciones"
+                        ElseIf idRol = 4 Then
+                            Session("UserRole") = "Recursos_Humanos"
+                        ElseIf idRol = 5 Then
+                            Session("UserRole") = "Seguridad"
+                        ElseIf idRol = 6 Then
+                            Session("UserRole") = "Servicio_Al_Cliente"
+                        ElseIf idRol = 7 Then
+                            Session("UserRole") = "Mantenimiento_Tecnico"
+
                         Else
                             Session("UserRole") = "Invitado"
                         End If

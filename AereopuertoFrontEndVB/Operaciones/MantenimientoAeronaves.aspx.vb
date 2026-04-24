@@ -36,7 +36,6 @@ Public Class MantenimientoAeronaves
                         ddlAeronave.DataValueField = "ID_AERONAVE"
                         ddlAeronave.DataBind()
                     End Using
-                    conn.Close()
                 End Using
 
                 ' Llenar Tipos de Mantenimiento
@@ -45,7 +44,6 @@ Public Class MantenimientoAeronaves
                     Dim cur2 As New OracleParameter("p_cursor", OracleDbType.RefCursor)
                     cur2.Direction = ParameterDirection.Output
                     cmd2.Parameters.Add(cur2)
-                    conn.Open()
                     Using reader2 As OracleDataReader = cmd2.ExecuteReader()
                         ddlTipo.DataSource = reader2
                         ddlTipo.DataTextField = "NOMBRE"

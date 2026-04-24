@@ -11,7 +11,7 @@ Option Strict On
 Option Explicit On
 
 
-Partial Public Class RegistroTripulacion
+Partial Public Class BandejaTickets
 
     '''<summary>
     '''form1 control.
@@ -41,47 +41,92 @@ Partial Public Class RegistroTripulacion
     Protected WithEvents lblMensaje As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
-    '''txtNombre control.
+    '''pnlListado control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtNombre As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents pnlListado As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''ddlPuesto control.
+    '''rptTickets control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlPuesto As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents rptTickets As Global.System.Web.UI.WebControls.Repeater
 
     '''<summary>
-    '''ddlTurno control.
+    '''pnlVacioTickets control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents ddlTurno As Global.System.Web.UI.WebControls.DropDownList
+    Protected WithEvents pnlVacioTickets As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''txtLicencia control.
+    '''pnlConversacion control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents txtLicencia As Global.System.Web.UI.WebControls.TextBox
+    Protected WithEvents pnlConversacion As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''btnGuardar control.
+    '''lblTicketIdVisor control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents btnGuardar As Global.System.Web.UI.WebControls.Button
+    Protected WithEvents lblTicketIdVisor As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''rptRespuestas control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents rptRespuestas As Global.System.Web.UI.WebControls.Repeater
+
+    '''<summary>
+    '''pnlVacioRespuestas control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents pnlVacioRespuestas As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''txtNuevaRespuesta control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents txtNuevaRespuesta As Global.System.Web.UI.WebControls.TextBox
+
+    '''<summary>
+    '''btnEnviarRespuesta control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents btnEnviarRespuesta As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''btnCerrarTicket control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents btnCerrarTicket As Global.System.Web.UI.WebControls.Button
 End Class

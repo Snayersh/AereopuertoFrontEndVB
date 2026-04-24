@@ -276,7 +276,7 @@ Public Class Reservas
     End Sub
 
     ' ====================================================================
-    ' 5. SINCRONIZACIÓN SILENCIOSA CADA 30 SEGUNDOS
+    ' 5. SINCRONIZACIÓN SILENCIOSA
     ' ====================================================================
     <WebMethod()>
     Public Shared Function ObtenerAsientosOcupados(idVuelo As Integer) As List(Of String)

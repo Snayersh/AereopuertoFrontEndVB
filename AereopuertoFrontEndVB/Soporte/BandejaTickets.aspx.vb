@@ -1,70 +1,40 @@
 ﻿Imports System.Data
 Imports Oracle.ManagedDataAccess.Client
 
-Public Class SoporteTickets
+Public Class BandejaTickets
     Inherits System.Web.UI.Page
 
-    Private CorreoUsuario As String
-
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        ' 🔥 SEGURIDAD: Solo Clientes (Rol 2) pueden abrir tickets propios
         Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
-        If Session("UserEmail") Is Nothing OrElse idRol <> 2 Then
+        If Session("UserEmail") Is Nothing OrElse idRol <> 6 Then
             Response.Redirect("~/Account/Login.aspx")
         End If
 
-        CorreoUsuario = Session("UserEmail").ToString()
-
         If Not IsPostBack Then
             ' 1. Cargar datos iniciales
-            CargarTiposTicket() ' Llama al SP_OBTENER_TIPOS_TICKET_CBX
-            CargarTicketsCliente()
+            CargarBandejaGlobal()
 
-            ' 2. ¡MAGIA URL! Si viene un ID en la URL, ocultamos el listado y mostramos la conversación
+            ' 2. ¡MAGIA URL! Si el agente le da clic a "Atender"
             If Request.QueryString("id") IsNot Nothing Then
                 pnlListado.Visible = False
                 pnlConversacion.Visible = True
-                CargarHiloRespuestas(Request.QueryString("id").ToString())
+
+                Dim idTicket As String = Request.QueryString("id").ToString()
+                lblTicketIdVisor.Text = idTicket
+                CargarHiloRespuestas(idTicket)
             End If
         End If
     End Sub
 
     ' =======================================================
-    ' MÉTODOS DEL PANEL 1 (LISTADO Y CREACIÓN)
+    ' CARGAR LA BANDEJA PRINCIPAL DE TICKETS
     ' =======================================================
-    Private Sub CargarTiposTicket()
+    Private Sub CargarBandejaGlobal()
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
-                Using cmd As New OracleCommand("SP_OBTENER_TIPOS_TICKET_CBX", conn)
+                Using cmd As New OracleCommand("SP_LISTAR_TICKETS_GLOBAL", conn)
                     cmd.CommandType = CommandType.StoredProcedure
-                    Dim cur As New OracleParameter("p_cursor", OracleDbType.RefCursor)
-                    cur.Direction = ParameterDirection.Output
-                    cmd.Parameters.Add(cur)
-
-                    conn.Open()
-                    Using reader As OracleDataReader = cmd.ExecuteReader()
-                        ddlTipoTicket.DataSource = reader
-                        ddlTipoTicket.DataTextField = "NOMBRE"
-                        ddlTipoTicket.DataValueField = "ID_TIPO_TICKET"
-                        ddlTipoTicket.DataBind()
-                    End Using
-                End Using
-            End Using
-            ddlTipoTicket.Items.Insert(0, New ListItem("-- Seleccione Tipo --", ""))
-        Catch ex As Exception
-            ' Error silencioso en carga
-        End Try
-    End Sub
-
-    Private Sub CargarTicketsCliente()
-        Dim db As New ConexionDB()
-        Try
-            Using conn As OracleConnection = db.ObtenerConexion()
-                Using cmd As New OracleCommand("SP_LISTAR_TICKETS_CLIENTE", conn)
-                    cmd.CommandType = CommandType.StoredProcedure
-                    cmd.BindByName = True
-                    cmd.Parameters.Add("p_correo", OracleDbType.Varchar2).Value = CorreoUsuario
 
                     Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
                     cursorParam.Direction = ParameterDirection.Output
@@ -88,46 +58,7 @@ Public Class SoporteTickets
                 End Using
             End Using
         Catch ex As Exception
-            MostrarMensaje("Error al cargar sus tickets: " & ex.Message, False)
-        End Try
-    End Sub
-
-    Protected Sub btnGuardarTicket_Click(sender As Object, e As EventArgs) Handles btnGuardarTicket.Click
-        If String.IsNullOrEmpty(txtAsunto.Text) OrElse String.IsNullOrEmpty(ddlTipoTicket.SelectedValue) Then
-            MostrarMensaje("⚠️ Complete todos los campos para enviar el ticket.", False)
-            Return
-        End If
-
-        Dim db As New ConexionDB()
-        Try
-            Using conn As OracleConnection = db.ObtenerConexion()
-                Using cmd As New OracleCommand("SP_CREAR_TICKET", conn)
-                    cmd.CommandType = CommandType.StoredProcedure
-                    cmd.BindByName = True
-
-                    cmd.Parameters.Add("p_asunto", OracleDbType.Varchar2).Value = txtAsunto.Text.Trim()
-                    cmd.Parameters.Add("p_correo", OracleDbType.Varchar2).Value = CorreoUsuario
-                    cmd.Parameters.Add("p_id_tipo", OracleDbType.Int32).Value = Convert.ToInt32(ddlTipoTicket.SelectedValue)
-
-                    Dim outResultado As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
-                    outResultado.Direction = ParameterDirection.Output
-                    cmd.Parameters.Add(outResultado)
-
-                    conn.Open()
-                    cmd.ExecuteNonQuery()
-
-                    If outResultado.Value.ToString() = "EXITO" Then
-                        MostrarMensaje("✅ Ticket abierto exitosamente. El equipo lo revisará pronto.", True)
-                        txtAsunto.Text = ""
-                        ddlTipoTicket.SelectedIndex = 0
-                        CargarTicketsCliente()
-                    Else
-                        MostrarMensaje("⚠️ Error DB: " & outResultado.Value.ToString(), False)
-                    End If
-                End Using
-            End Using
-        Catch ex As Exception
-            MostrarMensaje("❌ Error interno: " & ex.Message, False)
+            MostrarMensaje("Error al cargar la bandeja: " & ex.Message, False)
         End Try
     End Sub
 
@@ -139,21 +70,20 @@ Public Class SoporteTickets
             lblBadge.Text = estado
             If estado = "ABIERTO" Then
                 lblBadge.CssClass = "badge-abierto shadow-sm"
-            ElseIf estado = "CERRADO" Then
-                lblBadge.CssClass = "badge-cerrado shadow-sm"
             Else
-                lblBadge.CssClass = "badge-proceso shadow-sm"
+                lblBadge.CssClass = "badge-cerrado shadow-sm"
             End If
         End If
     End Sub
 
     ' =======================================================
-    ' MÉTODOS DEL PANEL 2 (CONVERSACIÓN / HILO)
+    ' VISUALIZADOR DE CONVERSACIÓN (HILO)
     ' =======================================================
     Private Sub CargarHiloRespuestas(idTicket As String)
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
+                ' Reutilizamos el mismo SP del cliente
                 Using cmd As New OracleCommand("SP_LISTAR_RESPUESTAS_TICKET", conn)
                     cmd.CommandType = CommandType.StoredProcedure
                     cmd.BindByName = True
@@ -185,22 +115,41 @@ Public Class SoporteTickets
         End Try
     End Sub
 
+    Protected Sub rptRespuestas_ItemDataBound(sender As Object, e As RepeaterItemEventArgs) Handles rptRespuestas.ItemDataBound
+        If e.Item.ItemType = ListItemType.Item OrElse e.Item.ItemType = ListItemType.AlternatingItem Then
+            Dim fechaObj = DataBinder.Eval(e.Item.DataItem, "FECHA")
+            Dim lblFecha As Label = CType(e.Item.FindControl("lblFechaMensaje"), Label)
+
+            If Not IsDBNull(fechaObj) Then
+                lblFecha.Text = Convert.ToDateTime(fechaObj).ToString("dd MMM yyyy, HH:mm") & " hrs"
+            End If
+        End If
+    End Sub
+
+    ' =======================================================
+    ' ACCIONES DEL AGENTE (RESPONDER Y CERRAR)
+    ' =======================================================
     Protected Sub btnEnviarRespuesta_Click(sender As Object, e As EventArgs) Handles btnEnviarRespuesta.Click
         If String.IsNullOrEmpty(txtNuevaRespuesta.Text) Then
+            MostrarMensaje("⚠️ No puedes enviar un mensaje vacío.", False)
             Return
         End If
 
         Dim idTicket As String = Request.QueryString("id").ToString()
-        Dim db As New ConexionDB()
 
+        ' 🔥 EL TRUCO MAGISTRAL: Le pegamos el prefijo al texto para diferenciarlo del cliente
+        Dim mensajeOficial As String = "🎧 Soporte Técnico: " & txtNuevaRespuesta.Text.Trim()
+
+        Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
+                ' Reutilizamos el SP de inserción
                 Using cmd As New OracleCommand("SP_AGREGAR_RESPUESTA", conn)
                     cmd.CommandType = CommandType.StoredProcedure
                     cmd.BindByName = True
 
                     cmd.Parameters.Add("p_id_ticket", OracleDbType.Int32).Value = Convert.ToInt32(idTicket)
-                    cmd.Parameters.Add("p_mensaje", OracleDbType.Varchar2).Value = txtNuevaRespuesta.Text.Trim()
+                    cmd.Parameters.Add("p_mensaje", OracleDbType.Varchar2).Value = mensajeOficial
 
                     Dim outResultado As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
                     outResultado.Direction = ParameterDirection.Output
@@ -222,15 +171,36 @@ Public Class SoporteTickets
         End Try
     End Sub
 
-    Protected Sub rptRespuestas_ItemDataBound(sender As Object, e As RepeaterItemEventArgs) Handles rptRespuestas.ItemDataBound
-        If e.Item.ItemType = ListItemType.Item OrElse e.Item.ItemType = ListItemType.AlternatingItem Then
-            Dim fechaObj = DataBinder.Eval(e.Item.DataItem, "FECHA")
-            Dim lblFecha As Label = CType(e.Item.FindControl("lblFechaMensaje"), Label)
+    Protected Sub btnCerrarTicket_Click(sender As Object, e As EventArgs) Handles btnCerrarTicket.Click
+        Dim idTicket As String = Request.QueryString("id").ToString()
+        Dim db As New ConexionDB()
 
-            If Not IsDBNull(fechaObj) Then
-                lblFecha.Text = Convert.ToDateTime(fechaObj).ToString("dd MMM yyyy, HH:mm") & " hrs"
-            End If
-        End If
+        Try
+            Using conn As OracleConnection = db.ObtenerConexion()
+                Using cmd As New OracleCommand("SP_CERRAR_TICKET_SOPORTE", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+                    cmd.BindByName = True
+
+                    cmd.Parameters.Add("p_id_ticket", OracleDbType.Int32).Value = Convert.ToInt32(idTicket)
+
+                    Dim outResultado As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
+                    outResultado.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(outResultado)
+
+                    conn.Open()
+                    cmd.ExecuteNonQuery()
+
+                    If outResultado.Value.ToString() = "EXITO" Then
+                        ' Redirigimos a la bandeja principal limpia
+                        Response.Redirect("BandejaTickets.aspx")
+                    Else
+                        MostrarMensaje("⚠️ Error al cerrar: " & outResultado.Value.ToString(), False)
+                    End If
+                End Using
+            End Using
+        Catch ex As Exception
+            MostrarMensaje("❌ Error interno: " & ex.Message, False)
+        End Try
     End Sub
 
     Private Sub MostrarMensaje(mensaje As String, esExito As Boolean)

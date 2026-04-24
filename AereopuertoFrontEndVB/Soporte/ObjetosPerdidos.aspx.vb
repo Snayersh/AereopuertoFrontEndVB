@@ -5,9 +5,8 @@ Public Class ObjetosPerdidos
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        ' 🔥 SEGURIDAD: Solo Admins (1) o Empleados/Operaciones (3)
         Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
-        If Session("UserEmail") Is Nothing OrElse (idRol <> 1 AndAlso idRol <> 3) Then
+        If Session("UserEmail") Is Nothing OrElse idRol <> 6 Then
             Response.Redirect("~/Account/Login.aspx")
         End If
 

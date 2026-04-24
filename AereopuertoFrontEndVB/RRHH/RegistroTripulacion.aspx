@@ -1,5 +1,4 @@
 ﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="RegistroTripulacion.aspx.vb" Inherits="AereopuertoFrontEndVB.RegistroTripulacion" %>
-
 <!DOCTYPE html>
 <html lang="es">
 <head runat="server">
@@ -16,7 +15,7 @@
 </head>
 <body>
     <form id="form1" runat="server">
-        <div class="container">
+        <div class="container pb-5">
             <div class="mb-4 text-center">
                 <a href="../Default.aspx" class="btn btn-outline-secondary fw-bold rounded-pill px-4 shadow-sm">← Volver al Tablero Principal</a>
             </div>
@@ -49,7 +48,13 @@
                             <asp:ListItem Text="Sobrecargo / Azafata" Value="Sobrecargo"></asp:ListItem>
                         </asp:DropDownList>
                     </div>
-                    <div class="col-md-6 mb-4">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-secondary fw-bold small">Turno de Trabajo *</label>
+                        <asp:DropDownList ID="ddlTurno" runat="server" CssClass="form-select bg-light border-secondary" required="true"></asp:DropDownList>
+                    </div>
+
+                    <div class="col-md-12 mb-4">
                         <label class="form-label text-secondary fw-bold small">No. de Licencia (DGAC)</label>
                         <asp:TextBox ID="txtLicencia" runat="server" CssClass="form-control" placeholder="Ej. L-987654 (Opcional)"></asp:TextBox>
                     </div>

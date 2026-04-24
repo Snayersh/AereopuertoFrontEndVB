@@ -1,4 +1,4 @@
-﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="G:\Aeropuerto\AereopuertoFrontEndVB\AereopuertoFrontEndVB\Empleado\Aereopuertos.aspx.vb" Inherits="AereopuertoFrontEndVB.Aeropuertos" %>
+﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="G:\Aeropuerto\AereopuertoFrontEndVB\AereopuertoFrontEndVB\Operaciones\Aereopuertos.aspx.vb" Inherits="AereopuertoFrontEndVB.Aeropuertos" %>
 
 <!DOCTYPE html>
 <html lang="es">

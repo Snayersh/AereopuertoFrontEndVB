@@ -10,8 +10,13 @@
         .top-bar { background-color: #0d47a1; color: white; padding: 15px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .main-card { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 35px; border-top: 5px solid #ff9800; margin-top: 40px; }
         .form-control, .form-select { height: 50px; border-radius: 8px; }
-        .baggage-item { background: #fff8e1; border: 1px solid #ffe082; border-left: 5px solid #ffb300; border-radius: 8px; padding: 15px; margin-bottom: 15px; display: flex; align-items: center; }
+        .baggage-item { background: #fff8e1; border: 1px solid #ffe082; border-left: 5px solid #ffb300; border-radius: 8px; padding: 15px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; }
         .baggage-icon { font-size: 2rem; margin-right: 15px; }
+        
+        /* Timeline para el Tracking */
+        .tracking-box { background: #f8f9fc; border: 2px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-top: 15px; }
+        .timeline-item { border-left: 3px solid #0d47a1; padding-left: 15px; position: relative; margin-bottom: 15px; }
+        .timeline-item::before { content: ''; position: absolute; left: -8px; top: 0; width: 13px; height: 13px; border-radius: 50%; background: #ff9800; border: 2px solid white; }
     </style>
 </head>
 <body>
@@ -21,7 +26,7 @@
             <a href="../Default.aspx" class="btn btn-outline-light btn-sm fw-bold rounded-pill px-4">← Volver al Inicio</a>
         </div>
 
-        <div class="container">
+        <div class="container pb-5">
             <div class="row justify-content-center">
                 <div class="col-md-10">
                     <div class="main-card">
@@ -46,12 +51,7 @@
                                     
                                     <div class="mb-3">
                                         <label class="form-label fw-bold text-secondary">Tipo de Equipaje *</label>
-                                        <asp:DropDownList ID="ddlTipoEquipaje" runat="server" CssClass="form-select" required="true">
-                                            <asp:ListItem Text="-- Seleccionar --" Value=""></asp:ListItem>
-                                            <asp:ListItem Text="Maleta de Bodega (Documentada)" Value="1"></asp:ListItem>
-                                            <asp:ListItem Text="Equipaje de Mano (Cabina)" Value="2"></asp:ListItem>
-                                            <asp:ListItem Text="Artículo Personal (Mochila)" Value="3"></asp:ListItem>
-                                        </asp:DropDownList>
+                                        <asp:DropDownList ID="ddlTipoEquipaje" runat="server" CssClass="form-select" required="true"></asp:DropDownList>
                                     </div>
 
                                     <div class="mb-3">
@@ -78,16 +78,41 @@
                                     <asp:Repeater ID="rptEquipaje" runat="server">
                                         <ItemTemplate>
                                             <div class="baggage-item shadow-sm">
-                                                <div class="baggage-icon">🧳</div>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="baggage-icon">🧳</div>
+                                                    <div>
+                                                        <h6 class="fw-bold m-0 text-dark"><%# Eval("descripcion") %></h6>
+                                                        <small class="text-muted fw-bold">Peso: <%# Eval("peso") %> Libras</small>
+                                                        <br />
+                                                        <span class="badge bg-secondary mt-1"><%# Eval("tipo_equipaje") %></span>
+                                                    </div>
+                                                </div>
                                                 <div>
-                                                    <h6 class="fw-bold m-0 text-dark"><%# Eval("descripcion") %></h6>
-                                                    <small class="text-muted fw-bold">Peso: <%# Eval("peso") %> Libras</small>
-                                                    <br />
-                                                    <span class="badge bg-secondary mt-1"><%# Eval("tipo_equipaje") %></span>
+                                                    <asp:LinkButton ID="btnRastrear" runat="server" CommandName="Rastrear" CommandArgument='<%# Eval("id_equipaje") %>' CssClass="btn btn-sm btn-outline-primary fw-bold">📍 Rastrear</asp:LinkButton>
                                                 </div>
                                             </div>
                                         </ItemTemplate>
                                     </asp:Repeater>
+
+                                    <asp:Panel ID="pnlTracking" runat="server" Visible="false" CssClass="tracking-box">
+                                        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                                            <h6 class="fw-bold text-dark m-0">Historial de Ubicación</h6>
+                                            <asp:Button ID="btnCerrarTracking" runat="server" Text="✖" CssClass="btn btn-sm btn-light text-danger fw-bold" OnClick="btnCerrarTracking_Click" />
+                                        </div>
+                                        
+                                        <asp:Repeater ID="rptTrackingLine" runat="server">
+                                            <ItemTemplate>
+                                                <div class="timeline-item">
+                                                    <div class="fw-bold text-primary"><%# Eval("UBICACION") %></div>
+                                                    <div class="small text-muted fw-bold"><%# Eval("FECHA_FORMATO") %></div>
+                                                </div>
+                                            </ItemTemplate>
+                                        </asp:Repeater>
+
+                                        <asp:Panel ID="pnlTrackingVacio" runat="server" Visible="false">
+                                            <p class="text-muted small fw-bold text-center m-0">Aún no hay escaneos registrados para esta maleta.</p>
+                                        </asp:Panel>
+                                    </asp:Panel>
                                 </div>
                             </div>
                         </asp:Panel>

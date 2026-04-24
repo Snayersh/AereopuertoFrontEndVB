@@ -11,8 +11,36 @@ Public Class CheckIn
         End If
 
         If Not IsPostBack Then
+            CargarTiposCheckin()
             txtCodigo.Focus()
         End If
+    End Sub
+
+    ' ====================================================================
+    ' CARGAR CATÁLOGO DE MÉTODOS DE CHECK-IN
+    ' ====================================================================
+    Private Sub CargarTiposCheckin()
+        Dim db As New ConexionDB()
+        Try
+            Using conn As OracleConnection = db.ObtenerConexion()
+                Using cmd As New OracleCommand("SP_OBTENER_TIPOS_CHECKIN", conn)
+                    cmd.CommandType = CommandType.StoredProcedure
+                    Dim cur As New OracleParameter("p_cursor", OracleDbType.RefCursor)
+                    cur.Direction = ParameterDirection.Output
+                    cmd.Parameters.Add(cur)
+
+                    conn.Open()
+                    Using reader As OracleDataReader = cmd.ExecuteReader()
+                        ddlTipoCheckin.DataSource = reader
+                        ddlTipoCheckin.DataTextField = "NOMBRE"
+                        ddlTipoCheckin.DataValueField = "ID_TIPO_CHECKIN"
+                        ddlTipoCheckin.DataBind()
+                    End Using
+                End Using
+            End Using
+        Catch ex As Exception
+            MostrarAlerta("Error al cargar métodos de check-in: " & ex.Message, "alert-danger")
+        End Try
     End Sub
 
     Protected Sub btnBuscar_Click(sender As Object, e As EventArgs) Handles btnBuscar.Click
@@ -100,7 +128,6 @@ Public Class CheckIn
                     cmd.BindByName = True
 
                     cmd.Parameters.Add("p_codigo_boleto", OracleDbType.Varchar2).Value = codigo
-                    ' Nuevo parámetro para llenar la tabla AUR_CHECKIN
                     cmd.Parameters.Add("p_id_tipo_checkin", OracleDbType.Int32).Value = Convert.ToInt32(ddlTipoCheckin.SelectedValue)
 
                     Dim outResultado As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)

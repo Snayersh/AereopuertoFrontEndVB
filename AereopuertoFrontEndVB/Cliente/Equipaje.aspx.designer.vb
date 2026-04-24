@@ -111,4 +111,40 @@ Partial Public Class Equipaje
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents rptEquipaje As Global.System.Web.UI.WebControls.Repeater
+
+    '''<summary>
+    '''pnlTracking control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents pnlTracking As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''btnCerrarTracking control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents btnCerrarTracking As Global.System.Web.UI.WebControls.Button
+
+    '''<summary>
+    '''rptTrackingLine control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents rptTrackingLine As Global.System.Web.UI.WebControls.Repeater
+
+    '''<summary>
+    '''pnlTrackingVacio control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents pnlTrackingVacio As Global.System.Web.UI.WebControls.Panel
 End Class
