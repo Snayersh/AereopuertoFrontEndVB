@@ -1,24 +1,25 @@
-﻿Imports System.Data
-Imports Oracle.ManagedDataAccess.Client
-
-Public Class Pagos
+﻿Public Class Pagos
     Inherits System.Web.UI.Page
 
     Private CorreoUsuario As String
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        ' 🔥 SEGURIDAD: Solo Pasajeros / Clientes (Rol 2)
-        Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        ' 🔥 SEGURIDAD: Control de sesión seguro
+        Dim idRol As Integer = 0
+        If Session("IdRol") IsNot Nothing Then idRol = Convert.ToInt32(Session("IdRol"))
+
         If Session("UserEmail") Is Nothing OrElse (idRol <> 2) Then
             Response.Redirect("~/Account/Login.aspx")
+            Return ' Obligatorio para detener el ciclo de vida de la página
         End If
 
-        CorreoUsuario = If(Session("UserEmail") IsNot Nothing, Session("UserEmail").ToString(), "")
+        CorreoUsuario = Session("UserEmail").ToString()
 
         If Not IsPostBack Then
             pnlError.Visible = False
             pnlExito.Visible = False
 
+            ' Si viene de hacer la reserva, pre-llenamos la caja de texto
             If Request.QueryString("codigo") IsNot Nothing Then
                 txtCodigoReserva.Text = Request.QueryString("codigo").ToString()
             End If
@@ -33,49 +34,22 @@ Public Class Pagos
             Return
         End If
 
-        ' Por regla de negocio web, asumimos que siempre es ID 1 (Tarjeta)
-        Dim idMetodoPago As Integer = 1
-        Dim db As New ConexionDB()
+        ' 🔥 Llamamos a nuestro nuevo servicio centralizado. 
+        ' Enviamos 1 fijo porque asumimos que en la web el pago es con tarjeta.
+        Dim respuesta = ClientePagoService.ProcesarPago(codigoReserva, CorreoUsuario, 1)
 
-        Try
-            Using conn As OracleConnection = db.ObtenerConexion()
-                Using cmd As New OracleCommand("SP_PROCESAR_PAGO", conn)
-                    cmd.CommandType = CommandType.StoredProcedure
-                    cmd.BindByName = True
+        If respuesta.success Then
+            ' Ocultamos el formulario y mostramos el pase de abordar/factura
+            pnlFormulario.Visible = False
+            pnlError.Visible = False
 
-                    cmd.Parameters.Add("p_codigo_reserva", OracleDbType.Varchar2).Value = codigoReserva
-                    cmd.Parameters.Add("p_correo_usuario", OracleDbType.Varchar2).Value = CorreoUsuario
-                    cmd.Parameters.Add("p_id_metodo_pago", OracleDbType.Int32).Value = idMetodoPago
-
-                    Dim outResultado As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
-                    outResultado.Direction = ParameterDirection.Output
-                    cmd.Parameters.Add(outResultado)
-
-                    conn.Open()
-                    cmd.ExecuteNonQuery()
-
-                    Dim resultadoCompleto As String = outResultado.Value.ToString()
-                    Dim partes() As String = resultadoCompleto.Split("|"c)
-
-                    If partes(0) = "EXITO" Then
-                        pnlFormulario.Visible = False
-                        pnlError.Visible = False
-
-                        ' Mostramos la factura formateada que nos devuelve el SP
-                        lblFactura.Text = "FAC-" & partes(1).PadLeft(6, "0"c)
-                        lblLocalizadorExito.Text = codigoReserva
-                        pnlExito.Visible = True
-                    ElseIf partes(0) = "ERROR_RESERVA_NO_VALIDA" Then
-                        MostrarError("No se encontró una reserva pendiente de pago con ese código o ya fue pagada.")
-                    Else
-                        MostrarError("Error en base de datos: " & resultadoCompleto)
-                    End If
-                End Using
-            End Using
-
-        Catch ex As Exception
-            MostrarError("Error al procesar el pago: " & ex.Message)
-        End Try
+            lblFactura.Text = respuesta.factura
+            lblLocalizadorExito.Text = codigoReserva
+            pnlExito.Visible = True
+        Else
+            ' Si hubo problemas con la tarjeta o el código, lo mostramos
+            MostrarError(respuesta.mensaje)
+        End If
     End Sub
 
     Private Sub MostrarError(mensaje As String)
@@ -83,4 +57,5 @@ Public Class Pagos
         pnlError.Visible = True
         lblError.Text = mensaje
     End Sub
+
 End Class

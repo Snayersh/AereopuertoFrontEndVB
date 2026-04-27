@@ -1,74 +1,55 @@
-﻿Imports System.Data
-Imports Oracle.ManagedDataAccess.Client
-
-Public Class MisBoletos
+﻿Public Class MisBoletos
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        Dim idRol As Integer = 0
+        If Session("IdRol") IsNot Nothing Then idRol = Convert.ToInt32(Session("IdRol"))
+
+        ' 🔥 SEGURIDAD: Solo clientes
         If Session("UserEmail") Is Nothing OrElse (idRol <> 2) Then
             Response.Redirect("~/Account/Login.aspx")
+            Return
         End If
 
         If Not IsPostBack Then
-            ' La primera vez carga con el valor por defecto del DropDown (ID 1 - Pendientes)
-            CargarDataBoletos(ddlFiltroEstado.SelectedValue)
+            ' La primera vez carga con el valor por defecto del DropDown
+            CargarDataBoletos(Convert.ToInt32(ddlFiltroEstado.SelectedValue))
         End If
     End Sub
 
     ' Evento del DropDown: Al cambiar el filtro, recarga la lista
     Protected Sub ddlFiltroEstado_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ddlFiltroEstado.SelectedIndexChanged
-        CargarDataBoletos(ddlFiltroEstado.SelectedValue)
+        CargarDataBoletos(Convert.ToInt32(ddlFiltroEstado.SelectedValue))
     End Sub
 
     ' =================================================================
     ' FUNCIÓN UNIFICADA PARA CARGAR BOLETOS (CON FILTRO)
     ' =================================================================
-    Private Sub CargarDataBoletos(idEstadoFiltro As String)
-        Dim db As New ConexionDB()
+    Private Sub CargarDataBoletos(idEstadoFiltro As Integer)
         Dim correoUsuario As String = Session("UserEmail").ToString()
-
-        ' Limpiamos mensajes de error previos
         pnlError.Visible = False
 
-        Try
-            Using conn As OracleConnection = db.ObtenerConexion()
-                ' Usamos el nuevo SP que creamos con filtro
-                Using cmd As New OracleCommand("SP_CONSULTAR_MIS_BOLETOS", conn)
-                    cmd.CommandType = CommandType.StoredProcedure
-                    cmd.BindByName = True ' Muy importante para evitar errores de orden de parámetros
+        ' 🔥 Llamamos al nuevo servicio
+        Dim respuesta = ClienteBoletoService.ObtenerMisBoletos(correoUsuario, idEstadoFiltro)
 
-                    ' Agregamos los parámetros EXACTOS que definimos en el SP de Oracle
-                    cmd.Parameters.Add("p_correo", OracleDbType.Varchar2).Value = correoUsuario
-                    cmd.Parameters.Add("p_id_estado_filtro", OracleDbType.Int32).Value = Convert.ToInt32(idEstadoFiltro)
+        If respuesta.success Then
+            Dim listaBoletos = CType(respuesta.boletos, List(Of Dictionary(Of String, Object)))
 
-                    ' Parámetro de salida (CURSOR)
-                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
-                    cursorParam.Direction = ParameterDirection.Output
-                    cmd.Parameters.Add(cursorParam)
-
-                    conn.Open()
-
-                    Using da As New OracleDataAdapter(cmd)
-                        Dim dt As New DataTable()
-                        da.Fill(dt)
-
-                        If dt.Rows.Count > 0 Then
-                            rptBoletos.DataSource = dt
-                            rptBoletos.DataBind()
-                            rptBoletos.Visible = True
-                            pnlVacio.Visible = False
-                        Else
-                            rptBoletos.Visible = False
-                            pnlVacio.Visible = True
-                        End If
-                    End Using
-                End Using
-            End Using
-        Catch ex As Exception
+            If listaBoletos.Count > 0 Then
+                rptBoletos.DataSource = listaBoletos
+                rptBoletos.DataBind()
+                rptBoletos.Visible = True
+                pnlVacio.Visible = False
+            Else
+                rptBoletos.Visible = False
+                pnlVacio.Visible = True
+            End If
+        Else
             pnlError.Visible = True
-            lblError.Text = "Error al obtener tus vuelos: " & ex.Message
-        End Try
+            lblError.Text = respuesta.mensaje
+            rptBoletos.Visible = False
+            pnlVacio.Visible = False
+        End If
     End Sub
 
     ' =================================================================
@@ -82,37 +63,18 @@ Public Class MisBoletos
     End Sub
 
     Private Sub ProcesarCancelacion(codigoReserva As String)
-        Dim db As New ConexionDB()
         Dim correoUsuario As String = Session("UserEmail").ToString()
 
-        Try
-            Using conn As OracleConnection = db.ObtenerConexion()
-                Using cmd As New OracleCommand("SP_CANCELAR_RESERVA", conn)
-                    cmd.CommandType = CommandType.StoredProcedure
-                    cmd.BindByName = True
+        ' 🔥 Llamamos al servicio para cancelar
+        Dim respuesta = ClienteBoletoService.CancelarReserva(codigoReserva, correoUsuario)
 
-                    cmd.Parameters.Add("p_codigo_reserva", OracleDbType.Varchar2).Value = codigoReserva
-                    cmd.Parameters.Add("p_correo_usuario", OracleDbType.Varchar2).Value = correoUsuario
-
-                    Dim outResultado As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
-                    outResultado.Direction = ParameterDirection.Output
-                    cmd.Parameters.Add(outResultado)
-
-                    conn.Open()
-                    cmd.ExecuteNonQuery()
-
-                    If outResultado.Value.ToString() = "EXITO" Then
-                        ' REFRESCAMOS la lista usando el mismo filtro que está seleccionado
-                        CargarDataBoletos(ddlFiltroEstado.SelectedValue)
-                    Else
-                        pnlError.Visible = True
-                        lblError.Text = "No se pudo cancelar: " & outResultado.Value.ToString()
-                    End If
-                End Using
-            End Using
-        Catch ex As Exception
+        If respuesta.success Then
+            ' REFRESCAMOS la lista usando el mismo filtro que está seleccionado
+            CargarDataBoletos(Convert.ToInt32(ddlFiltroEstado.SelectedValue))
+        Else
             pnlError.Visible = True
-            lblError.Text = "Error al procesar cancelación: " & ex.Message
-        End Try
+            lblError.Text = respuesta.mensaje
+        End If
     End Sub
+
 End Class

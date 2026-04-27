@@ -1,13 +1,14 @@
-﻿Imports System.Data
-Imports Oracle.ManagedDataAccess.Client
-
-Public Class PaseAbordar
+﻿Public Class PaseAbordar
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        Dim idRol As Integer = 0
+        If Session("IdRol") IsNot Nothing Then idRol = Convert.ToInt32(Session("IdRol"))
+
+        ' 🔥 SEGURIDAD: Validamos sesión y rol de cliente
         If Session("UserEmail") Is Nothing OrElse (idRol <> 2) Then
             Response.Redirect("~/Account/Login.aspx")
+            Return
         End If
 
         If Not IsPostBack Then
@@ -16,46 +17,27 @@ Public Class PaseAbordar
             If Not String.IsNullOrEmpty(codigoReserva) Then
                 CargarDatosPase(codigoReserva)
             Else
-                MostrarError("No se proporcionó un código de reserva válido.")
+                MostrarError("No se proporcionó un código de reserva válido en la URL.")
             End If
         End If
     End Sub
 
     Private Sub CargarDatosPase(codigoReserva As String)
-        Dim db As New ConexionDB()
         Dim correoUsuario As String = Session("UserEmail").ToString()
 
-        Try
-            Using conn As OracleConnection = db.ObtenerConexion()
-                Using cmd As New OracleCommand("SP_OBTENER_PASE_ABORDAR", conn)
-                    cmd.CommandType = CommandType.StoredProcedure
-                    cmd.BindByName = True
+        ' 🔥 Llamada a nuestro nuevo servicio
+        Dim respuesta = ClientePaseAbordarService.ObtenerPasesDeAbordar(codigoReserva, correoUsuario)
 
-                    cmd.Parameters.Add("p_codigo_reserva", OracleDbType.Varchar2).Value = codigoReserva
-                    cmd.Parameters.Add("p_correo", OracleDbType.Varchar2).Value = correoUsuario
-
-                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
-                    cursorParam.Direction = ParameterDirection.Output
-                    cmd.Parameters.Add(cursorParam)
-
-                    conn.Open()
-                    Using da As New OracleDataAdapter(cmd)
-                        Dim dt As New DataTable()
-                        da.Fill(dt)
-
-                        ' Si encuentra boletos, simplemente los mandamos a dibujar TODOS
-                        If dt.Rows.Count > 0 Then
-                            rptPases.DataSource = dt
-                            rptPases.DataBind()
-                        Else
-                            MostrarError("No se encontró el pase de abordar. Verifica que sea tuyo y esté pagado.")
-                        End If
-                    End Using
-                End Using
-            End Using
-        Catch ex As Exception
-            MostrarError("Error al generar el pase: " & ex.Message)
-        End Try
+        If respuesta.success Then
+            ' Si todo sale bien, atamos los datos al Repeater
+            rptPases.DataSource = respuesta.pases
+            rptPases.DataBind()
+            rptPases.Visible = True
+            pnlError.Visible = False
+        Else
+            ' Si falla (no existe, no es suyo, etc.), mostramos el error
+            MostrarError(respuesta.mensaje)
+        End If
     End Sub
 
     Private Sub MostrarError(mensaje As String)
@@ -63,4 +45,5 @@ Public Class PaseAbordar
         pnlError.Visible = True
         lblError.Text = mensaje
     End Sub
+
 End Class

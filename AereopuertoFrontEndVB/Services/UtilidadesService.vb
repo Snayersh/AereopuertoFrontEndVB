@@ -16,6 +16,27 @@ Public Class UtilidadesService
             Return builder.ToString()
         End Using
     End Function
+    ' Pega esto dentro de UtilidadesService.vb (junto a EncriptarSHA256)
+    Public Shared Function ConvertirDataTableALista(dt As DataTable) As List(Of Dictionary(Of String, Object))
+        Dim filas As New List(Of Dictionary(Of String, Object))
+        For Each row As DataRow In dt.Rows
+            Dim dict As New Dictionary(Of String, Object)
+            For Each col As DataColumn In dt.Columns
+                Dim valor = row(col)
+                Dim nombreColumna = col.ColumnName.ToLower() ' Minúsculas para React Native
+
+                If TypeOf valor Is DateTime Then
+                    dict(nombreColumna) = DirectCast(valor, DateTime).ToString("yyyy-MM-ddTHH:mm:ss")
+                ElseIf IsDBNull(valor) Then
+                    dict(nombreColumna) = Nothing
+                Else
+                    dict(nombreColumna) = valor
+                End If
+            Next
+            filas.Add(dict)
+        Next
+        Return filas
+    End Function
 
     ' 2. FUNCIÓN DE CORREO COMPARTIDA
     Public Shared Sub EnviarCorreoActivacion(correoDestino As String, nombre As String, linkActivacion As String)
@@ -44,6 +65,37 @@ Public Class UtilidadesService
             smtp.Send(mensaje)
         Catch ex As Exception
             Throw New Exception("No se pudo enviar el correo de activación.")
+        End Try
+    End Sub
+
+    ' Añadir esto a UtilidadesService.vb
+    Public Shared Sub EnviarCorreoRecuperacion(correoDestino As String, token As String)
+        Try
+            Dim smtp As New SmtpClient("smtp.gmail.com", 587)
+            smtp.EnableSsl = True
+            smtp.Credentials = New NetworkCredential("proyectoaeroupuertoaurora@gmail.com", "ezkk vcci gsgy qguh")
+
+            Dim mensaje As New MailMessage()
+            mensaje.From = New MailAddress("no-reply@laaurora.com", "Soporte La Aurora")
+            mensaje.To.Add(correoDestino)
+            mensaje.Subject = "Recuperación de Contraseña - La Aurora"
+            mensaje.IsBodyHtml = True
+
+            ' URL para la web
+            Dim urlRecuperacion As String = "https://localhost:44356/Account/NuevaPassword.aspx?token=" & token
+
+            mensaje.Body = $"
+                <div style='font-family: Arial, sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 10px;'>
+                    <h2 style='color: #0d47a1;'>Recuperación de Contraseña</h2>
+                    <p>Hemos recibido una solicitud para cambiar la contraseña de tu cuenta en La Aurora.</p>
+                    <p>Haz clic en el botón de abajo para asignar una nueva contraseña. Si tú no hiciste esta solicitud, ignora este correo.</p>
+                    <br>
+                    <a href='{urlRecuperacion}' style='background-color: #f57c00; color: white; padding: 10px 20px; text-decoration: none; font-weight: bold; border-radius: 5px;'>Cambiar Contraseña</a>
+                </div>"
+
+            smtp.Send(mensaje)
+        Catch ex As Exception
+            Throw New Exception("No se pudo enviar el correo de recuperación.")
         End Try
     End Sub
 

@@ -1,7 +1,4 @@
-﻿Imports System.Data
-Imports Oracle.ManagedDataAccess.Client
-Imports System.Text
-Imports System.Web.Services
+﻿Imports System.Web.Services
 
 Public Class Reservas
     Inherits System.Web.UI.Page
@@ -9,12 +6,15 @@ Public Class Reservas
     Private CorreoUsuario As String
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        Dim idRol As Integer = 0
+        If Session("IdRol") IsNot Nothing Then idRol = Convert.ToInt32(Session("IdRol"))
+
         If Session("UserEmail") Is Nothing OrElse (idRol <> 2) Then
             Response.Redirect("~/Account/Login.aspx")
+            Return
         End If
 
-        CorreoUsuario = If(Session("UserEmail") IsNot Nothing, Session("UserEmail").ToString(), "cliente@prueba.com")
+        CorreoUsuario = Session("UserEmail").ToString()
 
         If Not IsPostBack Then
             pnlError.Visible = False
@@ -24,175 +24,108 @@ Public Class Reservas
         End If
     End Sub
 
-    ' ====================================================================
-    ' 1. CARGA DE CATÁLOGOS (100% PARAMETRIZADOS)
-    ' ====================================================================
     Private Sub CargarVuelosDisponibles()
-        Dim db As New ConexionDB()
-        Try
-            Using conn As OracleConnection = db.ObtenerConexion()
-                ' 🔥 REEMPLAZO: Usamos el nuevo SP
-                Using cmd As New OracleCommand("SP_OBTENER_VUELOS_RESERVA_CBX", conn)
-                    cmd.CommandType = CommandType.StoredProcedure
-
-                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
-                    cursorParam.Direction = ParameterDirection.Output
-                    cmd.Parameters.Add(cursorParam)
-
-                    conn.Open()
-                    Using reader As OracleDataReader = cmd.ExecuteReader()
-                        ddlVuelos.DataSource = reader
-                        ddlVuelos.DataTextField = "DETALLE"
-                        ddlVuelos.DataValueField = "ID_VUELO"
-                        ddlVuelos.DataBind()
-                    End Using
-                End Using
-            End Using
-            ddlVuelos.Items.Insert(0, New ListItem("-- Selecciona tu vuelo --", ""))
-        Catch ex As Exception
-            MostrarError("Error cargando vuelos: " & ex.Message)
-        End Try
+        Dim respuesta = ClienteReservaService.ObtenerVuelosDisponibles()
+        If respuesta.success Then
+            ddlVuelos.Items.Clear()
+            ddlVuelos.Items.Add(New ListItem("-- Selecciona tu vuelo --", ""))
+            For Each item In respuesta.vuelos
+                ddlVuelos.Items.Add(New ListItem(item("detalle").ToString(), item("id_vuelo").ToString()))
+            Next
+        Else
+            MostrarError(respuesta.mensaje)
+        End If
     End Sub
 
     Private Sub CargarClases()
-        Dim db As New ConexionDB()
-        Try
-            Using conn As OracleConnection = db.ObtenerConexion()
-                ' 🔥 REEMPLAZO: Reusamos el SP de Clases de Boleto
-                Using cmd As New OracleCommand("SP_OBTENER_CLASES_BOLETO", conn)
-                    cmd.CommandType = CommandType.StoredProcedure
-
-                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
-                    cursorParam.Direction = ParameterDirection.Output
-                    cmd.Parameters.Add(cursorParam)
-
-                    conn.Open()
-                    Using reader As OracleDataReader = cmd.ExecuteReader()
-                        ddlClase.DataSource = reader
-                        ddlClase.DataTextField = "NOMBRE"
-                        ddlClase.DataValueField = "ID_TIPO_BOLETO"
-                        ddlClase.DataBind()
-                    End Using
-                End Using
-            End Using
-            ddlClase.Items.Insert(0, New ListItem("-- Selecciona la clase --", ""))
-
-            ' TRUCO: Le decimos a ASP.NET que este control no haga PostBack al servidor,
-            ' sino que llame únicamente a nuestra función de JavaScript
+        Dim respuesta = ClienteReservaService.ObtenerClases()
+        If respuesta.success Then
+            ddlClase.Items.Clear()
+            ddlClase.Items.Add(New ListItem("-- Selecciona la clase --", ""))
+            For Each item In respuesta.clases
+                ddlClase.Items.Add(New ListItem(item("nombre").ToString(), item("id_tipo_boleto").ToString()))
+            Next
             ddlClase.Attributes.Add("onchange", "actualizarFiltroYPrecio();")
-
-        Catch ex As Exception
-            MostrarError("Error cargando clases: " & ex.Message)
-        End Try
+        Else
+            MostrarError(respuesta.mensaje)
+        End If
     End Sub
 
-    ' ====================================================================
-    ' 2. AL ELEGIR UN VUELO
-    ' ====================================================================
     Protected Sub ddlVuelos_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ddlVuelos.SelectedIndexChanged
         If String.IsNullOrEmpty(ddlVuelos.SelectedValue) Then
             panelAvion.Visible = False
             Return
         End If
 
-        Dim idVuelo As Integer = Convert.ToInt32(ddlVuelos.SelectedValue)
-        GenerarMapaDeAsientos(idVuelo)
+        GenerarMapaDeAsientos(Convert.ToInt32(ddlVuelos.SelectedValue))
     End Sub
 
-    ' ====================================================================
-    ' 3. DIBUJAR EL AVIÓN INTELIGENTE (Inyecta precio y clase)
-    ' ====================================================================
     Private Sub GenerarMapaDeAsientos(idVuelo As Integer)
-        Dim db As New ConexionDB()
-        Dim capacidad As Integer = 0
-        Dim asientosOcupados As New List(Of String)()
+        ' 🔥 Llamamos al servicio para obtener la data cruda
+        Dim respuesta = ClienteReservaService.ObtenerDatosMapaAsientos(idVuelo)
 
-        Try
-            Using conn As OracleConnection = db.ObtenerConexion()
-                Using cmd As New OracleCommand("SP_OBTENER_MAPA_ASIENTOS", conn)
-                    cmd.CommandType = CommandType.StoredProcedure
-                    cmd.BindByName = True
-                    cmd.Parameters.Add("p_id_vuelo", OracleDbType.Int32).Value = idVuelo
-                    Dim outCapacidad As New OracleParameter("p_capacidad", OracleDbType.Int32)
-                    outCapacidad.Direction = ParameterDirection.Output
-                    cmd.Parameters.Add(outCapacidad)
-                    Dim cursorParam As New OracleParameter("p_cursor_ocupados", OracleDbType.RefCursor)
-                    cursorParam.Direction = ParameterDirection.Output
-                    cmd.Parameters.Add(cursorParam)
+        If Not respuesta.success Then
+            MostrarError(respuesta.mensaje)
+            panelAvion.Visible = False
+            Return
+        End If
 
-                    conn.Open()
-                    Using reader As OracleDataReader = cmd.ExecuteReader()
-                        While reader.Read()
-                            asientosOcupados.Add(reader("numero").ToString().ToUpper())
-                        End While
-                    End Using
-                    capacidad = Convert.ToInt32(outCapacidad.Value.ToString())
-                End Using
-            End Using
+        ' Ahora que tenemos la data, armamos el HTML localmente
+        Dim capacidad As Integer = respuesta.capacidad
+        Dim asientosOcupados As List(Of String) = respuesta.ocupados
 
-            Dim htmlAvion As New StringBuilder()
-            Dim letras() As String = {"A", "B", "C", "D"}
-            Dim totalFilas As Integer = Math.Ceiling(capacidad / 4.0)
-            Dim asientoActual As Integer = 1
+        Dim htmlAvion As New StringBuilder()
+        Dim letras() As String = {"A", "B", "C", "D"}
+        Dim totalFilas As Integer = Math.Ceiling(capacidad / 4.0)
+        Dim asientoActual As Integer = 1
 
-            Dim limitePrimera As Integer = Math.Ceiling(totalFilas * 0.1)
-            Dim limiteEjecutiva As Integer = Math.Ceiling(totalFilas * 0.3)
+        Dim limitePrimera As Integer = Math.Ceiling(totalFilas * 0.1)
+        Dim limiteEjecutiva As Integer = Math.Ceiling(totalFilas * 0.3)
 
-            For fila As Integer = 1 To totalFilas
-                htmlAvion.Append("<div class='seat-row'>")
+        For fila As Integer = 1 To totalFilas
+            htmlAvion.Append("<div class='seat-row'>")
 
-                Dim claseCSS As String
-                Dim precioAsiento As Decimal
-                Dim idClaseAsiento As Integer
+            Dim claseCSS As String
+            Dim precioAsiento As Decimal
+            Dim idClaseAsiento As Integer
 
-                ' Asignamos los datos reales a cada bloque del avión
-                If fila <= limitePrimera Then
-                    claseCSS = "primera"
-                    precioAsiento = 950.0
-                    idClaseAsiento = 3
-                ElseIf fila <= limiteEjecutiva Then
-                    claseCSS = "ejecutiva"
-                    precioAsiento = 550.0
-                    idClaseAsiento = 2
+            If fila <= limitePrimera Then
+                claseCSS = "primera"
+                precioAsiento = 950.0
+                idClaseAsiento = 3
+            ElseIf fila <= limiteEjecutiva Then
+                claseCSS = "ejecutiva"
+                precioAsiento = 550.0
+                idClaseAsiento = 2
+            Else
+                claseCSS = "economica"
+                precioAsiento = 250.0
+                idClaseAsiento = 1
+            End If
+
+            For col As Integer = 0 To 3
+                If asientoActual > capacidad Then Exit For
+                Dim codigoAsiento As String = fila.ToString() & letras(col)
+
+                If asientosOcupados.Contains(codigoAsiento) Then
+                    htmlAvion.Append($"<div class='seat occupied {claseCSS}' onclick=""alert('Ocupado.');"">{codigoAsiento}</div>")
                 Else
-                    claseCSS = "economica"
-                    precioAsiento = 250.0
-                    idClaseAsiento = 1
+                    htmlAvion.Append($"<div class='seat available {claseCSS}' data-precio='{precioAsiento}' data-idclase='{idClaseAsiento}' onclick=""seleccionarAsiento(this, '{codigoAsiento}')"">{codigoAsiento}</div>")
                 End If
 
-                For col As Integer = 0 To 3
-                    If asientoActual > capacidad Then Exit For
-                    Dim codigoAsiento As String = fila.ToString() & letras(col)
-
-                    If asientosOcupados.Contains(codigoAsiento) Then
-                        htmlAvion.Append($"<div class='seat occupied {claseCSS}' onclick=""alert('Ocupado.');"">{codigoAsiento}</div>")
-                    Else
-                        ' ATENCIÓN AQUÍ: Inyectamos data-precio y data-idclase al HTML
-                        htmlAvion.Append($"<div class='seat available {claseCSS}' data-precio='{precioAsiento}' data-idclase='{idClaseAsiento}' onclick=""seleccionarAsiento(this, '{codigoAsiento}')"">{codigoAsiento}</div>")
-                    End If
-
-                    If col = 1 Then htmlAvion.Append("<div class='aisle'></div>")
-                    asientoActual += 1
-                Next
-                htmlAvion.Append("</div>")
+                If col = 1 Then htmlAvion.Append("<div class='aisle'></div>")
+                asientoActual += 1
             Next
+            htmlAvion.Append("</div>")
+        Next
 
-            litMapaAsientos.Text = htmlAvion.ToString()
-            panelAvion.Visible = True
-            hfAsientoSeleccionado.Value = ""
-            ClientScript.RegisterStartupScript(Me.GetType(), "LimpiarAsiento", "document.getElementById('lblAsientoMostrado').innerText = 'Ninguno'; siExisteFuncion('actualizarFiltroYPrecio');", True)
-
-        Catch ex As Exception
-            MostrarError("Error al cargar el mapa: " & ex.Message)
-            panelAvion.Visible = False
-        End Try
+        litMapaAsientos.Text = htmlAvion.ToString()
+        panelAvion.Visible = True
+        hfAsientoSeleccionado.Value = ""
+        ClientScript.RegisterStartupScript(Me.GetType(), "LimpiarAsiento", "document.getElementById('lblAsientoMostrado').innerText = 'Ninguno'; siExisteFuncion('actualizarFiltroYPrecio');", True)
     End Sub
 
-    ' ====================================================================
-    ' 4. GUARDAR RESERVA MULTI-CLASE
-    ' ====================================================================
     Protected Sub btnReservar_Click(sender As Object, e As EventArgs) Handles btnReservar.Click
-        ' Ahora los asientos vienen así: "1A:3,12B:1" (Asiento : IdClase)
         Dim asientosElegidos As String = hfAsientoSeleccionado.Value
 
         If String.IsNullOrEmpty(ddlVuelos.SelectedValue) Then
@@ -206,67 +139,28 @@ Public Class Reservas
         End If
 
         Dim listaAsientos As String() = asientosElegidos.Split(","c)
-        Dim codigoReservaUnico As String = "B-" & Guid.NewGuid().ToString().Substring(0, 5).ToUpper()
-        Dim db As New ConexionDB()
-        Dim errores As New StringBuilder()
-        Dim asientosParaMostrar As New List(Of String)()
 
-        Try
-            Using conn As OracleConnection = db.ObtenerConexion()
-                conn.Open()
+        ' 🔥 Llamamos al servicio centralizado para reservar
+        Dim respuesta = ClienteReservaService.ProcesarReservaMasiva(
+            CorreoUsuario,
+            Convert.ToInt32(ddlVuelos.SelectedValue),
+            listaAsientos
+        )
 
-                For Each item In listaAsientos
-                    ' Desempaquetamos el dato (Ej. "1A:3")
-                    Dim partes() As String = item.Split(":"c)
-                    Dim asientoLimpio As String = partes(0).Trim()
-                    Dim idClaseElegida As Integer = Convert.ToInt32(partes(1))
+        If respuesta.success Then
+            pnlError.Visible = False
+            ddlVuelos.Enabled = False
+            ddlClase.Enabled = False
+            btnReservar.Enabled = False
+            panelAvion.Visible = False
 
-                    asientosParaMostrar.Add(asientoLimpio)
-
-                    Using cmd As New OracleCommand("SP_RESERVAR_BOLETO", conn)
-                        cmd.CommandType = CommandType.StoredProcedure
-                        cmd.BindByName = True
-
-                        cmd.Parameters.Add("p_correo_usuario", OracleDbType.Varchar2).Value = CorreoUsuario
-                        cmd.Parameters.Add("p_id_vuelo", OracleDbType.Int32).Value = Convert.ToInt32(ddlVuelos.SelectedValue)
-
-                        ' AHORA USAMOS LA CLASE ESPECÍFICA DE ESE ASIENTO, NO LA DEL COMBOBOX
-                        cmd.Parameters.Add("p_id_tipo_boleto", OracleDbType.Int32).Value = idClaseElegida
-
-                        cmd.Parameters.Add("p_asiento", OracleDbType.Varchar2).Value = asientoLimpio
-                        cmd.Parameters.Add("p_codigo_reserva", OracleDbType.Varchar2).Value = codigoReservaUnico
-
-                        Dim outResultado As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
-                        outResultado.Direction = ParameterDirection.Output
-                        cmd.Parameters.Add(outResultado)
-
-                        cmd.ExecuteNonQuery()
-
-                        If outResultado.Value.ToString() <> "EXITO" Then
-                            errores.AppendLine($"Error en asiento {asientoLimpio}: {outResultado.Value.ToString()}")
-                        End If
-                    End Using
-                Next
-            End Using
-
-            If errores.Length = 0 Then
-                pnlError.Visible = False
-                ddlVuelos.Enabled = False
-                ddlClase.Enabled = False
-                btnReservar.Enabled = False
-                panelAvion.Visible = False
-
-                lblCodigoBoleto.Text = codigoReservaUnico
-                lblAsientoConfirmado.Text = String.Join(", ", asientosParaMostrar)
-                hlPagarAhora.NavigateUrl = "Pagos.aspx?codigo=" & codigoReservaUnico
-                pnlExito.Visible = True
-            Else
-                MostrarError("Problemas al reservar: " & errores.ToString())
-            End If
-
-        Catch ex As Exception
-            MostrarError("Error crítico: " & ex.Message)
-        End Try
+            lblCodigoBoleto.Text = respuesta.codigo
+            lblAsientoConfirmado.Text = respuesta.asientos
+            hlPagarAhora.NavigateUrl = "Pagos.aspx?codigo=" & respuesta.codigo
+            pnlExito.Visible = True
+        Else
+            MostrarError("Problemas al reservar: " & respuesta.mensaje)
+        End If
     End Sub
 
     Private Sub MostrarError(mensaje As String)
@@ -276,40 +170,15 @@ Public Class Reservas
     End Sub
 
     ' ====================================================================
-    ' 5. SINCRONIZACIÓN SILENCIOSA
+    ' 5. SINCRONIZACIÓN SILENCIOSA (SignalR / WebMethods)
     ' ====================================================================
     <WebMethod()>
     Public Shared Function ObtenerAsientosOcupados(idVuelo As Integer) As List(Of String)
-        Dim ocupados As New List(Of String)()
-        Dim db As New ConexionDB()
-
-        Try
-            Using conn As OracleConnection = db.ObtenerConexion()
-                Using cmd As New OracleCommand("SP_OBTENER_MAPA_ASIENTOS", conn)
-                    cmd.CommandType = CommandType.StoredProcedure
-                    cmd.BindByName = True ' 🔥 Agregado por seguridad
-                    cmd.Parameters.Add("p_id_vuelo", OracleDbType.Int32).Value = idVuelo
-                    Dim outCapacidad As New OracleParameter("p_capacidad", OracleDbType.Int32)
-                    outCapacidad.Direction = ParameterDirection.Output
-                    cmd.Parameters.Add(outCapacidad)
-                    Dim cursorParam As New OracleParameter("p_cursor_ocupados", OracleDbType.RefCursor)
-                    cursorParam.Direction = ParameterDirection.Output
-                    cmd.Parameters.Add(cursorParam)
-
-                    conn.Open()
-                    Using reader As OracleDataReader = cmd.ExecuteReader()
-                        While reader.Read()
-                            ' Guardamos solo el número (Ej: "1A", "2B")
-                            ocupados.Add(reader("numero").ToString().ToUpper())
-                        End While
-                    End Using
-                End Using
-            End Using
-        Catch ex As Exception
-            ' Como es un proceso silencioso de fondo, si hay un micro-corte de red,
-            ' simplemente ignoramos el error y devolverá la lista vacía para no asustar al usuario.
-        End Try
-
-        Return ocupados
+        Dim respuesta = ClienteReservaService.ObtenerDatosMapaAsientos(idVuelo)
+        If respuesta.success Then
+            Return CType(respuesta.ocupados, List(Of String))
+        End If
+        Return New List(Of String)()
     End Function
+
 End Class

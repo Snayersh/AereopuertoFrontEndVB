@@ -1,16 +1,16 @@
-﻿Imports System.Data
-Imports Oracle.ManagedDataAccess.Client
-
-Public Class ReclamoEquipaje
+﻿Public Class ReclamoEquipaje
     Inherits System.Web.UI.Page
 
     Private CorreoUsuario As String
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-        Dim idRol As Integer = Convert.ToInt32(Session("IdRol"))
+        Dim idRol As Integer = 0
+        If Session("IdRol") IsNot Nothing Then idRol = Convert.ToInt32(Session("IdRol"))
+
         ' 🔥 SEGURIDAD: Solo Clientes / Pasajeros (Rol 2)
         If Session("UserEmail") Is Nothing OrElse (idRol <> 2) Then
             Response.Redirect("~/Account/Login.aspx")
+            Return
         End If
 
         CorreoUsuario = Session("UserEmail").ToString()
@@ -25,32 +25,19 @@ Public Class ReclamoEquipaje
     ' CARGAR SOLO LAS MALETAS DE ESTE CLIENTE EN EL SELECTOR
     ' =======================================================
     Private Sub CargarEquipajeCliente()
-        Dim db As New ConexionDB()
-        Try
-            Using conn As OracleConnection = db.ObtenerConexion()
-                Using cmd As New OracleCommand("SP_OBTENER_EQUIPAJE_CLIENTE_CBX", conn)
-                    cmd.CommandType = CommandType.StoredProcedure
-                    cmd.BindByName = True
+        Dim respuesta = ClienteReclamoService.ObtenerEquipajeCliente(CorreoUsuario)
 
-                    cmd.Parameters.Add("p_correo_usuario", OracleDbType.Varchar2).Value = CorreoUsuario
+        If respuesta.success Then
+            ddlEquipaje.Items.Clear()
+            ddlEquipaje.Items.Add(New ListItem("-- Seleccione la Maleta --", ""))
 
-                    Dim cur As New OracleParameter("p_cursor", OracleDbType.RefCursor)
-                    cur.Direction = ParameterDirection.Output
-                    cmd.Parameters.Add(cur)
-
-                    conn.Open()
-                    Using reader As OracleDataReader = cmd.ExecuteReader()
-                        ddlEquipaje.DataSource = reader
-                        ddlEquipaje.DataTextField = "INFO_EQUIPAJE" ' Asegurar que el SP devuelve este alias
-                        ddlEquipaje.DataValueField = "ID_EQUIPAJE"
-                        ddlEquipaje.DataBind()
-                    End Using
-                End Using
-            End Using
-            ddlEquipaje.Items.Insert(0, New ListItem("-- Seleccione la Maleta --", ""))
-        Catch ex As Exception
-            MostrarMensaje("Error al cargar su equipaje: " & ex.Message, False)
-        End Try
+            For Each item In respuesta.equipaje
+                ' Recordatorio: Las columnas vienen en minúsculas por nuestra utilidad
+                ddlEquipaje.Items.Add(New ListItem(item("info_equipaje").ToString(), item("id_equipaje").ToString()))
+            Next
+        Else
+            MostrarMensaje(respuesta.mensaje, False)
+        End If
     End Sub
 
     ' =======================================================
@@ -62,75 +49,36 @@ Public Class ReclamoEquipaje
             Return
         End If
 
-        Dim db As New ConexionDB()
-        Try
-            Using conn As OracleConnection = db.ObtenerConexion()
-                Using cmd As New OracleCommand("SP_REGISTRAR_RECLAMO", conn)
-                    cmd.CommandType = CommandType.StoredProcedure
-                    cmd.BindByName = True
+        Dim idEquipaje As Integer = Convert.ToInt32(ddlEquipaje.SelectedValue)
 
-                    cmd.Parameters.Add("p_descripcion", OracleDbType.Varchar2).Value = txtDescripcion.Text.Trim()
-                    cmd.Parameters.Add("p_id_equipaje", OracleDbType.Int32).Value = Convert.ToInt32(ddlEquipaje.SelectedValue)
+        ' 🔥 Llamamos al servicio centralizado
+        Dim respuesta = ClienteReclamoService.RegistrarReclamo(idEquipaje, txtDescripcion.Text.Trim())
 
-                    Dim paramOut As New OracleParameter("p_resultado", OracleDbType.Varchar2, 200)
-                    paramOut.Direction = ParameterDirection.Output
-                    cmd.Parameters.Add(paramOut)
-
-                    conn.Open()
-                    cmd.ExecuteNonQuery()
-
-                    If paramOut.Value.ToString() = "EXITO" Then
-                        MostrarMensaje("✅ Reclamo enviado. Nuestro equipo de Servicio al Cliente lo revisará a la brevedad.", True)
-                        txtDescripcion.Text = ""
-                        ddlEquipaje.SelectedIndex = 0
-                        CargarHistorialReclamos() ' Refrescar la tabla
-                    Else
-                        MostrarMensaje("⚠️ " & paramOut.Value.ToString(), False)
-                    End If
-                End Using
-            End Using
-        Catch ex As Exception
-            MostrarMensaje("❌ Error en el servidor: " & ex.Message, False)
-        End Try
+        If respuesta.success Then
+            MostrarMensaje(respuesta.mensaje, True)
+            txtDescripcion.Text = ""
+            ddlEquipaje.SelectedIndex = 0
+            CargarHistorialReclamos() ' Refrescar la tabla
+        Else
+            MostrarMensaje(respuesta.mensaje, False)
+        End If
     End Sub
 
     ' =======================================================
     ' MOSTRAR HISTORIAL DE RECLAMOS DEL CLIENTE
     ' =======================================================
     Private Sub CargarHistorialReclamos()
-        Dim db As New ConexionDB()
-        Try
-            Using conn As OracleConnection = db.ObtenerConexion()
-                Using cmd As New OracleCommand("SP_LISTAR_RECLAMOS_CLIENTE", conn)
-                    cmd.CommandType = CommandType.StoredProcedure
-                    cmd.BindByName = True
+        Dim respuesta = ClienteReclamoService.ObtenerHistorialReclamos(CorreoUsuario)
 
-                    cmd.Parameters.Add("p_correo_usuario", OracleDbType.Varchar2).Value = CorreoUsuario
-
-                    Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
-                    cursorParam.Direction = ParameterDirection.Output
-                    cmd.Parameters.Add(cursorParam)
-
-                    conn.Open()
-                    Using da As New OracleDataAdapter(cmd)
-                        Dim dt As New DataTable()
-                        da.Fill(dt)
-
-                        If dt.Rows.Count > 0 Then
-                            rptReclamos.DataSource = dt
-                            rptReclamos.DataBind()
-                            rptReclamos.Visible = True
-                            pnlVacio.Visible = False
-                        Else
-                            rptReclamos.Visible = False
-                            pnlVacio.Visible = True
-                        End If
-                    End Using
-                End Using
-            End Using
-        Catch ex As Exception
-            MostrarMensaje("Error al cargar historial: " & ex.Message, False)
-        End Try
+        If respuesta.success AndAlso respuesta.reclamos.Count > 0 Then
+            rptReclamos.DataSource = respuesta.reclamos
+            rptReclamos.DataBind()
+            rptReclamos.Visible = True
+            pnlVacio.Visible = False
+        Else
+            rptReclamos.Visible = False
+            pnlVacio.Visible = True
+        End If
     End Sub
 
     ' =======================================================
@@ -138,9 +86,11 @@ Public Class ReclamoEquipaje
     ' =======================================================
     Protected Sub rptReclamos_ItemDataBound(sender As Object, e As RepeaterItemEventArgs) Handles rptReclamos.ItemDataBound
         If e.Item.ItemType = ListItemType.Item OrElse e.Item.ItemType = ListItemType.AlternatingItem Then
-            Dim estado As String = DataBinder.Eval(e.Item.DataItem, "ESTADO").ToString().ToUpper()
-            Dim lblBadge As Label = CType(e.Item.FindControl("lblBadgeEstado"), Label)
+            ' Recuperamos los datos del diccionario (minúsculas)
+            Dim itemData As Dictionary(Of String, Object) = CType(e.Item.DataItem, Dictionary(Of String, Object))
+            Dim estado As String = itemData("estado")?.ToString().ToUpper()
 
+            Dim lblBadge As Label = CType(e.Item.FindControl("lblBadgeEstado"), Label)
             lblBadge.Text = estado
 
             If estado.Contains("PENDIENTE") OrElse estado.Contains("RECIBIDO") Then
@@ -160,4 +110,5 @@ Public Class ReclamoEquipaje
         lblMensaje.Text = mensaje
         pnlMensaje.CssClass = If(esExito, "alert alert-success fw-bold rounded-3 mb-4 shadow-sm", "alert alert-danger fw-bold rounded-3 mb-4 shadow-sm")
     End Sub
+
 End Class

@@ -69,52 +69,53 @@
             <asp:Repeater ID="rptBoletos" runat="server">
                 <ItemTemplate>
                     <div class="ticket-card">
+                        
                         <div class="ticket-main">
                             <div class="d-flex align-items-center mb-4">
-                                <span class="route-text"><%# Eval("Origen") %></span>
+                                <span class="route-text"><%# Eval("origen") %></span>
                                 <span class="flight-icon">✈️</span>
-                                <span class="route-text"><%# Eval("Destino") %></span>
+                                <span class="route-text"><%# Eval("destino") %></span>
                             </div>
                             
-                           <div class="row">
+                            <div class="row">
                                 <div class="col-4">
                                     <div class="ticket-label">FECHA</div>
-                                    <div class="ticket-value"><%# Eval("FechaSalida") %></div>
+                                    <div class="ticket-value"><%# Eval("fecha_salida") %></div>
                                 </div>
                                 <div class="col-4">
                                     <div class="ticket-label">HORA SALIDA</div>
-                                    <div class="ticket-value"><%# Eval("HoraSalida") %></div>
+                                    <div class="ticket-value"><%# Eval("hora_salida") %></div>
                                 </div>
                                 <div class="col-4">
                                     <div class="ticket-label">CABINA</div>
-                                    <div class="ticket-value text-primary"><%# Eval("ClaseCabina") %></div>
+                                    <div class="ticket-value text-primary"><%# Eval("clase_cabina") %></div>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-4 mt-3">
                                     <div class="ticket-label">ASIENTO</div>
-                                    <div class="ticket-value text-danger"><%# Eval("AsientoAsignado") %></div>
+                                    <div class="ticket-value text-danger"><%# Eval("asiento_asignado") %></div>
                                 </div>
                             </div>
-                        <div class="ticket-side">
+                        </div> <div class="ticket-side">
                             <div class="ticket-label text-center">LOCALIZADOR</div>
-                            <h3 class="fw-bold text-dark mb-3"><%# Eval("CodigoReserva") %></h3>
+                            <h3 class="fw-bold text-dark mb-3"><%# Eval("codigo_reserva") %></h3>
                             
                             <div class="ticket-label text-center">ESTADO</div>
-                            <span class='<%# If(Eval("EstadoBoleto").ToString().ToUpper() = "PAGADO", "badge-pagado", If(Eval("EstadoBoleto").ToString().ToUpper() = "CANCELADO", "badge-cancelado", "badge-reservado")) %> fw-bold mb-3'>
-                                <%# Eval("EstadoBoleto") %>
+                            <span class='<%# If(Eval("estado_boleto").ToString().ToUpper() = "PAGADO", "badge-pagado", If(Eval("estado_boleto").ToString().ToUpper() = "CANCELADO", "badge-cancelado", "badge-reservado")) %> fw-bold mb-3'>
+                                <%# Eval("estado_boleto") %>
                             </span>
 
-                            <asp:Panel ID="pnlAcciones" runat="server" Visible='<%# Eval("EstadoBoleto").ToString().ToUpper() = "RESERVADO" %>'>
-                                <a href='Pagos.aspx?codigo=<%# Eval("CodigoReserva") %>' class="btn btn-sm btn-success w-100 mb-2 fw-bold shadow-sm">💳 Pagar Ahora</a>
+                            <asp:Panel ID="pnlAcciones" runat="server" Visible='<%# Eval("estado_boleto").ToString().ToUpper() = "RESERVADO" %>'>
+                                <a href='Pagos.aspx?codigo=<%# Eval("codigo_reserva") %>' class="btn btn-sm btn-success w-100 mb-2 fw-bold shadow-sm">💳 Pagar Ahora</a>
                                 
                                 <asp:LinkButton ID="btnCancelar" runat="server" CssClass="btn btn-sm btn-outline-danger w-100 fw-bold" 
-                                    CommandName="CancelarReserva" CommandArgument='<%# Eval("CodigoReserva") %>' 
+                                    CommandName="CancelarReserva" CommandArgument='<%# Eval("codigo_reserva") %>' 
                                     OnClientClick="return confirm('¿Estás seguro que deseas cancelar esta reserva? El asiento será liberado para otros pasajeros.');">
                                     ❌ Cancelar
                                 </asp:LinkButton>
                             </asp:Panel>
 
-                            <asp:Panel ID="pnlAccionesPagado" runat="server" Visible='<%# Eval("EstadoBoleto").ToString().ToUpper() = "PAGADO" %>'>
-                                <a href='PaseAbordar.aspx?codigo=<%# Eval("CodigoReserva") %>' target="_blank" class="btn btn-sm btn-primary w-100 fw-bold shadow-sm">
+                            <asp:Panel ID="pnlAccionesPagado" runat="server" Visible='<%# Eval("estado_boleto").ToString().ToUpper() = "PAGADO" %>'>
+                                <a href='PaseAbordar.aspx?codigo=<%# Eval("codigo_reserva") %>' target="_blank" class="btn btn-sm btn-primary w-100 fw-bold shadow-sm">
                                     🖨️ Imprimir Pase
                                 </a>
                                 <div class="small text-center mt-2 text-success fw-bold">¡Listo para volar!</div>

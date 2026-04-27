@@ -224,7 +224,7 @@
     <Content Include="Cliente\MisFacturas.aspx" />
     <Content Include="Operaciones\ControlVuelos.aspx" />
     <Content Include="Operaciones\Escalas.aspx" />
-    <Content Include="Radar.aspx" />
+    <Content Include="Publico\Radar.aspx" />
     <Content Include="RRHH\Tripulacion.aspx" />
     <Content Include="RRHH\Usuarios.aspx" />
     <Content Include="Cliente\Equipaje.aspx" />
@@ -255,8 +255,8 @@
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\Site.css" />
-    <Content Include="Default.aspx" />
-    <Content Include="DetalleVuelo.aspx" />
+    <Content Include="Publico\Default.aspx" />
+    <Content Include="Publico\DetalleVuelo.aspx" />
     <Content Include="Operaciones\CheckIn.aspx" />
     <Content Include="Operaciones\RegistroEquipaje.aspx" />
     <Content Include="Operaciones\Rutas.aspx" />
@@ -293,7 +293,7 @@
     <Content Include="Content\bootstrap-grid.css.map" />
     <None Include=".editorconfig" />
     <Content Include="connections.config" />
-    <Content Include="ApiMovil.ashx" />
+    <Content Include="Services\ApiMovil.ashx" />
     <None Include="Oracle.DataAccess.Common.Configuration.Section.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -370,6 +370,7 @@
     </Compile>
     <Compile Include="Services\AccountActivationService.vb" />
     <Compile Include="Services\AccountLoginService.vb" />
+    <Compile Include="Services\AccountPasswordService.vb" />
     <Compile Include="Services\AccountRegistroService.vb" />
     <Compile Include="Admin\AdminPuertas.aspx.designer.vb">
       <DependentUpon>AdminPuertas.aspx</DependentUpon>
@@ -476,10 +477,10 @@
       <DependentUpon>ReporteVuelosGral.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
-    <Compile Include="ApiMovil.ashx.vb">
+    <Compile Include="Services\ApiMovil.ashx.vb">
       <DependentUpon>ApiMovil.ashx</DependentUpon>
     </Compile>
-    <Compile Include="Cliente\AsientosHub.vb" />
+    <Compile Include="Services\AsientosHub.vb" />
     <Compile Include="Admin\AuditoriaPagos.aspx.designer.vb">
       <DependentUpon>AuditoriaPagos.aspx</DependentUpon>
     </Compile>
@@ -508,9 +509,17 @@
       <DependentUpon>SoporteTickets.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
-    <Compile Include="Cliente\Startup.vb" />
+    <Compile Include="Services\ClienteBoletoService.vb" />
+    <Compile Include="Services\ClienteEquipajeService.vb" />
+    <Compile Include="Services\ClienteFacturaService.vb" />
+    <Compile Include="Services\ClientePagoService.vb" />
+    <Compile Include="Services\ClientePaseAbordarService.vb" />
+    <Compile Include="Services\ClienteReclamoService.vb" />
+    <Compile Include="Services\ClienteReservaService.vb" />
+    <Compile Include="Services\ClienteTicketService.vb" />
+    <Compile Include="Services\DashboardService.vb" />
+    <Compile Include="Services\Startup.vb" />
     <Compile Include="ConexionDBReplica.vb" />
-    <Compile Include="ApiServices.vb" />
     <Compile Include="config.vb" />
     <Compile Include="Operaciones\ControlSeguridad.aspx.designer.vb">
       <DependentUpon>ControlSeguridad.aspx</DependentUpon>
@@ -589,6 +598,8 @@
       <DependentUpon>GestionTurnos.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
+    <Compile Include="Services\AccountValidacionService.vb" />
+    <Compile Include="Services\ClientePerfilService.vb" />
     <Compile Include="Services\UtilidadesService.vb" />
     <Compile Include="Soporte\BandejaTickets.aspx.designer.vb">
       <DependentUpon>BandejaTickets.aspx</DependentUpon>
@@ -639,10 +650,10 @@
       <DependentUpon>Escalas.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
-    <Compile Include="Radar.aspx.designer.vb">
+    <Compile Include="Publico\Radar.aspx.designer.vb">
       <DependentUpon>Radar.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Radar.aspx.vb">
+    <Compile Include="Publico\Radar.aspx.vb">
       <DependentUpon>Radar.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
@@ -747,17 +758,17 @@
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Data\ConexionBD.vb" />
-    <Compile Include="Default.aspx.designer.vb">
+    <Compile Include="Publico\Default.aspx.designer.vb">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Default.aspx.vb">
+    <Compile Include="Publico\Default.aspx.vb">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
-    <Compile Include="DetalleVuelo.aspx.designer.vb">
+    <Compile Include="Publico\DetalleVuelo.aspx.designer.vb">
       <DependentUpon>DetalleVuelo.aspx</DependentUpon>
     </Compile>
-    <Compile Include="DetalleVuelo.aspx.vb">
+    <Compile Include="Publico\DetalleVuelo.aspx.vb">
       <DependentUpon>DetalleVuelo.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
