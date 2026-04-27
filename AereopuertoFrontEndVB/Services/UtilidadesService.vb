@@ -1,13 +1,28 @@
-﻿Imports System.Net.Mail
+﻿Imports System.Security.Cryptography
+Imports System.Text
+Imports System.Net.Mail
 Imports System.Net
 
-Public Class ServicioCorreo
+Public Class UtilidadesService
 
-    ' Esta función ahora es global y la puede usar el Web y la API Móvil
+    ' 1. FUNCIÓN DE ENCRIPTADO COMPARTIDA
+    Public Shared Function EncriptarSHA256(texto As String) As String
+        Using sha256 As SHA256 = SHA256.Create()
+            Dim bytes As Byte() = sha256.ComputeHash(Encoding.UTF8.GetBytes(texto))
+            Dim builder As New StringBuilder()
+            For i As Integer = 0 To bytes.Length - 1
+                builder.Append(bytes(i).ToString("x2"))
+            Next
+            Return builder.ToString()
+        End Using
+    End Function
+
+    ' 2. FUNCIÓN DE CORREO COMPARTIDA
     Public Shared Sub EnviarCorreoActivacion(correoDestino As String, nombre As String, linkActivacion As String)
         Try
             Dim smtp As New SmtpClient("smtp.gmail.com", 587)
             smtp.EnableSsl = True
+            ' Considera poner estas credenciales en el Web.config en el futuro por seguridad
             smtp.Credentials = New NetworkCredential("proyectoaeroupuertoaurora@gmail.com", "ezkk vcci gsgy qguh")
 
             Dim mensaje As New MailMessage()
@@ -28,8 +43,7 @@ Public Class ServicioCorreo
 
             smtp.Send(mensaje)
         Catch ex As Exception
-            ' Fallo silencioso, o puedes guardar un log aquí si lo deseas en el futuro
-            Throw New Exception("No se pudo enviar el correo.")
+            Throw New Exception("No se pudo enviar el correo de activación.")
         End Try
     End Sub
 

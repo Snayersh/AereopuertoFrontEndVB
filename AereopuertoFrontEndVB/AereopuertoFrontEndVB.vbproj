@@ -368,7 +368,9 @@
       <DependentUpon>RecuperarPassword.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
-    <Compile Include="Account\ServicioCorreo.vb" />
+    <Compile Include="Services\AccountActivationService.vb" />
+    <Compile Include="Services\AccountLoginService.vb" />
+    <Compile Include="Services\AccountRegistroService.vb" />
     <Compile Include="Admin\AdminPuertas.aspx.designer.vb">
       <DependentUpon>AdminPuertas.aspx</DependentUpon>
     </Compile>
@@ -587,6 +589,7 @@
       <DependentUpon>GestionTurnos.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
+    <Compile Include="Services\UtilidadesService.vb" />
     <Compile Include="Soporte\BandejaTickets.aspx.designer.vb">
       <DependentUpon>BandejaTickets.aspx</DependentUpon>
     </Compile>
