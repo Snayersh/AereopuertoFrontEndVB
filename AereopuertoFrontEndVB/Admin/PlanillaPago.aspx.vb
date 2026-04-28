@@ -31,7 +31,7 @@ Public Class PlanillaPago
             Return
         End If
 
-        Dim db As New ConexionDB()
+        Dim db As New ConexionDBReplica()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_REGISTRAR_DETALLE_PLANILLA", conn)
@@ -70,13 +70,13 @@ Public Class PlanillaPago
     ' 1. MÉTODO PARA LLENAR DESPLEGABLES (100% SPs)
     ' -------------------------------------------------------------
     Private Sub CargarCatalogos()
-        Dim db As New ConexionDB()
+        Dim db As New ConexionDBReplica()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 conn.Open()
 
                 ' 1. Cargar Empleados (Reutilizando el SP existente)
-                Using cmdEmp As New OracleCommand("SP_OBTENER_EMPLEADOS_CBX", conn)
+                Using cmdEmp As New OracleCommand("SP_OBTENER_EMPLEADOS", conn)
                     cmdEmp.CommandType = CommandType.StoredProcedure
                     Dim cursorEmp As New OracleParameter("p_cursor", OracleDbType.RefCursor)
                     cursorEmp.Direction = ParameterDirection.Output
@@ -92,7 +92,7 @@ Public Class PlanillaPago
                 End Using
 
                 ' 2. Cargar Planillas Maestras (Nuevo SP)
-                Using cmdPla As New OracleCommand("SP_OBTENER_PLANILLAS_CBX", conn)
+                Using cmdPla As New OracleCommand("SP_OBTENER_PLANILLAS", conn)
                     cmdPla.CommandType = CommandType.StoredProcedure
                     Dim cursorPla As New OracleParameter("p_cursor", OracleDbType.RefCursor)
                     cursorPla.Direction = ParameterDirection.Output
@@ -116,7 +116,7 @@ Public Class PlanillaPago
     Private Sub CargarTablaPlanilla(idPlanilla As String)
         If String.IsNullOrEmpty(idPlanilla) Then Return
 
-        Dim db As New ConexionDB()
+        Dim db As New ConexionDBReplica()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_LISTAR_DETALLE_PLANILLA", conn)

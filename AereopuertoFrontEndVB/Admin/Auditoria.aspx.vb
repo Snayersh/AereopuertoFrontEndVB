@@ -20,13 +20,14 @@ Public Class Auditoria
     End Sub
 
     Private Sub CargarBitacora(tabla As String, usuario As String, accion As String)
-        Dim db As New ConexionDB()
+        Dim db As New ConexionDBReplica()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_CONSULTAR_AUDITORIA", conn)
                     cmd.CommandType = CommandType.StoredProcedure
 
-                    ' Enviamos parámetros de filtro, si están vacíos la BD devuelve todo
+                    cmd.BindByName = True
+
                     cmd.Parameters.Add("p_tabla", OracleDbType.Varchar2).Value = If(String.IsNullOrEmpty(tabla), DBNull.Value, tabla.ToUpper())
                     cmd.Parameters.Add("p_usuario", OracleDbType.Varchar2).Value = If(String.IsNullOrEmpty(usuario), DBNull.Value, usuario.ToLower())
                     cmd.Parameters.Add("p_accion", OracleDbType.Varchar2).Value = If(String.IsNullOrEmpty(accion), DBNull.Value, accion.ToUpper())
@@ -34,6 +35,7 @@ Public Class Auditoria
                     Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
                     cursorParam.Direction = ParameterDirection.Output
                     cmd.Parameters.Add(cursorParam)
+
 
                     conn.Open()
                     Using da As New OracleDataAdapter(cmd)

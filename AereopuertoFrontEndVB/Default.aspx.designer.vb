@@ -131,6 +131,33 @@ Partial Public Class _Default
     Protected WithEvents lblSalidas As Global.System.Web.UI.WebControls.Label
 
     '''<summary>
+    '''lblClimaTemp control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblClimaTemp As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''lblClimaCondicion control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents lblClimaCondicion As Global.System.Web.UI.WebControls.Label
+
+    '''<summary>
+    '''litClimaIcono control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents litClimaIcono As Global.System.Web.UI.WebControls.Literal
+
+    '''<summary>
     '''rptVuelos control.
     '''</summary>
     '''<remarks>

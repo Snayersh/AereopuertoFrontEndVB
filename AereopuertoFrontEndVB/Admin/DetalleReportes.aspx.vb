@@ -31,7 +31,7 @@ Public Class DetalleReportes
     End Sub
 
     Private Sub CargarReportesPadre()
-        Dim db As New ConexionDB()
+        Dim db As New ConexionDBReplica()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_OBTENER_REPORTES_CBX", conn)
@@ -68,7 +68,7 @@ Public Class DetalleReportes
     End Sub
 
     Private Sub CargarTablaDetalles()
-        Dim db As New ConexionDB()
+        Dim db As New ConexionDBReplica()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_LISTAR_DETALLE_REPORTE", conn)
@@ -109,7 +109,7 @@ Public Class DetalleReportes
             Return
         End If
 
-        Dim db As New ConexionDB()
+        Dim db As New ConexionDBReplica()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_REGISTRAR_REPORTE_DETALLE", conn)

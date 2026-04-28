@@ -5,6 +5,9 @@
         If Not IsPostBack Then
             AplicarSeguridadYBienvenida()
             CargarDatosDashboard()
+
+            ' 🔥 AQUÍ ESTABA EL PROBLEMA: Faltaba llamar a la función que pinta el clima
+            CargarClima()
         End If
     End Sub
 
@@ -44,23 +47,57 @@
     ' CARGA INTEGRADA: Estadísticas + Vuelos con Rutas Reales
     ' -------------------------------------------------------------
     Private Sub CargarDatosDashboard()
-        ' 🔥 Llamamos al nuevo servicio público
         Dim respuesta = DashboardService.ObtenerRadarEnVivo()
 
-        If respuesta.success Then
+        ' Extraemos usando CallByName por si estás usando Option Strict On
+        Dim exito As Boolean = Convert.ToBoolean(CallByName(respuesta, "success", CallType.Get))
+
+        If exito Then
             ' 1. Llenar Estadísticas
-            Dim stats = respuesta.estadisticas
-            lblVuelosActivos.Text = stats.activos.ToString()
-            lblLlegadas.Text = stats.llegadas.ToString()
-            lblSalidas.Text = stats.salidas.ToString()
+            Dim stats = CallByName(respuesta, "estadisticas", CallType.Get)
+            lblVuelosActivos.Text = CallByName(stats, "activos", CallType.Get).ToString()
+            lblLlegadas.Text = CallByName(stats, "llegadas", CallType.Get).ToString()
+            lblSalidas.Text = CallByName(stats, "salidas", CallType.Get).ToString()
 
             ' 2. Llenar Tabla de Vuelos
-            ' (Asegúrate de que en el Default.aspx los <%# Eval() %> de esta tabla estén en minúsculas)
-            rptVuelos.DataSource = respuesta.radar_vuelos
+            rptVuelos.DataSource = CallByName(respuesta, "radar_vuelos", CallType.Get)
             rptVuelos.DataBind()
         Else
-            lblSaludo.Text = "Error de sincronización con la torre de control: " & respuesta.mensaje
+            Dim mensaje As String = CallByName(respuesta, "mensaje", CallType.Get).ToString()
+            lblSaludo.Text = "Error de sincronización con la torre de control: " & mensaje
         End If
+    End Sub
+
+    ' -------------------------------------------------------------
+    ' 🌤️ CARGA DEL CLIMA EN TIEMPO REAL (NUEVO MÉTODO)
+    ' -------------------------------------------------------------
+    Private Sub CargarClima()
+        Try
+            ' 1. Llamamos al servicio (que ya dejaste listo para la App)
+            Dim resultadoClima As Object = DashboardService.ObtenerClimaEnVivo()
+
+            ' 2. Verificamos si conectó exitosamente a OpenWeather
+            Dim exito As Boolean = Convert.ToBoolean(CallByName(resultadoClima, "success", CallType.Get))
+
+            If exito Then
+                ' 3. Pintamos los datos en la pantalla
+                lblClimaTemp.Text = CallByName(resultadoClima, "temperatura", CallType.Get).ToString()
+                lblClimaCondicion.Text = CallByName(resultadoClima, "condicion", CallType.Get).ToString()
+
+                Dim icono As String = CallByName(resultadoClima, "icono", CallType.Get).ToString()
+                litClimaIcono.Text = "<img src='https://openweathermap.org/img/wn/" & icono & "@2x.png' width='60' />"
+            Else
+                ' Si falló la API Key o no hay internet, muestra el error en el widget
+                Dim errorMsg As String = CallByName(resultadoClima, "mensaje", CallType.Get).ToString()
+                lblClimaCondicion.Text = errorMsg
+                lblClimaTemp.Text = "--"
+                litClimaIcono.Text = "⚠️"
+            End If
+        Catch ex As Exception
+            lblClimaCondicion.Text = "Falla de conexión local"
+            lblClimaTemp.Text = "--"
+            litClimaIcono.Text = "⚠️"
+        End Try
     End Sub
 
     ' -------------------------------------------------------------

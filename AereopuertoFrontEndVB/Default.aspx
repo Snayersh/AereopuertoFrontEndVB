@@ -130,7 +130,6 @@
                                         <li class="nav-item"><a class="nav-link" href="Operaciones/ProgramasVuelo.aspx">📅 Programas Vuelos</a></li>
                                         <li class="nav-item"><a class="nav-link" href="Operaciones/Escalas.aspx">🛑 Escalas</a></li>
                                         <li class="nav-item"><a class="nav-link" href="Operaciones/Rutas.aspx">🗺️ Rutas</a></li>
-                                        <li class="nav-item"><a class="nav-link" href="Operaciones/ClimaAeropuerto.aspx">🌤️ Clima Aeropuerto</a></li>
                                     </ul>
                                 </div>
                             </li>
@@ -189,7 +188,6 @@
                                         <li class="nav-item"><a class="nav-link" href="RRHH/GestionTurnos.aspx">⏱️ Gestión Turnos</a></li>
                                         <li class="nav-item"><a class="nav-link" href="RRHH/EvaluacionPersonal.aspx">⭐ Evaluación Personal</a></li>
                                         <li class="nav-item"><a class="nav-link" href="RRHH/GestionAsistencia.aspx">♿ Gestión Asistencia</a></li>
-
                                     </ul>
                                 </div>
                             </li>
@@ -265,8 +263,9 @@
                         </div>
                     </div>
 
+                    <!-- 🔥 AQUÍ ESTÁ LA NUEVA ESTRUCTURA (col-md-3) -->
                     <div class="row mb-5">
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-3 mb-3">
                             <div class="card stat-card shadow-sm text-white h-100" style="background-color: #2c3e50;">
                                 <div class="card-body p-4 d-flex justify-content-between align-items-center">
                                     <div><h6 class="text-uppercase mb-2 text-white-50 fw-bold letter-spacing-1">Vuelos Activos</h6><h1 class="fw-bold mb-0 display-5"><asp:Label ID="lblVuelosActivos" runat="server" Text="0"></asp:Label></h1></div>
@@ -274,7 +273,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-3 mb-3">
                             <div class="card stat-card shadow-sm text-white h-100" style="background-color: #27ae60;">
                                 <div class="card-body p-4 d-flex justify-content-between align-items-center">
                                     <div><h6 class="text-uppercase mb-2 text-white-50 fw-bold letter-spacing-1">Llegadas Hoy</h6><h1 class="fw-bold mb-0 display-5"><asp:Label ID="lblLlegadas" runat="server" Text="0"></asp:Label></h1></div>
@@ -282,11 +281,27 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-3 mb-3">
                             <div class="card stat-card shadow-sm text-dark h-100" style="background-color: #f1c40f;">
                                 <div class="card-body p-4 d-flex justify-content-between align-items-center">
                                     <div><h6 class="text-uppercase mb-2 text-black-50 fw-bold letter-spacing-1">Salidas Hoy</h6><h1 class="fw-bold mb-0 display-5"><asp:Label ID="lblSalidas" runat="server" Text="0"></asp:Label></h1></div>
                                     <h1 class="opacity-25 m-0 display-3">🛫</h1>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 🌤️ NUEVO WIDGET DEL CLIMA EN VIVO -->
+                        <div class="col-md-3 mb-3">
+                            <div class="card stat-card shadow-sm text-white h-100" style="background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);">
+                                <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="text-uppercase mb-2 text-white-50 fw-bold letter-spacing-1">Clima GUA</h6>
+                                        <h1 class="fw-bold mb-0 display-6"><asp:Label ID="lblClimaTemp" runat="server" Text="--"></asp:Label>°C</h1>
+                                        <small class="text-capitalize fw-bold opacity-75"><asp:Label ID="lblClimaCondicion" runat="server" Text="Cargando..."></asp:Label></small>
+                                    </div>
+                                    <h1 class="m-0 display-4">
+                                        <asp:Literal ID="litClimaIcono" runat="server">🌤️</asp:Literal>
+                                    </h1>
                                 </div>
                             </div>
                         </div>

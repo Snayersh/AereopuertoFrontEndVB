@@ -16,6 +16,7 @@ Public Class ClienteEquipajeService
                     cur.Direction = ParameterDirection.Output
                     cmd.Parameters.Add(cur)
 
+
                     conn.Open()
                     Using da As New OracleDataAdapter(cmd)
                         Dim dt As New DataTable()

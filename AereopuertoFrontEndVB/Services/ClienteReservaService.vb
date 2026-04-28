@@ -10,7 +10,7 @@ Public Class ClienteReservaService
         Dim db As New ConexionDB()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
-                Using cmd As New OracleCommand("SP_OBTENER_VUELOS_RESERVA_CBX", conn)
+                Using cmd As New OracleCommand("SP_OBTENER_VUELOS_RESERVA", conn)
                     cmd.CommandType = CommandType.StoredProcedure
                     Dim cursorParam As New OracleParameter("p_cursor", OracleDbType.RefCursor)
                     cursorParam.Direction = ParameterDirection.Output

@@ -21,7 +21,7 @@ Public Class GestionPuertas
     ' CARGAR CATÁLOGO DE AEROPUERTOS EN EL DROPDOWN
     ' =======================================================
     Private Sub CargarAeropuertos()
-        Dim db As New ConexionDB()
+        Dim db As New ConexionDBReplica()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_OBTENER_AEROPUERTOS_CBX", conn)
@@ -49,7 +49,7 @@ Public Class GestionPuertas
     ' CARGAR LA TABLA DE PUERTAS
     ' =======================================================
     Private Sub CargarPuertas()
-        Dim db As New ConexionDB()
+        Dim db As New ConexionDBReplica()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_LISTAR_PUERTAS_ADMIN", conn)
@@ -102,7 +102,7 @@ Public Class GestionPuertas
             Return
         End If
 
-        Dim db As New ConexionDB()
+        Dim db As New ConexionDBReplica()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_REGISTRAR_PUERTA", conn)

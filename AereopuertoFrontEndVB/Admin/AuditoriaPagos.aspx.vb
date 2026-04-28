@@ -17,7 +17,7 @@ Public Class AuditoriaPagos
     End Sub
 
     Private Sub CargarHistorial()
-        Dim db As New ConexionDB()
+        Dim db As New ConexionDBReplica()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_LISTAR_HISTORIAL_PAGOS", conn)

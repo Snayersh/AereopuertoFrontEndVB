@@ -1,4 +1,6 @@
 ﻿Imports System.Data
+Imports System.Net
+Imports System.Web.Script.Serialization
 Imports Oracle.ManagedDataAccess.Client
 
 Public Class DashboardService
@@ -116,6 +118,47 @@ Public Class DashboardService
             End Using
         Catch ex As Exception
             Return New With {.success = False, .mensaje = "Error al cargar coordenadas del radar: " & ex.Message}
+        End Try
+    End Function
+
+    ''' <summary>
+    ''' Obtiene el clima en tiempo real consultando directamente al satélite de OpenWeather.
+    ''' </summary>
+    Public Shared Function ObtenerClimaEnVivo() As Object
+        Try
+            ' Sustituye Config.API_KEY por tu llave o asegúrate de que la clase Config exista
+            Dim API_KEY As String = Config.API_KEY
+            Dim CIUDAD_AEROPUERTO As String = "Guatemala City"
+            Dim url As String = $"https://api.openweathermap.org/data/2.5/weather?q={CIUDAD_AEROPUERTO}&units=metric&appid={API_KEY}&lang=es"
+
+            Using client As New WebClient()
+                client.Encoding = System.Text.Encoding.UTF8
+                Dim jsonRespuesta As String = client.DownloadString(url)
+
+                Dim js As New JavaScriptSerializer()
+                Dim datosClima As Dictionary(Of String, Object) = js.Deserialize(Of Dictionary(Of String, Object))(jsonRespuesta)
+
+                Dim mainData As Dictionary(Of String, Object) = DirectCast(datosClima("main"), Dictionary(Of String, Object))
+                Dim weatherArray As ArrayList = DirectCast(datosClima("weather"), ArrayList)
+                Dim weatherData As Dictionary(Of String, Object) = DirectCast(weatherArray(0), Dictionary(Of String, Object))
+
+                Dim temp As Decimal = Convert.ToDecimal(mainData("temp"))
+                Dim condicion As String = weatherData("description").ToString()
+                Dim icono As String = weatherData("icon").ToString()
+
+                ' Retornamos directamente al Frontend sin tocar Oracle
+                Return New With {
+                    .success = True,
+                    .temperatura = Math.Round(temp, 1),
+                    .condicion = condicion,
+                    .icono = icono ' Ej: "01d" para un sol, "04d" para nubes
+                }
+            End Using
+
+        Catch ex As WebException
+            Return New With {.success = False, .mensaje = "Radar meteorológico fuera de línea (Error de API)."}
+        Catch ex As Exception
+            Return New With {.success = False, .mensaje = "Error al descifrar datos del clima: " & ex.Message}
         End Try
     End Function
 End Class

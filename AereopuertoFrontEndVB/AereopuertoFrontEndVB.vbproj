@@ -224,7 +224,7 @@
     <Content Include="Cliente\MisFacturas.aspx" />
     <Content Include="Operaciones\ControlVuelos.aspx" />
     <Content Include="Operaciones\Escalas.aspx" />
-    <Content Include="Publico\Radar.aspx" />
+    <Content Include="Radar.aspx" />
     <Content Include="RRHH\Tripulacion.aspx" />
     <Content Include="RRHH\Usuarios.aspx" />
     <Content Include="Cliente\Equipaje.aspx" />
@@ -255,8 +255,8 @@
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\Site.css" />
-    <Content Include="Publico\Default.aspx" />
-    <Content Include="Publico\DetalleVuelo.aspx" />
+    <Content Include="Default.aspx" />
+    <Content Include="DetalleVuelo.aspx" />
     <Content Include="Operaciones\CheckIn.aspx" />
     <Content Include="Operaciones\RegistroEquipaje.aspx" />
     <Content Include="Operaciones\Rutas.aspx" />
@@ -650,10 +650,10 @@
       <DependentUpon>Escalas.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
-    <Compile Include="Publico\Radar.aspx.designer.vb">
+    <Compile Include="Radar.aspx.designer.vb">
       <DependentUpon>Radar.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Publico\Radar.aspx.vb">
+    <Compile Include="Radar.aspx.vb">
       <DependentUpon>Radar.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
@@ -758,17 +758,17 @@
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Data\ConexionBD.vb" />
-    <Compile Include="Publico\Default.aspx.designer.vb">
+    <Compile Include="Default.aspx.designer.vb">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Publico\Default.aspx.vb">
+    <Compile Include="Default.aspx.vb">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
-    <Compile Include="Publico\DetalleVuelo.aspx.designer.vb">
+    <Compile Include="DetalleVuelo.aspx.designer.vb">
       <DependentUpon>DetalleVuelo.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Publico\DetalleVuelo.aspx.vb">
+    <Compile Include="DetalleVuelo.aspx.vb">
       <DependentUpon>DetalleVuelo.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
@@ -878,6 +878,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Assets\" />
+    <Folder Include="Publico\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

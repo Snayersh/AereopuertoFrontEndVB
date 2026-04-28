@@ -25,7 +25,7 @@ Public Class BitacoraSesiones
     ' CARGAR LA TABLA DE AUDITORÍA
     ' =======================================================
     Private Sub CargarBitacora()
-        Dim db As New ConexionDB()
+        Dim db As New ConexionDBReplica()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_LISTAR_BITACORA_SESIONES", conn)

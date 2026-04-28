@@ -25,7 +25,7 @@ Public Class GestionPlanilla
             Return
         End If
 
-        Dim db As New ConexionDB()
+        Dim db As New ConexionDBReplica()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_REGISTRAR_PLANILLA", conn)
@@ -58,7 +58,7 @@ Public Class GestionPlanilla
     End Sub
 
     Private Sub CargarHistorial()
-        Dim db As New ConexionDB()
+        Dim db As New ConexionDBReplica()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_LISTAR_PLANILLAS", conn)

@@ -21,7 +21,7 @@ Public Class BitacoraSistemas
     End Sub
 
     Private Sub CargarLogs(palabra As String, usuario As String, tipo As String)
-        Dim db As New ConexionDB()
+        Dim db As New ConexionDBReplica()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_CONSULTAR_BITACORA_LOG", conn)
@@ -81,7 +81,7 @@ Public Class BitacoraSistemas
     ' 🌟 FUNCIÓN GLOBAL PARA GUARDAR LOGS DESDE CUALQUIER PARTE DE TU CÓDIGO 🌟
     ' =========================================================================
     Public Shared Sub RegistrarEventoApp(modulo As String, accion As String, usuario As String, descripcion As String)
-        Dim db As New ConexionDB()
+        Dim db As New ConexionDBReplica()
         Try
             Using conn As OracleConnection = db.ObtenerConexion()
                 Using cmd As New OracleCommand("SP_INSERTAR_BITACORA_LOG", conn)
