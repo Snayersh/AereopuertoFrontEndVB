@@ -50,13 +50,22 @@ Partial Public Class _Default
     Protected WithEvents pnlRRHH As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
-    '''pnlSeguridadSoporte control.
+    '''pnlSeguridad control.
     '''</summary>
     '''<remarks>
     '''Auto-generated field.
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
-    Protected WithEvents pnlSeguridadSoporte As Global.System.Web.UI.WebControls.Panel
+    Protected WithEvents pnlSeguridad As Global.System.Web.UI.WebControls.Panel
+
+    '''<summary>
+    '''pnlSoporte control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents pnlSoporte As Global.System.Web.UI.WebControls.Panel
 
     '''<summary>
     '''pnlAdmin control.

@@ -19,7 +19,10 @@
         pnlCliente.Visible = False
         pnlEmpleado.Visible = False
         pnlRRHH.Visible = False
-        pnlSeguridadSoporte.Visible = False
+
+        ' 🔥 CORRECCIÓN: Ahora controlamos los dos paneles nuevos por separado
+        pnlSeguridad.Visible = False
+        pnlSoporte.Visible = False
 
         If Session("UserEmail") IsNot Nothing Then
             Dim rolStr As String = If(Session("UserRole") IsNot Nothing, Session("UserRole").ToString(), "")
@@ -34,7 +37,10 @@
                 Case "Pasajero" : pnlCliente.Visible = True
                 Case "Operaciones", "Mantenimiento_Tecnico" : pnlEmpleado.Visible = True
                 Case "Recursos_Humanos" : pnlRRHH.Visible = True
-                Case "Seguridad", "Servicio_Al_Cliente" : pnlSeguridadSoporte.Visible = True
+
+                ' 🔥 CORRECCIÓN: Separamos los roles para que activen su panel correspondiente
+                Case "Seguridad" : pnlSeguridad.Visible = True
+                Case "Servicio_Al_Cliente" : pnlSoporte.Visible = True
             End Select
         Else
             lblSaludo.Text = "Bienvenido, Invitado. Inicia sesión para más opciones."

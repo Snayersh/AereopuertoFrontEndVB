@@ -192,11 +192,15 @@
                                 </div>
                             </li>
                         </asp:Panel>
-
-                        <asp:Panel ID="pnlSeguridadSoporte" runat="server" Visible="false">
-                            <li class="section-title text-danger">Seguridad & Soporte</li>
+<!-- PANEL EXCLUSIVO PARA SEGURIDAD -->
+                        <asp:Panel ID="pnlSeguridad" runat="server" Visible="false">
+                            <li class="section-title text-danger">Seguridad Aeroportuaria</li>
                             <li class="nav-item"><a class="nav-link" href="Seguridad/Arrestos.aspx">🚔 Arrestos</a></li>
-                            
+                        </asp:Panel>
+
+                        <!-- PANEL EXCLUSIVO PARA SERVICIO AL CLIENTE / SOPORTE -->
+                        <asp:Panel ID="pnlSoporte" runat="server" Visible="false">
+                            <li class="section-title" style="color: #4db6ac;">Atención y Soporte</li>
                             <li class="nav-item">
                                 <a class="nav-link collapsed d-flex justify-content-between" data-bs-toggle="collapse" href="#collapseSoporte">
                                     <span>💻 Soporte Gral</span><span class="toggle-icon">▼</span>

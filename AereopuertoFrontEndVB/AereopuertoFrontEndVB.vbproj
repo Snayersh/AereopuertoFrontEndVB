@@ -212,7 +212,6 @@
     <Content Include="RRHH\EvaluacionPersonal.aspx" />
     <Content Include="Admin\GestionPlanilla.aspx" />
     <Content Include="Seguridad\Arrestos.aspx" />
-    <Content Include="Operaciones\ClimaAeropuerto.aspx" />
     <Content Include="Operaciones\EscanerRampa.aspx" />
     <Content Include="RRHH\GestionAsistencia.aspx" />
     <Content Include="Operaciones\AsignarPuertas.aspx" />
@@ -561,13 +560,6 @@
     </Compile>
     <Compile Include="Seguridad\Arrestos.aspx.vb">
       <DependentUpon>Arrestos.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
-    <Compile Include="Operaciones\ClimaAeropuerto.aspx.designer.vb">
-      <DependentUpon>ClimaAeropuerto.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Operaciones\ClimaAeropuerto.aspx.vb">
-      <DependentUpon>ClimaAeropuerto.aspx</DependentUpon>
       <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Operaciones\EscanerRampa.aspx.designer.vb">
